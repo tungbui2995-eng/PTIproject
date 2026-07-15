@@ -778,6 +778,27 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 @media (min-width: 861px) {
   .bottom-nav { display: none !important; }
 }
+
+/* ── Remember password checkbox ── */
+.remember-me-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 14px;
+}
+.remember-me-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.remember-me-row label {
+  font-size: 12px;
+  color: var(--text1);
+  cursor: pointer;
+  user-select: none;
+}
 </style>
 </head>
 <body>
@@ -803,6 +824,11 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <div class="form-row">
         <label class="form-label">Mật khẩu</label>
         <input class="form-ctrl" type="password" id="login-pass" placeholder="Nhập mật khẩu..." onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="remember-me-row">
+        <input type="checkbox" id="remember-me">
+        <label for="remember-me">🔑 Ghi nhớ mật khẩu</label>
+        <span style="font-size:10px;color:var(--text2);margin-left:auto;">(Lưu trên trình duyệt này)</span>
       </div>
       <div id="login-role-preview" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;margin-bottom:14px;font-size:12px;color:var(--text2)"></div>
       <button class="btn btn-accent" style="width:100%;justify-content:center;padding:10px" onclick="doLogin()">
@@ -3813,6 +3839,27 @@ function initLoginScreen() {
   const sel = document.getElementById('login-user');
   sel.innerHTML = '<option value="">— Chọn tên của bạn —</option>'
     + team.map(t=>`<option value="${t.email}">${t.name} — ${t.role.split('/')[0].trim()}</option>`).join('');
+
+  // Kiểm tra nếu có mật khẩu đã lưu
+  const savedPass = localStorage.getItem('mp_saved_password');
+  const savedEmail = localStorage.getItem('mp_saved_email');
+
+  // Nếu có email và mật khẩu đã lưu, tự động điền
+  if(savedEmail) {
+    sel.value = savedEmail;
+    if(savedPass) {
+      document.getElementById('login-pass').value = savedPass;
+      document.getElementById('remember-me').checked = true;
+      // Tự động đăng nhập nếu có cả email và pass
+      onLoginUserChange(savedEmail);
+      // Đăng nhập luôn nếu pass khớp
+      const member = team.find(t=>t.email===savedEmail);
+      if(member && savedPass === member.password) {
+        setTimeout(() => { doLogin(); }, 300);
+      }
+    }
+  }
+
   const saved = sessionStorage.getItem('mp_user');
   if(saved) {
     try { const u=JSON.parse(saved); if(team.find(t=>t.email===u.email)){applyLogin(u);return;} } catch(e){}
@@ -3826,6 +3873,18 @@ function onLoginUserChange(email) {
   if(m){ prev.style.display='block'; prev.innerHTML=`👷 <strong style="color:var(--text0)">${m.name}</strong> · ${m.role} · <span class="badge ${m.status==='Bận'?'badge-amber':'badge-green'}">${m.status}</span>`; }
   else prev.style.display='none';
   document.getElementById('login-err').style.display='none';
+
+  // Nếu có mật khẩu đã lưu cho email này, tự động điền
+  const savedPass = localStorage.getItem('mp_saved_password');
+  const savedEmail = localStorage.getItem('mp_saved_email');
+  if(email === savedEmail && savedPass) {
+    document.getElementById('login-pass').value = savedPass;
+    document.getElementById('remember-me').checked = true;
+  } else {
+    // Nếu không, xóa mật khẩu và bỏ checkbox
+    document.getElementById('login-pass').value = '';
+    document.getElementById('remember-me').checked = false;
+  }
 }
 
 const EMERGENCY_ADMIN_PASSWORD = 'Mecha@2025!'; 
@@ -3857,13 +3916,28 @@ function doLogin() {
   const email=document.getElementById('login-user').value;
   const pass=document.getElementById('login-pass').value;
   const errEl=document.getElementById('login-err');
+  const rememberMe = document.getElementById('remember-me').checked;
   if(!email){errEl.textContent='Vui lòng chọn tài khoản.';errEl.style.display='block';return;}
   const member=team.find(t=>t.email===email);
   const correctPass=member?.password||'1234';
   if(pass!==correctPass){
     errEl.textContent='Sai mật khẩu. Vui lòng thử lại.';errEl.style.display='block';
-    document.getElementById('login-pass').value='';document.getElementById('login-pass').focus();return;
+    document.getElementById('login-pass').value='';document.getElementById('login-pass').focus();
+    // Xóa mật khẩu đã lưu nếu sai
+    localStorage.removeItem('mp_saved_password');
+    localStorage.removeItem('mp_saved_email');
+    return;
   }
+
+  // Lưu mật khẩu nếu checkbox được chọn
+  if(rememberMe) {
+    localStorage.setItem('mp_saved_email', email);
+    localStorage.setItem('mp_saved_password', pass);
+  } else {
+    localStorage.removeItem('mp_saved_email');
+    localStorage.removeItem('mp_saved_password');
+  }
+
   applyLogin({email,name:member.name,role:member.role,color:stringToColor(email)});
 }
 
