@@ -1882,7 +1882,12 @@ function renderProjects() {
       <td style="font-family:monospace;font-size:12px">${p.deadline}</td>
       <td style="font-size:12px;color:var(--text1)">${p.val ? formatVND(p.val) : '—'}</td>
       <td><span class="badge ${p.status==='Hoàn thành'?'badge-green':'badge-blue'}">${p.status}</span></td>
-      <td><button class="btn btn-xs btn-danger" onclick="deleteProject('${p.id}')">Xóa</button></td>
+      <td>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-xs btn-ghost" onclick="${isAdmin()?`openModal('edit-project','${p.id}')`:'showNoPermToast()'}">Sửa</button>
+          <button class="btn btn-xs btn-danger" onclick="deleteProject('${p.id}')">Xóa</button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
   document.getElementById('proj-count').textContent = `${projects.length} dự án`;
@@ -2581,6 +2586,19 @@ function savePIC(pId, idx, email) {
   closeModal();
   loadPhases(pId);
   syncDataToDrive();
+  if(email && member) {
+    const ph = getPH(p);
+    const phase = ph[idx];
+    const deadline = p.phaseDeadlines?.[idx] || 'Chưa đặt';
+    const deadlineText = deadline !== 'Chưa đặt' ? formatDateVN(deadline) : 'Chưa đặt';
+    sendTelegramMessage(
+      `👷 <b>Phân công PIC</b>\n` +
+      `📁 Dự án: ${tgEscape(p.id)} — ${tgEscape(p.name)}\n` +
+      `📐 Giai đoạn: P${idx+1} — ${tgEscape(phase.name)}\n` +
+      `👤 PIC: ${tgEscape(member.name)}\n` +
+      `📅 Deadline: ${tgEscape(deadlineText)}`
+    );
+  }
   if(email && member && sendEmail) {
     sendEmailNotification({
       type: 'assign_pic',
@@ -3372,6 +3390,30 @@ function openModal(type, data) {
     `;
     document.getElementById('modal-ft').innerHTML = `<button class="btn btn-ghost" onclick="closeModal()">Hủy</button><button class="btn btn-accent" onclick="saveProject()">Xác nhận tạo</button>`;
   } 
+  else if(type==='edit-project'){
+    if(!isAdmin()){ closeModal(); showNoPermToast(); return; }
+    const p = projects.find(x=>x.id===data);
+    if(!p){ closeModal(); toast('Không tìm thấy dự án'); return; }
+    hd.textContent = `✏️  Sửa dự án — ${p.id}`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Mã DA *</label><input class="form-ctrl" id="ep-id" value="${p.id}" disabled style="opacity:0.6;cursor:not-allowed"></div>
+        <div class="form-row"><label class="form-label">Trạng thái</label>
+          <select class="form-ctrl" id="ep-status">
+            ${['Đang thực hiện','Chờ triển khai','Hoàn thành'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><label class="form-label">Tên thiết bị / Máy *</label><input class="form-ctrl" id="ep-name" value="${p.name||''}" placeholder="Máy hàn tự động, Băng tải, ..."></div>
+      <div class="form-row"><label class="form-label">Khách hàng *</label><input class="form-ctrl" id="ep-client" value="${p.client||''}" placeholder="Tên khách hàng hoặc công ty"></div>
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Giá trị hợp đồng (VNĐ)</label><input class="form-ctrl" type="number" id="ep-val" value="${p.val||0}" placeholder="0"></div>
+        <div class="form-row"><label class="form-label">Hạn bàn giao</label><input class="form-ctrl" type="date" id="ep-deadline" value="${p.deadline && p.deadline!=='—' ? p.deadline : ''}"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px">Mã dự án không thể chỉnh sau khi tạo. Để đổi mã, tạo dự án mới rồi xóa dự án cũ.</div>
+    `;
+    document.getElementById('modal-ft').innerHTML = `<button class="btn btn-ghost" onclick="closeModal()">Hủy</button><button class="btn btn-accent" onclick="saveEditProject('${p.id}')">Lưu thay đổi</button>`;
+  }
   else if(type==='new-issue') {
     hd.textContent = '⚠️  Thêm NCR / Sự cố kỹ thuật';
     document.getElementById('modal-body').innerHTML = `
@@ -3463,6 +3505,22 @@ function saveProject() {
     phaseComments: []
   });
   closeModal(); syncDataToDrive();
+}
+
+function saveEditProject(id) {
+  if(!isAdmin()){ showNoPermToast(); return; }
+  const p = projects.find(x=>x.id===id);
+  if(!p){ toast('Không tìm thấy dự án'); return; }
+  const name = document.getElementById('ep-name').value.trim();
+  const client = document.getElementById('ep-client').value.trim();
+  if(!name || !client){ toast('Vui lòng điền đủ thông tin bắt buộc'); return; }
+  p.name = name;
+  p.client = client;
+  p.val = document.getElementById('ep-val').value || 0;
+  p.deadline = document.getElementById('ep-deadline').value || '—';
+  p.status = document.getElementById('ep-status').value;
+  closeModal(); renderProjects(); syncDataToDrive();
+  toast(`✅ Đã cập nhật dự án ${id}`);
 }
 
 function saveIssue() {
@@ -3813,7 +3871,7 @@ function openTaskModal(type, editId) {
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
-    ${isEdit ? `<button class="btn btn-danger btn-sm" onclick="deleteTask('${editId}')">Xóa</button>` : ''}
+    ${isEdit && isAdmin() ? `<button class="btn btn-danger btn-sm" onclick="deleteTask('${editId}')">Xóa</button>` : ''}
     <button class="btn btn-sm" style="background:${accentColor};border-color:${accentColor};color:#fff" onclick="saveTask(${isEdit?`'${editId}'`:'null'})">
       ${isEdit ? 'Lưu thay đổi' : 'Thêm công việc'}
     </button>
@@ -3865,6 +3923,7 @@ function saveTask(editId) {
 }
 
 function deleteTask(id){
+  if(!isAdmin()){ showNoPermToast(); return; }
   const t=tasks.find(x=>x.id===id);
   showConfirm({title:'Xóa công việc',icon:'🗑️',iconBg:'var(--red-dim)',
     msg:`Xác nhận xóa: <strong>${t?.title||id}</strong>?`,
@@ -3977,6 +4036,10 @@ function taskCardHtml(t) {
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         Sửa
       </button>
+      ${isAdmin() ? `<button class="btn btn-xs btn-danger" title="Xóa (Admin)" onclick="deleteTask('${t.id}')">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Xóa
+      </button>` : ''}
       ${canSendEmail ? `<button class="btn btn-xs" style="background:var(--accent-dim);border-color:rgba(79,142,247,0.25);color:var(--accent)" onclick="sendTaskEmail('${t.id}')">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         Gửi mail
@@ -5260,6 +5323,7 @@ function initChat() {
 
 function createProjectRooms() {
   projects.forEach(p => {
+    if(p.chatRoomDeleted) return;
     if(!chatRooms.find(r=>r.id==='proj-'+p.id)) {
       chatRooms.push({ id:'proj-'+p.id, name:p.id+' — '+p.name, icon:'📁', color:'#34d399', type:'project', projId:p.id, messages:[] });
     }
@@ -5270,18 +5334,48 @@ function createProjectRooms() {
 function renderChatRooms() {
   const list = document.getElementById('chat-room-list');
   if(!list) return;
+  const admin = isAdmin();
   list.innerHTML = chatRooms.map(r => {
     const last = r.messages && r.messages.length ? r.messages[r.messages.length-1] : null;
     const lastText = last ? (last.senderName+': '+(last.text||'📎 File').slice(0,28)) : 'Chưa có tin nhắn';
     const isActive = r.id === currentRoomId;
+    const linkedProj = r.type==='project' ? projects.find(p=>p.id===r.projId) : null;
+    const canDelete = admin && r.type==='project' && linkedProj && linkedProj.status==='Hoàn thành';
     return `<div class="chat-room-item ${isActive?'active':''}" onclick="openRoom('${r.id}')">
       <div class="chat-room-icon" style="background:${r.color}22;color:${r.color}">${r.icon}</div>
       <div style="flex:1;min-width:0">
         <div class="chat-room-name">${r.name}</div>
         <div class="chat-room-last">${lastText}</div>
       </div>
+      ${canDelete ? `<button class="btn btn-xs btn-ghost" style="color:var(--red);flex-shrink:0;padding:4px 6px" title="Xóa phòng chat (dự án đã hoàn thành)" onclick="event.stopPropagation();deleteChatRoom('${r.id}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>` : ''}
     </div>`;
   }).join('');
+}
+
+function deleteChatRoom(roomId) {
+  if(!isAdmin()){ showNoPermToast(); return; }
+  const room = chatRooms.find(r=>r.id===roomId);
+  if(!room) return;
+  showConfirm({title:'Xóa phòng chat',icon:'🗑️',iconBg:'var(--red-dim)',
+    msg:`Xác nhận xóa phòng chat <strong>${room.name}</strong>? Toàn bộ tin nhắn trong phòng sẽ bị xóa vĩnh viễn.`,
+    okText:'Xóa phòng chat',okClass:'btn-danger',
+    onOk:()=>{
+      chatRooms = chatRooms.filter(r=>r.id!==roomId);
+      if(room.type==='project' && room.projId) {
+        const linkedProj = projects.find(p=>p.id===room.projId);
+        if(linkedProj) linkedProj.chatRoomDeleted = true;
+      }
+      if(currentRoomId === roomId) {
+        currentRoomId = 'general';
+        if(document.getElementById('chat-room-list')) openRoom('general');
+      }
+      renderChatRooms();
+      syncChatToDrive();
+      toast(`Đã xóa phòng chat ${room.name}`);
+    }
+  });
 }
 
 function openRoom(roomId) {
