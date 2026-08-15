@@ -6,6 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0c10">
 <title>PTI-Project — Quản lý dự án PTI</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PTI-Project">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -708,12 +716,39 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 .drive-perm-badge.read { background: rgba(52,211,153,0.15); color: var(--green); }
 .drive-perm-badge.none { background: var(--bg3); color: var(--text2); }
 
+.mobile-menu-btn { display: none; }
+.sidebar-overlay { display: none; }
+
 @media (max-width: 768px) {
   .stats-row { grid-template-columns: 1fr 1fr; }
   .two-col { grid-template-columns: 1fr; }
   .chat-layout { grid-template-columns: 1fr; }
   .perm-grid { grid-template-columns: 1fr; }
   .phase-docs-modal .modal { width: 95vw; }
+
+  body { overflow-x: hidden; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 1000;
+    width: 82vw; max-width: 300px;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .sidebar-overlay {
+    display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    z-index: 999; opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+  .mobile-menu-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: var(--r); border: 1px solid var(--border2);
+    background: var(--bg3); color: var(--text0); cursor: pointer; flex-shrink: 0;
+  }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar-title { font-size: 13px; }
+  .main { width: 100%; }
 }
 </style>
 </head>
@@ -796,7 +831,8 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   <div class="loading-sub" id="loading-sub">Vui lòng chờ</div>
 </div>
 
-<nav class="sidebar">
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+<nav class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-mark">
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
@@ -870,7 +906,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   </div>
 
   <div class="sidebar-footer">
-    <div class="nav-item" onclick="openModal('new-project')">
+    <div class="nav-item" onclick="openModal('new-project'); closeMobileSidebar();">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
       Tạo dự án mới
     </div>
@@ -879,6 +915,9 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 
 <div class="main">
   <div class="topbar">
+    <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" title="Menu" aria-label="Menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="topbar-breadcrumb">
       <span class="topbar-crumb-root">PTI-Project</span>
       <span class="topbar-crumb-sep">›</span>
@@ -894,6 +933,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
         Tải lại
       </button>
       <button class="btn btn-sm btn-ghost" id="theme-toggle-btn" onclick="toggleTheme()" title="Đổi giao diện sáng/tối"></button>
+      <button class="btn btn-sm btn-ghost" id="pwa-install-btn" onclick="installPwa()" title="Cài đặt PTI-Project vào thiết bị" style="display:none;color:var(--accent)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><polyline points="7 11 12 16 17 11"/><path d="M5 19h14"/></svg>
+        Cài đặt
+      </button>
       <button class="btn btn-sm btn-ghost" id="tg-settings-btn" onclick="openModal_telegramSettings()" title="Cài đặt thông báo Telegram" style="display:none">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       </button>
@@ -1599,6 +1642,14 @@ function toggleTheme() {
 }
 updateThemeToggleIcon(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
 
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
 function nav(viewId, el) {
   if(!canView(viewId)) {
     toast('⛔ Bạn không có quyền truy cập mục này');
@@ -1613,6 +1664,7 @@ function nav(viewId, el) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(`view-${viewId}`).classList.add('active');
   document.getElementById('topbar-title').textContent = PAGE_TITLES[viewId] || viewId;
+  closeMobileSidebar();
 }
 
 function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', notation: 'compact', maximumFractionDigits: 1 }).format(n); }
@@ -5770,6 +5822,34 @@ function renderAll() {
 }
 
 window.onload = () => { fetchDataFromDrive(); };
+
+// ── PWA: đăng ký Service Worker + gợi ý cài đặt app ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW đăng ký lỗi:', err));
+  });
+}
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = '';
+});
+function installPwa() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.finally(() => {
+    deferredInstallPrompt = null;
+    const btn = document.getElementById('pwa-install-btn');
+    if (btn) btn.style.display = 'none';
+  });
+}
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'none';
+  toast('📲 Đã cài đặt PTI-Project vào thiết bị');
+});
 </script>
 </body>
 </html>
