@@ -1564,6 +1564,12 @@ const PH = PH_DEFAULT;
 function getPH(proj) {
   return (proj && proj.customPhases && proj.customPhases.length > 0) ? proj.customPhases : PH_DEFAULT;
 }
+function getProjAvg(p) {
+  const ph = getPH(p);
+  const arr = (p.phases || []).slice(0, ph.length);
+  if(!ph.length) return 0;
+  return Math.round(arr.reduce((a,b)=>a+(b||0),0) / ph.length);
+}
 
 let projects = [], issues = [], docs = [];
 
@@ -1773,7 +1779,7 @@ function renderDashboard() {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📂</div><div class="empty-state-title">Chưa có dự án nào</div>Tạo dự án đầu tiên để bắt đầu</div>`;
   } else {
     list.innerHTML = projects.slice(0,5).map(p => {
-      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
+      const avg = getProjAvg(p);
       const color = avg >= 80 ? 'var(--green)' : avg >= 40 ? 'var(--accent)' : 'var(--amber)';
       return `<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px" onclick="goToPhaseDetail('${p.id}')" style="cursor:pointer">
         <div style="flex:1;min-width:0">
@@ -1848,7 +1854,7 @@ function renderDashboard() {
   if(projects.length===0) { mg.innerHTML = `<div class="empty-state" style="padding:20px">Chưa có dữ liệu tiến độ</div>`; }
   else {
     mg.innerHTML = projects.slice(0,6).map(p => {
-      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
+      const avg = getProjAvg(p);
       return `<div class="gantt-row">
         <div class="gantt-row-hd">
           <span class="gantt-row-name">${p.id} — ${p.name}</span>
@@ -1867,7 +1873,7 @@ function renderProjects() {
     return;
   }
   tbody.innerHTML = projects.map(p => {
-    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
+    const avg = getProjAvg(p);
     const color = avg >= 80 ? 'var(--green)' : avg >= 40 ? 'var(--accent)' : 'var(--amber)';
     return `<tr>
       <td class="tbl-code" style="cursor:pointer" onclick="goToPhaseDetail('${p.id}')">${p.id}</td>
@@ -2926,7 +2932,7 @@ function renderGantt() {
   const wrap = document.getElementById('gantt-wrap');
   if(projects.length===0){ wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-title">Không có dữ liệu tiến độ</div></div>`; return; }
   wrap.innerHTML = projects.map(p => {
-    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
+    const avg = getProjAvg(p);
     return `<div class="gantt-row">
       <div class="gantt-row-hd">
         <span class="gantt-row-name"><span style="color:var(--text2);font-family:monospace;font-size:11px">${p.id}</span> — ${p.name}</span>
@@ -5615,7 +5621,7 @@ function buildAIContext() {
     projects: projects.map(p=>({
       id: p.id, name: p.name, client: p.client,
       status: p.status, deadline: p.deadline,
-      progress: Math.round((p.phases||[]).reduce((a,b)=>a+b,0)/8),
+      progress: getProjAvg(p),
       phases: (p.phases||[]).map((pct,i)=>({ phase:`P${i+1}`, pct, pic: p.phasePIC?.[i]||'—', deadline: p.phaseDeadlines?.[i]||'—' }))
     })),
     team: team.map(t=>({ name:t.name, role:t.role, status:t.status, email:t.email })),
