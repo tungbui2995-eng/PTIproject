@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<script>(function(){try{var t=localStorage.getItem('mp-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0c10">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MechaProject">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<title>MechaProject — Quản lý dự án cơ khí</title>
+<title>PTI-Project — Quản lý dự án PTI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --bg0: #0a0c10;
@@ -45,6 +41,40 @@
   --r3: 16px;
   --sidebar-w: 248px;
   --topbar-h: 58px;
+  --loading-bg: rgba(10,12,16,0.92);
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  --bg0: #f3f4f7;
+  --bg1: #ffffff;
+  --bg2: #ffffff;
+  --bg3: #f1f3f6;
+  --bg4: #e6e9ef;
+  --bg5: #d4d9e2;
+  --border: rgba(15,23,42,0.08);
+  --border2: rgba(15,23,42,0.13);
+  --border3: rgba(15,23,42,0.22);
+  --text0: #171a21;
+  --text1: #565e6e;
+  --text2: #8991a2;
+  --accent: #2f6fe0;
+  --accent-dim: rgba(47,111,224,0.10);
+  --accent-glow: rgba(47,111,224,0.20);
+  --green: #0f9d68;
+  --green-dim: rgba(15,157,104,0.10);
+  --amber: #a16207;
+  --amber-dim: rgba(161,98,7,0.10);
+  --red: #dc2626;
+  --red-dim: rgba(220,38,38,0.08);
+  --purple: #7c3aed;
+  --teal: #0d9488;
+  --teal-dim: rgba(13,148,136,0.10);
+  --orange: #ea580c;
+  --loading-bg: rgba(243,244,247,0.92);
+  color-scheme: light;
+}
+body, .sidebar, .topbar, .modal, .toast, .login-card, .confirm-box, .btn, .form-ctrl, .user-badge {
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; }
@@ -62,7 +92,7 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
 
 .global-loading {
-  position: fixed; inset: 0; background: rgba(10,12,16,0.92);
+  position: fixed; inset: 0; background: var(--loading-bg);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   z-index: 9999; gap: 14px; transition: opacity 0.3s; backdrop-filter: blur(6px);
 }
@@ -285,16 +315,10 @@ body {
 .modal-body { padding: 20px; }
 .modal-ft { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
 
-/* Fix cho modal tài liệu giai đoạn - rộng hơn */
 .phase-docs-modal .modal { width: 90vw; max-width: 900px; }
 .phase-docs-modal .tbl { min-width: auto; width: 100%; }
 .phase-docs-modal .tbl th, .phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
 .phase-docs-modal .tbl-wrap { overflow-x: auto; }
-/* Also target when class is on overlay */
-.overlay.phase-docs-modal .modal { width: 90vw; max-width: 900px; }
-.overlay.phase-docs-modal .tbl { min-width: auto; width: 100%; }
-.overlay.phase-docs-modal .tbl th, .overlay.phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
-.overlay.phase-docs-modal .tbl-wrap { overflow-x: auto; }
 
 .form-row { margin-bottom: 14px; }
 .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
@@ -373,7 +397,6 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 .upload-phase-btn:hover { background: var(--bg4); color: var(--text0); border-color: var(--border3); }
 .upload-phase-btn svg { flex-shrink: 0; }
 
-/* Chat layout mở rộng hơn */
 .chat-layout {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -442,7 +465,6 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 }
 .chat-wrap-pos { position: relative; flex: 1; min-width: 0; }
 
-/* Các phần còn lại giữ nguyên */
 .chat-rooms-hd { padding:12px 14px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.08em; display:flex; align-items:center; justify-content:space-between; }
 .chat-room-item { padding:10px 14px; cursor:pointer; border-bottom:1px solid var(--border); transition:background .12s; display:flex; align-items:center; gap:9px; }
 .chat-room-item:hover { background:var(--bg3); }
@@ -652,134 +674,6 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 .team-proj-badges { display: flex; flex-wrap: wrap; gap: 3px; max-width: 200px; }
 .team-proj-badges .badge { font-size: 10px; padding: 1px 6px; }
 
-@media (max-width: 768px) {
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  .two-col { grid-template-columns: 1fr; }
-  .chat-layout { grid-template-columns: 1fr; }
-  .perm-grid { grid-template-columns: 1fr; }
-  .phase-docs-modal .modal { width: 95vw; }
-}
-/* ════════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — Hamburger menu + Drawer sidebar
-   ════════════════════════════════════════════════════════ */
-
-.hamburger-btn { display: none; }
-.mobile-overlay-bg { display: none; }
-
-@media (max-width: 860px) {
-  html { font-size: 13px; }
-
-  /* ── Hamburger button ── */
-  .hamburger-btn {
-    display: flex; align-items: center; justify-content: center;
-    width: 36px; height: 36px; border-radius: var(--r);
-    background: var(--bg3); border: 1px solid var(--border2);
-    color: var(--text0); cursor: pointer; flex-shrink: 0;
-  }
-  .hamburger-btn:active { background: var(--bg4); }
-
-  /* ── Sidebar becomes a slide-out drawer ── */
-  .sidebar {
-    position: fixed; top: 0; left: 0; bottom: 0; z-index: 400;
-    width: 78vw; max-width: 300px;
-    transform: translateX(-100%);
-    transition: transform .25s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 0 40px rgba(0,0,0,0.5);
-  }
-  .sidebar.drawer-open { transform: translateX(0); }
-
-  .mobile-overlay-bg {
-    display: block; position: fixed; inset: 0; z-index: 399;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
-    opacity: 0; pointer-events: none; transition: opacity .2s;
-  }
-  .mobile-overlay-bg.show { opacity: 1; pointer-events: all; }
-
-  /* ── Main takes full width ── */
-  .main { width: 100%; }
-  .topbar { padding: 0 12px; gap: 8px; }
-  .topbar-title { font-size: 13px; }
-  .topbar-crumb-root { display: none; }
-  .topbar-crumb-sep { display: none; }
-  .topbar-actions { gap: 6px; }
-  .topbar-actions .btn span,
-  .topbar-actions .btn { font-size: 0; padding: 7px; gap: 0; }
-  .topbar-actions .btn svg { margin: 0; }
-  .drive-status span:not(.drive-dot) { display: none; }
-  .drive-status { padding: 6px; }
-  .user-badge span { display: none; }
-  .user-badge { padding: 4px; gap: 0; }
-
-  .content { padding: 12px; padding-bottom: 70px; }
-
-  /* ── Stats / cards stack ── */
-  .stats-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .stat { padding: 12px 14px; }
-  .stat-num { font-size: 20px; }
-  .two-col { grid-template-columns: 1fr; }
-  .docs-layout { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; }
-  .chat-layout { grid-template-columns: 1fr; height: auto; }
-  .chat-rooms { max-height: 160px; }
-  .ai-layout { grid-template-columns: 1fr; height: auto; }
-  .ai-sidebar { order: 2; }
-  .ai-main { order: 1; min-height: 420px; }
-
-  /* ── Tables: horizontal scroll wrapper ── */
-  .tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .tbl { min-width: 640px; }
-  .card > table.tbl,
-  .card > .tbl { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-  /* ── Phase timeline: horizontal scroll instead of squeeze ── */
-  .phase-timeline { overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
-  .phase-timeline::after { left: 20px; right: 20px; }
-  .phase-step { min-width: 76px; flex-shrink: 0; }
-  .phase-step-label { max-width: 76px; }
-
-  /* ── Modal full-screen on mobile ── */
-  .modal { width: 94vw !important; max-width: 94vw !important; max-height: 88vh; }
-  .overlay.phase-docs-modal .modal,
-  .phase-docs-modal .modal { width: 94vw !important; max-width: 94vw !important; }
-
-  /* ── Search bars stack ── */
-  .search-wrap { flex-wrap: wrap; }
-  .search-input-wrap { max-width: 100% !important; flex: 1 1 100%; }
-  .section-hd { flex-wrap: wrap; gap: 10px; }
-  .section-hd-left { flex: 1 1 100%; }
-
-  /* ── Toast positioning ── */
-  .toast { left: 12px; right: 12px; bottom: 70px; }
-
-  /* ── Login screen ── */
-  .login-card { width: 92vw; max-width: 360px; }
-
-  /* ── Order cart layout stacks ── */
-  #wh-panel-order .two-col { grid-template-columns: 1fr; }
-}
-
-/* ── Bottom nav bar for very small screens (phones) ── */
-.bottom-nav { display: none; }
-@media (max-width: 860px) {
-  .bottom-nav {
-    display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
-    background: var(--bg1); border-top: 1px solid var(--border);
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-    justify-content: space-around; align-items: center;
-  }
-  .bottom-nav-item {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    color: var(--text2); font-size: 9px; cursor: pointer; padding: 4px 8px;
-    border-radius: var(--r); transition: color .15s; flex: 1; min-width: 0;
-  }
-  .bottom-nav-item.active { color: var(--accent); }
-  .bottom-nav-item svg { width: 19px; height: 19px; }
-}
-@media (min-width: 861px) {
-  .bottom-nav { display: none !important; }
-}
-
-/* ── Remember password checkbox ── */
 .remember-me-row {
   display: flex;
   align-items: center;
@@ -799,6 +693,28 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   cursor: pointer;
   user-select: none;
 }
+
+/* Permissions badge */
+.drive-perm-badge {
+  font-size: 9px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  display: inline-block;
+}
+.drive-perm-badge.owner { background: rgba(248,113,113,0.15); color: var(--red); }
+.drive-perm-badge.write { background: rgba(251,191,36,0.15); color: var(--amber); }
+.drive-perm-badge.read { background: rgba(52,211,153,0.15); color: var(--green); }
+.drive-perm-badge.none { background: var(--bg3); color: var(--text2); }
+
+@media (max-width: 768px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+  .chat-layout { grid-template-columns: 1fr; }
+  .perm-grid { grid-template-columns: 1fr; }
+  .phase-docs-modal .modal { width: 95vw; }
+}
 </style>
 </head>
 <body>
@@ -810,7 +726,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <div class="login-logo">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"/></svg>
       </div>
-      <div class="login-title">MechaProject</div>
+      <div class="login-title">PTI-Project</div>
       <div class="login-subtitle">Hệ thống quản lý dự án cơ khí</div>
     </div>
     <div class="login-body">
@@ -888,7 +804,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       </svg>
     </div>
     <div>
-      <div class="logo-name">MechaProject</div>
+      <div class="logo-name">PTI-Project</div>
       <div class="logo-tag">Cơ khí chế tạo máy</div>
     </div>
   </div>
@@ -961,38 +877,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   </div>
 </nav>
 
-<div class="mobile-overlay-bg" id="mobile-overlay-bg" onclick="closeMobileSidebar()"></div>
-
-<div class="bottom-nav" id="bottom-nav">
-  <div class="bottom-nav-item active" data-view="dashboard" onclick="navMobile('dashboard',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    <span>Dashboard</span>
-  </div>
-  <div class="bottom-nav-item" data-view="phases" onclick="navMobile('phases',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    <span>Giai đoạn</span>
-  </div>
-  <div class="bottom-nav-item" data-view="urgent" onclick="navMobile('urgent',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <span>Ưu tiên</span>
-  </div>
-  <div class="bottom-nav-item" data-view="chat" onclick="navMobile('chat',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    <span>Chat</span>
-  </div>
-  <div class="bottom-nav-item" onclick="toggleMobileSidebar()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    <span>Thêm</span>
-  </div>
-</div>
-
 <div class="main">
   <div class="topbar">
-    <div class="hamburger-btn" onclick="toggleMobileSidebar()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </div>
     <div class="topbar-breadcrumb">
-      <span class="topbar-crumb-root">MechaProject</span>
+      <span class="topbar-crumb-root">PTI-Project</span>
       <span class="topbar-crumb-sep">›</span>
       <span class="topbar-title" id="topbar-title">Dashboard</span>
     </div>
@@ -1004,6 +892,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <button class="btn btn-sm btn-ghost" onclick="fetchDataFromDrive()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
         Tải lại
+      </button>
+      <button class="btn btn-sm btn-ghost" id="theme-toggle-btn" onclick="toggleTheme()" title="Đổi giao diện sáng/tối"></button>
+      <button class="btn btn-sm btn-ghost" id="tg-settings-btn" onclick="openModal_telegramSettings()" title="Cài đặt thông báo Telegram" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       </button>
       <button class="btn btn-sm btn-ghost" onclick="triggerDailyReport(true)" title="Gửi báo cáo tổng hợp ngay" style="color:var(--accent)">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -1242,6 +1134,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
                 <th style="min-width:140px">Dự án tham gia</th>
                 <th>Trạng thái</th>
                 <th>Phân quyền</th>
+                <th>Drive Access</th>
                 <th>Mật khẩu</th>
                 <th>Thao tác</th>
               </tr>
@@ -1365,6 +1258,15 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Thêm vật tư
             </button>
+            <input type="file" id="stock-excel-input" accept=".xlsx,.xls" style="display:none" onchange="handleStockExcelImport(event)">
+            <button class="btn btn-sm btn-ghost" onclick="document.getElementById('stock-excel-input').click()" title="Nhập danh mục vật tư từ file Excel">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Nhập Excel
+            </button>
+            <button class="btn btn-sm btn-ghost" onclick="exportStockExcel()" title="Xuất danh mục vật tư ra file Excel">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Xuất Excel
+            </button>
           </div>
         </div>
         <div class="card">
@@ -1455,7 +1357,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
                   <textarea class="form-ctrl" id="cart-note" rows="2" placeholder="Ghi chú cho toàn bộ phiếu order..."></textarea>
                 </div>
                 <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;font-size:11px;color:var(--text2);margin-bottom:12px">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                   Email tự động gửi cho quản lý kho khi tạo phiếu
                 </div>
                 <button class="btn btn-accent" style="width:100%;justify-content:center" onclick="submitCartOrder()">
@@ -1534,7 +1436,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
         <!-- Sidebar -->
         <div class="ai-sidebar">
           <div class="ai-info-card">
-            <div class="ai-info-title">⚡ AI Trợ lý MechaProject</div>
+            <div class="ai-info-title">⚡ AI Trợ lý PTI-Project</div>
             <div style="font-size:11px;color:var(--text2);line-height:1.6">
               Trợ lý AI hiểu ngữ cảnh dự án của bạn. Có thể hỏi về tiến độ, nhân sự, vật tư, kỹ thuật cơ khí và nhiều hơn.
             </div>
@@ -1598,7 +1500,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// TOÀN BỘ JAVASCRIPT HOÀN CHỈNH (giữ nguyên như cũ)
+// TOÀN BỘ JAVASCRIPT
 // ═══════════════════════════════════════════════════════════════
 
 const DRIVE_API_URL = "https://script.google.com/macros/s/AKfycbzEEx69y1kyP4J9UJUZP8senAH8hqkUsNVBGO73oahMuSxU5vLhmvTeNzy5Fn4q_yd-/exec";
@@ -1639,17 +1541,26 @@ const ROLE_TEMPLATES = {
   viewer:   { dashboard:1, projects:1, phases:1, gantt:1, issues:1, docs:1, team:0, chat:1, urgent:0, today:0, warehouse:1, ai:1 }
 };
 
+// ── DRIVE PERMISSION LEVELS ──
+const DRIVE_PERM_LEVELS = {
+  none:  { label: 'Không truy cập', cls: 'none', icon: '🚫' },
+  read:  { label: 'Chỉ xem', cls: 'read', icon: '👁️' },
+  write: { label: 'Xem + Tải về', cls: 'write', icon: '📥' },
+  owner: { label: 'Toàn quyền', cls: 'owner', icon: '⚡' }
+};
+
 let team = [
-  {name:'Tùng', email:'tungbui2995@gmail.com', role:'Lead Mechanical Engineer / PM', projects:[], status:'Sẵn sàng', roleTemplate:'admin',    perms:{...ROLE_TEMPLATES.admin}, password:'1234'},
-  {name:'Nguyễn Văn A', email:'a@company.com', role:'Lead Mechanical Engineer', projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234'},
-  {name:'Trần Văn B',   email:'b@company.com', role:'Senior Mechanical Designer',     projects:['TL-2025-002'], status:'Sẵn sàng', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234'},
-  {name:'Lê Văn C',     email:'c@company.com', role:'Automation & Electrical Engineer',projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234'}
+  {name:'Tùng', email:'tungbui2995@gmail.com', role:'Lead PTI-nical Engineer / PM', projects:[], status:'Sẵn sàng', roleTemplate:'admin',    perms:{...ROLE_TEMPLATES.admin}, password:'1234', drivePerm:'owner'},
+  {name:'Nguyễn Văn A', email:'a@company.com', role:'Lead PTI-nical Engineer', projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'read'},
+  {name:'Trần Văn B',   email:'b@company.com', role:'Senior PTI-nical Designer',     projects:['TL-2025-002'], status:'Sẵn sàng', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'write'},
+  {name:'Lê Văn C',     email:'c@company.com', role:'Automation & Electrical Engineer',projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'read'}
 ];
 
 let tasks = [];
 let warehouseStock  = [];
 let warehouseOrders = [];
 let warehouseTxns   = [];
+let settings = { telegramBotToken: '', telegramChatId: '', telegramEnabled: false };
 
 const PAGE_TITLES = {
   dashboard: 'Dashboard',
@@ -1667,6 +1578,27 @@ const PAGE_TITLES = {
 };
 
 // ── HELPER FUNCTIONS ──
+// ── THEME (Light / Dark mode) ──
+const THEME_ICON_SUN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg><span>Sáng</span>';
+const THEME_ICON_MOON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.7 6.7 0 0 0 10.7 10.7z"/></svg><span>Tối</span>';
+function updateThemeToggleIcon(theme) {
+  const btn = document.getElementById('theme-toggle-btn');
+  if(!btn) return;
+  btn.innerHTML = theme === 'light' ? THEME_ICON_MOON : THEME_ICON_SUN;
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('mp-theme', theme); } catch(e) {}
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content', theme === 'light' ? '#f3f4f7' : '#0a0c10');
+  updateThemeToggleIcon(theme);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  applyTheme(cur === 'light' ? 'dark' : 'light');
+}
+updateThemeToggleIcon(document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+
 function nav(viewId, el) {
   if(!canView(viewId)) {
     toast('⛔ Bạn không có quyền truy cập mục này');
@@ -1677,49 +1609,10 @@ function nav(viewId, el) {
     i.classList.remove('active-red');
   });
   const isRed = viewId === 'urgent' || viewId === 'today';
-  if(el) el.classList.add(isRed ? 'active-red' : 'active');
+  el.classList.add(isRed ? 'active-red' : 'active');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(`view-${viewId}`).classList.add('active');
   document.getElementById('topbar-title').textContent = PAGE_TITLES[viewId] || viewId;
-
-  // Sync bottom nav active state
-  document.querySelectorAll('.bottom-nav-item').forEach(i=>{
-    i.classList.toggle('active', i.dataset.view === viewId);
-  });
-  // Close mobile drawer after navigating
-  closeMobileSidebar();
-  // Scroll content to top
-  const contentEl = document.querySelector('.content');
-  if(contentEl) contentEl.scrollTop = 0;
-}
-
-// ── MOBILE: gọi nav() từ bottom nav (không có element sidebar gốc) ──
-function navMobile(viewId, el) {
-  // Tìm sidebar nav-item tương ứng để giữ logic active đồng bộ
-  const sidebarItem = document.querySelector(`.nav-item[onclick*="nav('${viewId}'"]`);
-  nav(viewId, sidebarItem || el);
-  document.querySelectorAll('.bottom-nav-item').forEach(i=>i.classList.remove('active'));
-  if(el) el.classList.add('active');
-}
-
-// ── MOBILE: Hamburger drawer toggle ──
-function toggleMobileSidebar() {
-  const sb = document.querySelector('.sidebar');
-  const bg = document.getElementById('mobile-overlay-bg');
-  const isOpen = sb.classList.contains('drawer-open');
-  if(isOpen) { closeMobileSidebar(); }
-  else {
-    sb.classList.add('drawer-open');
-    bg.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-}
-function closeMobileSidebar() {
-  const sb = document.querySelector('.sidebar');
-  const bg = document.getElementById('mobile-overlay-bg');
-  if(sb) sb.classList.remove('drawer-open');
-  if(bg) bg.classList.remove('show');
-  document.body.style.overflow = '';
 }
 
 function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', notation: 'compact', maximumFractionDigits: 1 }).format(n); }
@@ -1760,6 +1653,28 @@ function canFull(module)  { return getPerm(module) >= 3; }
 function isAdmin()        { return canFull('team'); }
 function showNoPermToast() { toast('⛔ Chỉ Admin mới có quyền thực hiện thao tác này'); }
 
+// ── DRIVE PERMISSION FUNCTIONS ──
+function getUserDrivePerm(userEmail) {
+  const member = team.find(t=>t.email===userEmail);
+  if(!member) return 'none';
+  return member.drivePerm || 'read';
+}
+
+function canDownloadFile(userEmail) {
+  const perm = getUserDrivePerm(userEmail);
+  return perm === 'write' || perm === 'owner';
+}
+
+function canManageDrivePermissions(userEmail) {
+  const perm = getUserDrivePerm(userEmail);
+  return perm === 'owner' || isAdmin();
+}
+
+function getDrivePermBadge(perm) {
+  const info = DRIVE_PERM_LEVELS[perm] || DRIVE_PERM_LEVELS.read;
+  return `<span class="drive-perm-badge ${info.cls}">${info.icon} ${info.label}</span>`;
+}
+
 function applyPermissions() {
   const navMap = {
     dashboard:'dashboard', projects:'projects', phases:'phases',
@@ -1784,13 +1699,13 @@ function applyPermissions() {
       el.style.display = canEdit(mod) ? '' : 'none';
     });
   });
+
+  const tgBtn = document.getElementById('tg-settings-btn');
+  if(tgBtn) tgBtn.style.display = isAdmin() ? '' : 'none';
 }
 
 // ── RENDER FUNCTIONS ──
 function renderDashboard() {
-  // Tự động đồng bộ trạng thái Hoàn thành cho mọi dự án dựa trên % tiến độ thực tế
-  projects.forEach(p => syncProjectStatus(p));
-
   document.getElementById('stat-active-proj').textContent = projects.filter(p=>p.status!=='Hoàn thành').length;
   document.getElementById('stat-done-proj').textContent = projects.filter(p=>p.status==='Hoàn thành').length;
   document.getElementById('stat-issues').textContent = issues.filter(i=>i.status==='Mở').length;
@@ -1806,7 +1721,7 @@ function renderDashboard() {
     list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📂</div><div class="empty-state-title">Chưa có dự án nào</div>Tạo dự án đầu tiên để bắt đầu</div>`;
   } else {
     list.innerHTML = projects.slice(0,5).map(p => {
-      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/getPH(p).length);
+      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
       const color = avg >= 80 ? 'var(--green)' : avg >= 40 ? 'var(--accent)' : 'var(--amber)';
       return `<div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px" onclick="goToPhaseDetail('${p.id}')" style="cursor:pointer">
         <div style="flex:1;min-width:0">
@@ -1881,7 +1796,7 @@ function renderDashboard() {
   if(projects.length===0) { mg.innerHTML = `<div class="empty-state" style="padding:20px">Chưa có dữ liệu tiến độ</div>`; }
   else {
     mg.innerHTML = projects.slice(0,6).map(p => {
-      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/getPH(p).length);
+      const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
       return `<div class="gantt-row">
         <div class="gantt-row-hd">
           <span class="gantt-row-name">${p.id} — ${p.name}</span>
@@ -1894,14 +1809,13 @@ function renderDashboard() {
 }
 
 function renderProjects() {
-  projects.forEach(p => syncProjectStatus(p));
   const tbody = document.getElementById('proj-tbody');
   if(projects.length===0) {
     tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📂</div><div class="empty-state-title">Chưa có dự án</div>Nhấn "Tạo dự án" để thêm</div></td></tr>`;
     return;
   }
   tbody.innerHTML = projects.map(p => {
-    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/getPH(p).length);
+    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
     const color = avg >= 80 ? 'var(--green)' : avg >= 40 ? 'var(--accent)' : 'var(--amber)';
     return `<tr>
       <td class="tbl-code" style="cursor:pointer" onclick="goToPhaseDetail('${p.id}')">${p.id}</td>
@@ -1953,7 +1867,6 @@ function loadPhases(pId) {
   if(!p.generalComments) p.generalComments = [];
   if(!p.phaseComments) p.phaseComments = [];
   while(p.phases.length < ph.length) p.phases.push(0);
-  syncProjectStatus(p);
   const avg = Math.round(p.phases.slice(0,ph.length).reduce((a,b)=>a+b,0)/ph.length);
 
   cont.innerHTML = `
@@ -2454,35 +2367,121 @@ function saveManagePhases(pId) {
   toast(`✅ Đã lưu ${getPH(p).length} giai đoạn cho ${p.name}`);
 }
 
-// ── ĐỒNG BỘ TRẠNG THÁI DỰ ÁN THEO % TIẾN ĐỘ ──
-function syncProjectStatus(p) {
-  if(!p || !p.phases) return false;
-  const ph  = getPH(p);
-  const avg = Math.round(p.phases.slice(0, ph.length).reduce((a,b)=>a+b,0) / ph.length);
-  const wasStatus = p.status;
-
-  if(avg >= 100 && p.status !== 'Hoàn thành') {
-    p.status = 'Hoàn thành';
-  } else if(avg < 100 && p.status === 'Hoàn thành') {
-    // Nếu tiến độ tụt xuống dưới 100% (ví dụ bấm lại dot về 0%), tự chuyển về Đang thực hiện
-    p.status = 'Đang thực hiện';
-  }
-  return p.status !== wasStatus; // true nếu có thay đổi
+// ── HÀM CẬP NHẬT TIẾN ĐỘ GIAI ĐOẠN VỚI THÔNG BÁO CHUYỂN TIẾP ──
+function checkAndNotifyNextPhase(projectId, completedIdx) {
+    const p = projects.find(x => x.id === projectId);
+    if (!p) return;
+    const ph = getPH(p);
+    const nextIdx = completedIdx + 1;
+    
+    // Nếu đã hoàn thành giai đoạn cuối hoặc không có giai đoạn tiếp theo
+    if (nextIdx >= ph.length) {
+        // Cập nhật trạng thái dự án thành Hoàn thành nếu tất cả giai đoạn đều 100%
+        const allDone = ph.every((_, i) => (p.phases[i]||0) >= 100);
+        if (allDone && p.status !== 'Hoàn thành') {
+            p.status = 'Hoàn thành';
+            sendTelegramMessage(
+                `🎉 <b>DỰ ÁN HOÀN THÀNH</b>\n` +
+                `📁 ${tgEscape(p.id)} — ${tgEscape(p.name)}\n` +
+                `👷 Khách hàng: ${tgEscape(p.client)}\n` +
+                `✅ Tất cả ${ph.length} giai đoạn đã hoàn thành!`
+            );
+            // Gửi email cho PM
+            const pm = team.find(t => t.roleTemplate === 'admin' && t.email !== 'admin@PTI-project.local');
+            if (pm) {
+                sendEmailNotification({
+                    type: 'project_complete',
+                    to: pm.email,
+                    toName: pm.name,
+                    proj: p,
+                    phaseIdx: -1
+                });
+            }
+        }
+        return;
+    }
+    
+    const nextPhase = ph[nextIdx];
+    const nextPICEmail = p.phasePIC?.[nextIdx] || '';
+    const nextPIC = team.find(t => t.email === nextPICEmail);
+    const completedPhase = ph[completedIdx];
+    
+    if (!nextPIC) {
+        // Nếu chưa có PIC, gửi cảnh báo
+        sendTelegramMessage(
+            `⚠️ <b>CẢNH BÁO: Chưa có PIC cho giai đoạn tiếp theo</b>\n` +
+            `📁 ${tgEscape(p.id)} — ${tgEscape(p.name)}\n` +
+            `✅ Đã hoàn thành: ${tgEscape(completedPhase.name)}\n` +
+            `⏳ Giai đoạn tiếp theo: ${tgEscape(nextPhase.name)}\n` +
+            `👷 Vui lòng phân công PIC ngay!`
+        );
+        return;
+    }
+    
+    // Gửi thông báo Telegram
+    const message = `📢 <b>CHUYỂN GIAI ĐOẠN</b>\n` +
+        `📁 ${tgEscape(p.id)} — ${tgEscape(p.name)}\n` +
+        `✅ Đã hoàn thành: ${tgEscape(completedPhase.name)}\n` +
+        `👉 Giai đoạn tiếp theo: ${tgEscape(nextPhase.name)}\n` +
+        `👷 PIC mới: ${tgEscape(nextPIC.name)}\n` +
+        `📅 Deadline dự án: ${tgEscape(p.deadline)}`;
+    sendTelegramMessage(message);
+    
+    // Gửi email cho PIC mới
+    sendEmailNotification({
+        type: 'phase_transition',
+        to: nextPICEmail,
+        toName: nextPIC.name,
+        proj: p,
+        phaseIdx: nextIdx,
+        completedPhaseName: completedPhase.name
+    });
+    
+    // Gửi thông báo cho PM (nếu khác PIC)
+    const pm = team.find(t => t.roleTemplate === 'admin' && t.email !== 'admin@PTI-project.local' && t.email !== nextPICEmail);
+    if (pm) {
+        sendEmailNotification({
+            type: 'phase_transition_pm',
+            to: pm.email,
+            toName: pm.name,
+            proj: p,
+            phaseIdx: nextIdx,
+            completedPhaseName: completedPhase.name,
+            picName: nextPIC.name
+        });
+    }
 }
 
 function updatePhasePct(pId, idx) {
-  const p = projects.find(x=>x.id===pId);
-  p.phases[idx] = p.phases[idx] === 100 ? 0 : (p.phases[idx]||0) + 20;
-  const changed = syncProjectStatus(p);
-  loadPhases(pId);
-  syncDataToDrive();
-  if(changed) toast(p.status === 'Hoàn thành' ? `🎉 Dự án ${p.id} đã hoàn thành!` : `Dự án ${p.id} chuyển về Đang thực hiện`);
+    const p = projects.find(x => x.id === pId);
+    if (!p) return;
+    
+    // Lưu giá trị cũ để kiểm tra xem có hoàn thành mới không
+    const oldPct = p.phases[idx] || 0;
+    const wasComplete = oldPct >= 100;
+    
+    // Cập nhật tiến độ
+    p.phases[idx] = (p.phases[idx] || 0) + 20;
+    if (p.phases[idx] > 100) p.phases[idx] = 0;
+    const newPct = p.phases[idx];
+    
+    // Nếu vừa đạt 100% (hoàn thành) và trước đó chưa hoàn thành
+    if (newPct === 100 && !wasComplete) {
+        toast(`🎉 Hoàn thành giai đoạn ${idx+1}: ${getPH(p)[idx].name}`);
+        // Gửi thông báo chuyển giai đoạn
+        checkAndNotifyNextPhase(pId, idx);
+    } else if (newPct === 0 && wasComplete) {
+        toast(`🔄 Đã reset giai đoạn ${idx+1} về 0%`);
+    }
+    
+    loadPhases(pId);
+    syncDataToDrive();
 }
 
 // ── CÁC HÀM PHASE ──
 function assignPIC(pId, idx) {
   const p = projects.find(x=>x.id===pId);
-  if(!p.phasePIC) p.phasePIC = Array(getPH(p).length).fill('');
+  if(!p.phasePIC) p.phasePIC = Array(PH.length).fill('');
   const current = p.phasePIC[idx] || '';
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
@@ -2523,7 +2522,7 @@ function assignPIC(pId, idx) {
 
 function savePIC(pId, idx, email) {
   const p = projects.find(x=>x.id===pId);
-  if(!p.phasePIC) p.phasePIC = Array(getPH(p).length).fill('');
+  if(!p.phasePIC) p.phasePIC = Array(PH.length).fill('');
   p.phasePIC[idx] = email;
   const sendEmail = document.getElementById('send-email-chk')?.checked;
   const member = team.find(t=>t.email===email);
@@ -2545,59 +2544,175 @@ function savePIC(pId, idx, email) {
   }
 }
 
-function sendEmailNotification({ type, to, toName, proj, phaseIdx }) {
-  const ph = getPH(proj)[phaseIdx]||PH_DEFAULT[phaseIdx]||{icon:"📋",name:"Giai đoạn"};
-  const deadline = proj.phaseDeadlines?.[phaseIdx] || 'Chưa đặt';
-  const deadlineText = deadline !== 'Chưa đặt' ? formatDateVN(deadline) : 'Chưa đặt';
-  const payload = {
-    action: 'send_email',
-    to,
-    subject: `[MechaProject] Bạn được gán phụ trách: ${proj.id} — P${phaseIdx+1}: ${ph.name}`,
-    body: `Xin chào ${toName},\n\nBạn được phân công phụ trách giai đoạn sau:\n\n` +
-      `📁 Dự án: ${proj.id} — ${proj.name}\n` +
-      `👷 Khách hàng: ${proj.client}\n` +
-      `📐 Giai đoạn: P${phaseIdx+1} — ${ph.name}\n` +
-      `📅 Deadline giai đoạn: ${deadlineText}\n` +
-      `📅 Hạn bàn giao dự án: ${proj.deadline}\n\n` +
-      `Vui lòng đăng nhập MechaProject để xem chi tiết và cập nhật tiến độ.\n\nTrân trọng,\nHệ thống MechaProject`,
-    htmlBody: `
-      <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
-        <div style="background:linear-gradient(135deg,#3a7de0,#6366f1);padding:22px 24px 18px">
-          <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px">Hệ thống quản lý dự án cơ khí</div>
-        </div>
-        <div style="padding:22px 24px">
-          <div style="font-size:15px;font-weight:600;margin-bottom:16px">Xin chào ${toName},</div>
-          <p style="font-size:13px;color:#9aa3b5;margin-bottom:18px">Bạn vừa được phân công phụ trách giai đoạn kỹ thuật sau:</p>
-          <div style="background:#1e2330;border:1px solid #262d3d;border-radius:10px;padding:16px 18px;margin-bottom:18px">
-            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px">
-              <span style="color:#5c6578;font-weight:600">Dự án</span><span style="color:#eef0f4">${proj.id} — ${proj.name}</span>
-              <span style="color:#5c6578;font-weight:600">Khách hàng</span><span style="color:#eef0f4">${proj.client}</span>
-              <span style="color:#5c6578;font-weight:600">Giai đoạn</span><span style="color:#4f8ef7;font-weight:600">P${phaseIdx+1} — ${ph.name}</span>
-              <span style="color:#5c6578;font-weight:600">Deadline GĐ</span><span style="color:${deadline!=='Chưa đặt'?'#fbbf24':'#5c6578'};font-weight:600">${deadlineText}</span>
-              <span style="color:#5c6578;font-weight:600">Hạn bàn giao</span><span style="color:#eef0f4">${proj.deadline}</span>
-            </div>
-          </div>
-          <p style="font-size:12px;color:#5c6578">Vui lòng đăng nhập MechaProject để cập nhật tiến độ và tải tài liệu giai đoạn.</p>
-        </div>
-        <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject — Hệ thống tự động · Không reply email này</div>
-      </div>`
-  };
-  fetch(DRIVE_API_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
-  .then(r => r.json())
-  .then(res => {
-    if(res.status === 'success') toast(`✉ Đã gửi email thông báo tới ${toName} (${to})`);
-    else toast(`Gán PIC thành công. Lưu ý: email chưa gửi được (${res.message||''})`);
-  })
-  .catch(() => toast(`Đã gán PIC: ${toName}. Email sẽ gửi sau khi kết nối Drive ổn định`));
+// ── HÀM GỬI EMAIL THÔNG BÁO HOÀN CHỈNH ──
+function sendEmailNotification({ type, to, toName, proj, phaseIdx, completedPhaseName, picName }) {
+    // Hàm này đã được cập nhật để hỗ trợ tất cả các loại thông báo
+    let payload = null;
+    const ph = getPH(proj);
+    
+    if (type === 'assign_pic') {
+        const deadline = proj.phaseDeadlines?.[phaseIdx] || 'Chưa đặt';
+        const deadlineText = deadline !== 'Chưa đặt' ? formatDateVN(deadline) : 'Chưa đặt';
+        const phase = ph[phaseIdx];
+        
+        payload = {
+            action: 'send_email',
+            to,
+            subject: `[PTI-Project] Bạn được gán phụ trách: ${proj.id} — P${phaseIdx+1}: ${phase.name}`,
+            body: `Xin chào ${toName},\n\nBạn được phân công phụ trách giai đoạn sau:\n\n` +
+                `📁 Dự án: ${proj.id} — ${proj.name}\n` +
+                `👷 Khách hàng: ${proj.client}\n` +
+                `📐 Giai đoạn: P${phaseIdx+1} — ${phase.name}\n` +
+                `📅 Deadline giai đoạn: ${deadlineText}\n` +
+                `📅 Hạn bàn giao dự án: ${proj.deadline}\n\n` +
+                `Vui lòng đăng nhập PTI-Project để xem chi tiết và cập nhật tiến độ.\n\nTrân trọng,\nHệ thống PTI-Project`,
+            htmlBody: `
+                <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
+                    <div style="background:linear-gradient(135deg,#3a7de0,#6366f1);padding:22px 24px 18px">
+                        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:3px">Hệ thống quản lý dự án cơ khí</div>
+                    </div>
+                    <div style="padding:22px 24px">
+                        <div style="font-size:15px;font-weight:600;margin-bottom:16px">Xin chào ${toName},</div>
+                        <p style="font-size:13px;color:#9aa3b5;margin-bottom:18px">Bạn vừa được phân công phụ trách giai đoạn kỹ thuật sau:</p>
+                        <div style="background:#1e2330;border:1px solid #262d3d;border-radius:10px;padding:16px 18px;margin-bottom:18px">
+                            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px">
+                                <span style="color:#5c6578;font-weight:600">Dự án</span><span style="color:#eef0f4">${proj.id} — ${proj.name}</span>
+                                <span style="color:#5c6578;font-weight:600">Khách hàng</span><span style="color:#eef0f4">${proj.client}</span>
+                                <span style="color:#5c6578;font-weight:600">Giai đoạn</span><span style="color:#4f8ef7;font-weight:600">P${phaseIdx+1} — ${phase.name}</span>
+                                <span style="color:#5c6578;font-weight:600">Deadline GĐ</span><span style="color:${deadline!=='Chưa đặt'?'#fbbf24':'#5c6578'};font-weight:600">${deadlineText}</span>
+                                <span style="color:#5c6578;font-weight:600">Hạn bàn giao</span><span style="color:#eef0f4">${proj.deadline}</span>
+                            </div>
+                        </div>
+                        <p style="font-size:12px;color:#5c6578">Vui lòng đăng nhập PTI-Project để cập nhật tiến độ và tải tài liệu giai đoạn.</p>
+                    </div>
+                    <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project — Hệ thống tự động · Không reply email này</div>
+                </div>`
+        };
+    } else if (type === 'phase_transition') {
+        const nextPhase = ph[phaseIdx];
+        const deadline = proj.phaseDeadlines?.[phaseIdx] || 'Chưa đặt';
+        const deadlineText = deadline !== 'Chưa đặt' ? formatDateVN(deadline) : 'Chưa đặt';
+        
+        payload = {
+            action: 'send_email',
+            to,
+            subject: `[PTI-Project] 🚀 Giai đoạn mới: ${proj.id} — P${phaseIdx+1}: ${nextPhase.name}`,
+            body: `Xin chào ${toName},\n\nBạn được gán phụ trách giai đoạn tiếp theo của dự án:\n\n` +
+                `📁 Dự án: ${proj.id} — ${proj.name}\n` +
+                `👷 Khách hàng: ${proj.client}\n` +
+                `✅ Giai đoạn vừa hoàn thành: ${completedPhaseName}\n` +
+                `📐 Giai đoạn mới: P${phaseIdx+1} — ${nextPhase.name}\n` +
+                `📅 Deadline giai đoạn: ${deadlineText}\n` +
+                `📅 Hạn bàn giao dự án: ${proj.deadline}\n\n` +
+                `Vui lòng đăng nhập PTI-Project để xem chi tiết và bắt đầu công việc.\n\nTrân trọng,\nHệ thống PTI-Project`,
+            htmlBody: `
+                <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
+                    <div style="background:linear-gradient(135deg,#34d399,#059669);padding:22px 24px 18px">
+                        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:3px">🚀 Giai đoạn mới được kích hoạt</div>
+                    </div>
+                    <div style="padding:22px 24px">
+                        <div style="font-size:15px;font-weight:600;margin-bottom:16px">Xin chào ${toName},</div>
+                        <p style="font-size:13px;color:#9aa3b5;margin-bottom:18px">
+                            Giai đoạn <strong style="color:#34d399">${completedPhaseName}</strong> của dự án <strong style="color:#eef0f4">${proj.id} — ${proj.name}</strong> đã hoàn thành.
+                            Bạn được gán phụ trách giai đoạn tiếp theo.
+                        </p>
+                        <div style="background:#1e2330;border:1px solid #262d3d;border-radius:10px;padding:16px 18px;margin-bottom:18px">
+                            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px">
+                                <span style="color:#5c6578;font-weight:600">Dự án</span><span style="color:#eef0f4">${proj.id} — ${proj.name}</span>
+                                <span style="color:#5c6578;font-weight:600">Khách hàng</span><span style="color:#eef0f4">${proj.client}</span>
+                                <span style="color:#5c6578;font-weight:600">Giai đoạn mới</span><span style="color:#4f8ef7;font-weight:600">P${phaseIdx+1} — ${nextPhase.name}</span>
+                                <span style="color:#5c6578;font-weight:600">Deadline GĐ</span><span style="color:${deadline!=='Chưa đặt'?'#fbbf24':'#5c6578'};font-weight:600">${deadlineText}</span>
+                                <span style="color:#5c6578;font-weight:600">Hạn bàn giao</span><span style="color:#eef0f4">${proj.deadline}</span>
+                            </div>
+                        </div>
+                        <p style="font-size:12px;color:#5c6578">Vui lòng đăng nhập PTI-Project để cập nhật tiến độ và tải tài liệu giai đoạn.</p>
+                    </div>
+                    <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project — Hệ thống tự động · Không reply email này</div>
+                </div>`
+        };
+    } else if (type === 'phase_transition_pm') {
+        const nextPhase = ph[phaseIdx];
+        payload = {
+            action: 'send_email',
+            to,
+            subject: `[PTI-Project] 📢 Chuyển giai đoạn: ${proj.id} — P${phaseIdx+1} ${nextPhase.name}`,
+            body: `Xin chào ${toName},\n\nDự án ${proj.id} — ${proj.name} đã chuyển sang giai đoạn mới:\n\n` +
+                `✅ Hoàn thành: ${completedPhaseName}\n` +
+                `📐 Giai đoạn mới: P${phaseIdx+1} — ${nextPhase.name}\n` +
+                `👷 PIC phụ trách: ${picName}\n\n` +
+                `Vui lòng theo dõi tiến độ tại PTI-Project.`,
+            htmlBody: `
+                <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
+                    <div style="background:linear-gradient(135deg,#6366f1,#4f8ef7);padding:22px 24px 18px">
+                        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:3px">📢 Cập nhật tiến độ dự án</div>
+                    </div>
+                    <div style="padding:22px 24px">
+                        <div style="font-size:15px;font-weight:600;margin-bottom:16px">Xin chào ${toName},</div>
+                        <p style="font-size:13px;color:#9aa3b5;margin-bottom:18px">
+                            Dự án <strong style="color:#eef0f4">${proj.id} — ${proj.name}</strong> đã chuyển sang giai đoạn mới:
+                        </p>
+                        <div style="background:#1e2330;border:1px solid #262d3d;border-radius:10px;padding:16px 18px;margin-bottom:18px">
+                            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px">
+                                <span style="color:#5c6578;font-weight:600">Hoàn thành</span><span style="color:#34d399">${completedPhaseName}</span>
+                                <span style="color:#5c6578;font-weight:600">Giai đoạn mới</span><span style="color:#4f8ef7;font-weight:600">P${phaseIdx+1} — ${nextPhase.name}</span>
+                                <span style="color:#5c6578;font-weight:600">PIC mới</span><span style="color:#eef0f4">${picName}</span>
+                            </div>
+                        </div>
+                        <p style="font-size:12px;color:#5c6578">Theo dõi tiến độ tại PTI-Project.</p>
+                    </div>
+                    <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project — Thông báo tự động</div>
+                </div>`
+        };
+    } else if (type === 'project_complete') {
+        payload = {
+            action: 'send_email',
+            to,
+            subject: `[PTI-Project] 🎉 DỰ ÁN HOÀN THÀNH: ${proj.id} — ${proj.name}`,
+            body: `Xin chào ${toName},\n\nDự án ${proj.id} — ${proj.name} đã HOÀN THÀNH 100%!\n\n` +
+                `👷 Khách hàng: ${proj.client}\n` +
+                `📅 Hạn bàn giao: ${proj.deadline}\n\n` +
+                `Vui lòng kiểm tra và tiến hành bàn giao.`,
+            htmlBody: `
+                <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
+                    <div style="background:linear-gradient(135deg,#34d399,#059669);padding:22px 24px 18px">
+                        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
+                        <div style="font-size:13px;color:rgba(255,255,255,0.9);margin-top:4px">🎉 DỰ ÁN HOÀN THÀNH</div>
+                    </div>
+                    <div style="padding:22px 24px">
+                        <div style="font-size:15px;font-weight:600;margin-bottom:16px">Xin chào ${toName},</div>
+                        <p style="font-size:13px;color:#9aa3b5;margin-bottom:18px">
+                            Dự án <strong style="color:#34d399">${proj.id} — ${proj.name}</strong> đã hoàn thành 100%!
+                        </p>
+                        <div style="background:#1e2330;border:1px solid #262d3d;border-radius:10px;padding:16px 18px;margin-bottom:18px">
+                            <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px">
+                                <span style="color:#5c6578;font-weight:600">Dự án</span><span style="color:#eef0f4">${proj.id} — ${proj.name}</span>
+                                <span style="color:#5c6578;font-weight:600">Khách hàng</span><span style="color:#eef0f4">${proj.client}</span>
+                                <span style="color:#5c6578;font-weight:600">Hạn bàn giao</span><span style="color:#eef0f4">${proj.deadline}</span>
+                            </div>
+                        </div>
+                        <p style="font-size:12px;color:#5c6578">Vui lòng kiểm tra và tiến hành bàn giao cho khách hàng.</p>
+                    </div>
+                    <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project — Thông báo tự động</div>
+                </div>`
+        };
+    }
+    
+    if (payload) {
+        fetch(DRIVE_API_URL, { method: 'POST', body: JSON.stringify(payload) })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') toast(`✉ Đã gửi email tới ${toName}`);
+            })
+            .catch(() => {});
+    }
 }
 
 function editPhaseDeadline(pId, idx) {
   const p = projects.find(x=>x.id===pId);
-  if(!p.phaseDeadlines) p.phaseDeadlines = Array(getPH(p).length).fill('');
+  if(!p.phaseDeadlines) p.phaseDeadlines = Array(PH.length).fill('');
   const current = p.phaseDeadlines[idx] || '';
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
@@ -2618,7 +2733,7 @@ function editPhaseDeadline(pId, idx) {
 
 function savePhaseDeadline(pId, idx, val) {
   const p = projects.find(x=>x.id===pId);
-  if(!p.phaseDeadlines) p.phaseDeadlines = Array(getPH(p).length).fill('');
+  if(!p.phaseDeadlines) p.phaseDeadlines = Array(PH.length).fill('');
   if(!val){
     showConfirm({title:'Xóa deadline',icon:'📅',iconBg:'var(--amber-dim)',
       msg:`Xác nhận xóa deadline giai đoạn <strong>P${idx+1}</strong>?`,
@@ -2633,7 +2748,7 @@ function savePhaseDeadline(pId, idx, val) {
 
 function uploadPhaseDoc(pId, idx, input) {
   const p = projects.find(x=>x.id===pId);
-  if(!p.phaseDocs) p.phaseDocs = Array(getPH(p).length).fill(null).map(()=>[]);
+  if(!p.phaseDocs) p.phaseDocs = Array(PH.length).fill(null).map(()=>[]);
   if(!p.phaseDocs[idx]) p.phaseDocs[idx] = [];
   const files = Array.from(input.files);
   if(!files.length) return;
@@ -2685,10 +2800,13 @@ function viewPhaseDocs(pId, idx) {
   const docList = (p.phaseDocs && p.phaseDocs[idx]) || [];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
-  // Thêm class vào overlay để CSS .phase-docs-modal .modal apply được
   overlay.classList.add('phase-docs-modal');
   const _phListDoc=getPH(projects.find(x=>x.id===pId)||{});
   document.getElementById('modal-hd-title').textContent = `📂  Tài liệu P${idx+1}: ${(_phListDoc[idx]||{}).name||''}`;
+  
+  // Kiểm tra quyền download
+  const canDownload = currentUser ? canDownloadFile(currentUser.email) : false;
+  
   document.getElementById('modal-body').innerHTML = docList.length === 0
     ? `<div class="empty-state">Chưa có tài liệu nào</div>`
     : `<div class="tbl-wrap"><table class="tbl" style="min-width:auto;width:100%;table-layout:fixed">
@@ -2701,17 +2819,25 @@ function viewPhaseDocs(pId, idx) {
         </tr></thead>
         <tbody>
           ${docList.map((d,di) => {
-            const dlBtn = d.fileId
-              ? `<a href="https://drive.google.com/uc?export=download&id=${d.fileId}" target="_blank" class="download-btn" style="width:100%;justify-content:center">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Tải xuống
-                </a>`
-              : d.driveLink
-              ? `<a href="${d.driveLink}" target="_blank" class="download-btn" style="width:100%;justify-content:center">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Tải xuống
-                </a>`
-              : `<span style="color:var(--text2);font-size:11px">Chờ sync Drive...</span>`;
+            // Kiểm tra quyền tải xuống
+            let dlBtn = '';
+            if (canDownload || isAdmin()) {
+              dlBtn = d.fileId
+                ? `<a href="https://drive.google.com/uc?export=download&id=${d.fileId}" target="_blank" class="download-btn" style="width:100%;justify-content:center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Tải xuống
+                  </a>`
+                : d.driveLink
+                ? `<a href="${d.driveLink}" target="_blank" class="download-btn" style="width:100%;justify-content:center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Tải xuống
+                  </a>`
+                : `<span style="color:var(--text2);font-size:11px">Chờ sync Drive...</span>`;
+            } else {
+              const perm = currentUser ? getUserDrivePerm(currentUser.email) : 'none';
+              const permInfo = DRIVE_PERM_LEVELS[perm] || DRIVE_PERM_LEVELS.none;
+              dlBtn = `<span style="color:var(--text2);font-size:11px">🔒 ${permInfo.icon} ${permInfo.label}</span>`;
+            }
             return `<tr>
               <td style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px" title="${d.name}">${d.name}</td>
               <td><span class="file-type ${getFileTypeCls(d.type)}">${d.type}</span></td>
@@ -2730,7 +2856,7 @@ function renderGantt() {
   const wrap = document.getElementById('gantt-wrap');
   if(projects.length===0){ wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-title">Không có dữ liệu tiến độ</div></div>`; return; }
   wrap.innerHTML = projects.map(p => {
-    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/getPH(p).length);
+    const avg = Math.round(p.phases.reduce((a,b)=>a+b,0)/PH.length);
     return `<div class="gantt-row">
       <div class="gantt-row-hd">
         <span class="gantt-row-name"><span style="color:var(--text2);font-family:monospace;font-size:11px">${p.id}</span> — ${p.name}</span>
@@ -2769,10 +2895,18 @@ function renderIssues() {
 }
 
 function closeIssue(id){
+  const i = issues.find(x=>x.id===id);
   showConfirm({title:'Đóng NCR',icon:'✅',iconBg:'var(--green-dim)',
     msg:`Xác nhận đóng NCR <strong>${id}</strong>?`,
     okText:'Đóng NCR',okClass:'btn-green',
-    onOk:()=>{issues=issues.filter(i=>i.id!==id);syncDataToDrive();}
+    onOk:()=>{
+      sendTelegramMessage(
+        `✅ <b>Đã đóng NCR</b> — ${tgEscape(id)}\n` +
+        (i ? `Dự án: ${tgEscape(i.proj)}\nNội dung: ${tgEscape(i.title)}\n` : '') +
+        `Đóng bởi: ${tgEscape(currentUser ? currentUser.name : '')}`
+      );
+      issues=issues.filter(i=>i.id!==id);syncDataToDrive();
+    }
   });
 }
 
@@ -2795,17 +2929,25 @@ function renderDocs() {
     return;
   }
 
+  const canDownload = currentUser ? canDownloadFile(currentUser.email) : false;
+
   tbody.innerHTML = filtered.map(function(d) {
     const ext     = (d.type||d.name.split('.').pop()||'').toUpperCase();
     const typeCls = getFileTypeCls(d.type||d.name.split('.').pop());
     const globalIdx = docs.indexOf(d);
     let downloadHtml;
-    if(d.fileId) {
-      downloadHtml = '<a href="https://drive.google.com/uc?export=download&id='+d.fileId+'" target="_blank" class="download-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải xuống</a>';
-    } else if(d.driveLink) {
-      downloadHtml = '<a href="'+d.driveLink+'" target="_blank" class="download-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải xuống</a>';
+    if (canDownload || isAdmin()) {
+      if(d.fileId) {
+        downloadHtml = '<a href="https://drive.google.com/uc?export=download&id='+d.fileId+'" target="_blank" class="download-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải xuống</a>';
+      } else if(d.driveLink) {
+        downloadHtml = '<a href="'+d.driveLink+'" target="_blank" class="download-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải xuống</a>';
+      } else {
+        downloadHtml = '<span style="font-size:11px;color:var(--text2)">Chưa có link</span>';
+      }
     } else {
-      downloadHtml = '<span style="font-size:11px;color:var(--text2)">Chưa có link</span>';
+      const perm = currentUser ? getUserDrivePerm(currentUser.email) : 'none';
+      const permInfo = DRIVE_PERM_LEVELS[perm] || DRIVE_PERM_LEVELS.none;
+      downloadHtml = `<span style="font-size:11px;color:var(--text2)">🔒 ${permInfo.icon} ${permInfo.label}</span>`;
     }
     const deleteBtn = isAdmin()
       ? '<button class="btn btn-xs btn-danger" onclick="deleteDoc('+globalIdx+')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>'
@@ -2853,7 +2995,7 @@ function getMemberProjects(email) {
 function renderTeam() {
   const tbody = document.getElementById('team-tbody');
   if(team.length===0){
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">👤</div><div class="empty-state-title">Chưa có nhân sự</div>Thêm kỹ sư để phân công giai đoạn</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">👤</div><div class="empty-state-title">Chưa có nhân sự</div>Thêm kỹ sư để phân công giai đoạn</div></td></tr>`;
     return;
   }
   const admin = isAdmin();
@@ -2869,6 +3011,8 @@ function renderTeam() {
           return `<span class="badge badge-gray" title="${proj?proj.name:pid}">${pid}</span>`;
         }).join('')}</div>`
       : '<span style="color:var(--text2);font-size:11px">Chưa phân công</span>';
+    const drivePermBadge = getDrivePermBadge(t.drivePerm || 'read');
+    const canManageDrive = isAdmin() || (isSelf && canManageDrivePermissions(t.email));
     return `<tr>
       <td style="font-weight:600">${t.name}${isSelf?` <span style="font-size:10px;color:var(--accent)">(bạn)</span>`:''}</td>
       <td><a href="mailto:${t.email}" style="color:var(--accent);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px">
@@ -2888,6 +3032,14 @@ function renderTeam() {
         </div>
       </td>
       <td>
+        <div style="display:flex;align-items:center;gap:5px">
+          ${drivePermBadge}
+          ${canManageDrive ? `<button class="btn btn-xs btn-ghost" onclick="openDrivePermModal(${i})" title="Thay đổi quyền Drive">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>` : ''}
+        </div>
+      </td>
+      <td>
         <button class="btn btn-xs" style="background:transparent;border:1px solid ${admin?'rgba(251,191,36,0.3)':'var(--border)'};color:${admin?'var(--amber)':'var(--text2)'};padding:4px 8px"
           onclick="${admin?`openPermModal(${i})`:'showNoPermToast()'}" title="${admin?'Đổi mật khẩu trong Phân quyền':''}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -2903,6 +3055,59 @@ function renderTeam() {
       </td>
     </tr>`;
   }).join('');
+}
+
+function openDrivePermModal(idx) {
+  const t = team[idx];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = `🔑 Phân quyền Google Drive — ${t.name}`;
+  
+  const permOptions = Object.entries(DRIVE_PERM_LEVELS).map(([key, val]) => {
+    const checked = t.drivePerm === key ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:all .15s;${t.drivePerm===key?'border-color:var(--accent);background:var(--accent-dim)':''}"
+      onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+      <input type="radio" name="drive-perm" value="${key}" ${checked} style="accent-color:var(--accent)">
+      <span style="font-size:18px">${val.icon}</span>
+      <div>
+        <div style="font-size:13px;font-weight:600">${val.label}</div>
+        <div style="font-size:10px;color:var(--text2)">
+          ${key==='none'?'Không thể xem hoặc tải file':key==='read'?'Chỉ xem, không tải về được':key==='write'?'Xem và tải về được':'Toàn quyền quản lý file'}
+        </div>
+      </div>
+    </label>`;
+  }).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.6">
+      <div style="font-weight:600;color:var(--text1);margin-bottom:4px">📌 Quyền truy cập Google Drive</div>
+      <ul style="margin:4px 0 0 16px;padding-left:0">
+        <li><strong style="color:var(--green)">Chỉ xem</strong> — Xem file nhưng KHÔNG thể tải về</li>
+        <li><strong style="color:var(--amber)">Xem + Tải về</strong> — Có thể xem và tải file</li>
+        <li><strong style="color:var(--red)">Toàn quyền</strong> — Xem, tải, upload, xóa, chia sẻ (chỉ Admin)</li>
+        <li><strong style="color:var(--text2)">Không truy cập</strong> — Không thấy file trong thư viện</li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">${permOptions}</div>
+    <div style="margin-top:12px;font-size:11px;color:var(--text2)">
+      🔒 Quyền hiện tại: ${getDrivePermBadge(t.drivePerm || 'read')}
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="saveDrivePerm(${idx})">Lưu quyền</button>
+  `;
+}
+
+function saveDrivePerm(idx) {
+  const selected = document.querySelector('input[name="drive-perm"]:checked');
+  if(!selected) { toast('Vui lòng chọn quyền truy cập'); return; }
+  const perm = selected.value;
+  team[idx].drivePerm = perm;
+  closeModal();
+  renderTeam();
+  syncDataToDrive();
+  toast(`✅ Đã cập nhật quyền Drive cho ${team[idx].name}: ${DRIVE_PERM_LEVELS[perm].label}`);
 }
 
 function openPermModal(idx) {
@@ -3028,6 +3233,14 @@ function editMember(idx) {
         <option ${t.status==='Nghỉ phép'?'selected':''}>Nghỉ phép</option>
       </select>
     </div>
+    <div class="form-row">
+      <label class="form-label">Quyền Google Drive</label>
+      <select class="form-ctrl" id="em-drive-perm">
+        ${Object.entries(DRIVE_PERM_LEVELS).map(([key, val]) => 
+          `<option value="${key}" ${t.drivePerm===key?'selected':''}>${val.icon} ${val.label}</option>`
+        ).join('')}
+      </select>
+    </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
@@ -3039,7 +3252,14 @@ function saveMember(idx) {
   const name = document.getElementById('em-name').value.trim();
   const email = document.getElementById('em-email').value.trim();
   if(!name || !email){ toast('Vui lòng điền tên và email'); return; }
-  team[idx] = {...team[idx], name, email, role: document.getElementById('em-role').value.trim(), status: document.getElementById('em-status').value};
+  team[idx] = {
+    ...team[idx],
+    name,
+    email,
+    role: document.getElementById('em-role').value.trim(),
+    status: document.getElementById('em-status').value,
+    drivePerm: document.getElementById('em-drive-perm').value
+  };
   closeModal(); renderTeam(); syncDataToDrive();
   toast('Đã cập nhật thông tin nhân sự');
 }
@@ -3064,7 +3284,8 @@ function addMember() {
     status: document.getElementById('nm-status').value,
     roleTemplate: 'engineer',
     perms: {...ROLE_TEMPLATES.engineer},
-    password: pass
+    password: pass,
+    drivePerm: document.getElementById('nm-drive-perm')?.value || 'read'
   });
   closeModal(); renderTeam(); syncDataToDrive();
   toast(`Đã thêm ${name} vào danh sách nhân sự`);
@@ -3116,9 +3337,17 @@ function openModal(type, data) {
     document.getElementById('modal-body').innerHTML = `
       <div class="form-row"><label class="form-label">Họ tên *</label><input class="form-ctrl" id="nm-name" placeholder="Nguyễn Văn X"></div>
       <div class="form-row"><label class="form-label">Email *</label><input class="form-ctrl" type="email" id="nm-email" placeholder="ten@company.com"></div>
-      <div class="form-row"><label class="form-label">Vai trò chuyên môn</label><input class="form-ctrl" id="nm-role" placeholder="Mechanical Designer, PLC Engineer..."></div>
+      <div class="form-row"><label class="form-label">Vai trò chuyên môn</label><input class="form-ctrl" id="nm-role" placeholder="PTI-nical Designer, PLC Engineer..."></div>
       <div class="form-row"><label class="form-label">Trạng thái</label>
         <select class="form-ctrl" id="nm-status"><option>Sẵn sàng</option><option>Bận</option><option>Nghỉ phép</option></select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Quyền Google Drive</label>
+        <select class="form-ctrl" id="nm-drive-perm">
+          ${Object.entries(DRIVE_PERM_LEVELS).map(([key, val]) => 
+            `<option value="${key}" ${key==='read'?'selected':''}>${val.icon} ${val.label}</option>`
+          ).join('')}
+        </select>
       </div>
       ${admin ? `
       <div class="form-row">
@@ -3188,7 +3417,16 @@ function saveIssue() {
   const proj = document.getElementById('fi-proj').value;
   const title = document.getElementById('fi-title').value.trim();
   if(!title){ toast('Vui lòng nhập nội dung sự cố'); return; }
-  issues.unshift({id: 'NCR-'+Date.now().toString().slice(-4), proj, title, priority: document.getElementById('fi-prio').value, status:'Mở'});
+  const priority = document.getElementById('fi-prio').value;
+  const newIssue = {id: 'NCR-'+Date.now().toString().slice(-4), proj, title, priority, status:'Mở'};
+  issues.unshift(newIssue);
+  sendTelegramMessage(
+    `⚠️ <b>NCR mới</b> — ${tgEscape(newIssue.id)}\n` +
+    `Dự án: ${tgEscape(proj)}\n` +
+    `Mức độ: ${tgEscape(priority)}\n` +
+    `Nội dung: ${tgEscape(title)}\n` +
+    `Người tạo: ${tgEscape(currentUser ? currentUser.name : '')}`
+  );
   closeModal(); syncDataToDrive();
 }
 
@@ -3258,33 +3496,12 @@ function fetchDataFromDrive() {
   showLoading("Đang nạp dữ liệu từ Google Drive...");
   document.getElementById('drive-status-text').textContent = 'Đang kết nối...';
   document.getElementById('drive-dot').style.background = 'var(--amber)';
-
-  // Timeout cứng: nếu sau 12s vẫn chưa xong, ép hiện UI (tránh màn hình đen vĩnh viễn)
-  let settled = false;
-  const hardTimeout = setTimeout(() => {
-    if(settled) return;
-    settled = true;
-    console.warn('fetchDataFromDrive timeout — forcing UI to show');
-    hideLoading();
-    try { renderAll(); initChat(); } catch(e) { console.error('renderAll failed', e); }
-    initLoginScreen();
-    document.getElementById('drive-status-text').textContent = 'Lỗi kết nối (timeout)';
-    document.getElementById('drive-dot').style.background = 'var(--red)';
-    toast("⚠️ Kết nối Drive chậm/lỗi — đang dùng dữ liệu local");
-  }, 12000);
-
   if(DRIVE_API_URL.includes("DÁN_URL")) {
-    clearTimeout(hardTimeout); settled = true;
-    hideLoading(); initLoginScreen();
-    alert("Vui lòng cấu hình URL Web App Google Apps Script.");
-    return;
+    hideLoading(); alert("Vui lòng cấu hình URL Web App Google Apps Script."); return;
   }
-
   fetch(DRIVE_API_URL)
     .then(res => res.json())
     .then(data => {
-      if(settled) return;
-      settled = true; clearTimeout(hardTimeout);
       projects = (data.projects || []).map(p => {
         if (!p.generalComments) p.generalComments = [];
         if (!p.phaseComments) p.phaseComments = [];
@@ -3298,6 +3515,7 @@ function fetchDataFromDrive() {
       if(data.warehouseStock)  warehouseStock  = data.warehouseStock;
       if(data.warehouseOrders) warehouseOrders = data.warehouseOrders;
       if(data.warehouseTxns)   warehouseTxns   = data.warehouseTxns;
+      if(data.settings) settings = { ...settings, ...data.settings };
       renderAll(); initChat(); hideLoading();
       initLoginScreen();
       document.getElementById('drive-status-text').textContent = 'Drive đã kết nối';
@@ -3305,25 +3523,91 @@ function fetchDataFromDrive() {
       toast("Đã đồng bộ dữ liệu từ Drive!");
     })
     .catch(err => {
-      if(settled) return;
-      settled = true; clearTimeout(hardTimeout);
-      console.error(err);
-      hideLoading();
-      // Luôn render UI và hiện màn hình đăng nhập dù lỗi mạng — tránh màn hình đen
-      try { renderAll(); initChat(); } catch(e) { console.error('renderAll failed', e); }
-      initLoginScreen();
+      console.error(err); hideLoading();
       document.getElementById('drive-status-text').textContent = 'Lỗi kết nối';
       document.getElementById('drive-dot').style.background = 'var(--red)';
-      toast("Không thể kết nối Drive — dùng dữ liệu local");
+      toast("Không thể kết nối Drive — dùng dữ liệu cục bộ");
+      initLoginScreen();
     });
 }
 
 function syncDataToDrive() {
   showLoading("Đang đồng bộ lên Google Drive...");
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns };
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, settings };
   fetch(DRIVE_API_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) })
     .then(() => { hideLoading(); toast("Đã lưu dữ liệu lên Drive!"); renderAll(); })
     .catch(err => { hideLoading(); alert("Lỗi đồng bộ: " + err); });
+}
+
+// ── TELEGRAM NOTIFICATIONS ──
+function sendTelegramMessage(text, opts) {
+  if (!settings.telegramEnabled) return Promise.resolve(false);
+  if (!settings.telegramBotToken || !settings.telegramChatId) return Promise.resolve(false);
+  const token  = (opts && opts.token)  || settings.telegramBotToken;
+  const chatId = (opts && opts.chatId) || settings.telegramChatId;
+  return fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (!res.ok) console.error('Telegram error:', res.description);
+    return !!res.ok;
+  })
+  .catch(err => { console.error('Telegram fetch error:', err); return false; });
+}
+function tgEscape(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function openModal_telegramSettings() {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = '📨  Cài đặt thông báo Telegram';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:11.5px;color:var(--text2);line-height:1.6">
+      1. Chat với <strong style="color:var(--text0)">@BotFather</strong> trên Telegram → gõ <code>/newbot</code> → đặt tên → nhận <strong style="color:var(--text0)">Bot Token</strong>.<br>
+      2. Tạo nhóm Telegram, thêm bot vừa tạo vào nhóm.<br>
+      3. Lấy <strong style="color:var(--text0)">Chat ID</strong> của nhóm: gửi 1 tin bất kỳ vào nhóm, sau đó mở
+      <span style="color:var(--accent)">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</span> trên trình duyệt, tìm số ở mục <code>"chat":{"id": ...}</code> (số nhóm thường có dấu trừ, ví dụ -1001234567890).
+    </div>
+    <div class="form-row"><label class="form-label">Bot Token *</label><input class="form-ctrl" id="tg-token" placeholder="123456789:AAExampleTokenHere" value="${settings.telegramBotToken||''}"></div>
+    <div class="form-row"><label class="form-label">Chat ID nhóm *</label><input class="form-ctrl" id="tg-chatid" placeholder="-1001234567890" value="${settings.telegramChatId||''}"></div>
+    <div class="form-row" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="tg-enabled" ${settings.telegramEnabled?'checked':''} style="width:16px;height:16px">
+      <label for="tg-enabled" style="font-size:12px;color:var(--text1);cursor:pointer">Bật gửi thông báo qua Telegram</label>
+    </div>
+    <div id="tg-test-result" style="font-size:12px;margin-top:4px"></div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-ghost" onclick="testTelegramSettings()">📤 Gửi thử</button>
+    <button class="btn btn-accent" onclick="saveTelegramSettings()">Lưu cài đặt</button>
+  `;
+}
+function testTelegramSettings() {
+  const token  = document.getElementById('tg-token').value.trim();
+  const chatId = document.getElementById('tg-chatid').value.trim();
+  const resEl  = document.getElementById('tg-test-result');
+  if (!token || !chatId) { resEl.innerHTML = '<span style="color:var(--red)">Vui lòng nhập Bot Token và Chat ID</span>'; return; }
+  resEl.innerHTML = '<span style="color:var(--text2)">Đang gửi thử...</span>';
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: '✅ PTI-Project đã kết nối Telegram thành công!', parse_mode: 'HTML' })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.ok) resEl.innerHTML = '<span style="color:var(--green)">✅ Gửi thành công! Kiểm tra nhóm Telegram của bạn.</span>';
+    else resEl.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${res.description||'Không gửi được'}</span>`;
+  })
+  .catch(() => { resEl.innerHTML = '<span style="color:var(--red)">❌ Lỗi kết nối tới Telegram</span>'; });
+}
+function saveTelegramSettings() {
+  settings.telegramBotToken = document.getElementById('tg-token').value.trim();
+  settings.telegramChatId   = document.getElementById('tg-chatid').value.trim();
+  settings.telegramEnabled  = document.getElementById('tg-enabled').checked;
+  closeModal(); syncDataToDrive();
+  toast('Đã lưu cài đặt Telegram');
 }
 
 function showLoading(text) {
@@ -3384,10 +3668,16 @@ function doRejectTask(taskId) {
     const picName = team.find(m=>m.email===t.pic)?.name || 'PIC';
     const now = new Date();
     const timeStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    sendTelegramMessage(
+      `❌ <b>Từ chối nhận việc</b>\n` +
+      `${tgEscape(picName)} đã từ chối lúc ${tgEscape(timeStr)}\n` +
+      `Công việc: ${tgEscape(t.title)}\n` +
+      `Lý do: ${tgEscape(reason)}`
+    );
     fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
       action:'send_email',
       to: requester.email,
-      subject: `[MechaProject] ❌ ${picName} từ chối nhận việc: ${t.title}`,
+      subject: `[PTI-Project] ❌ ${picName} từ chối nhận việc: ${t.title}`,
       body: `${picName} đã từ chối nhận việc lúc ${timeStr}\n\nLý do: ${reason}\n\nCông việc: ${t.title}\nLoại: ${label}`,
       htmlBody: `
         <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
@@ -3407,7 +3697,7 @@ function doRejectTask(taskId) {
             </div>
             <p style="font-size:12px;color:#5c6578">Vui lòng gán lại cho người khác hoặc liên hệ trực tiếp với ${picName}.</p>
           </div>
-          <div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Thông báo tự động</div>
+          <div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Thông báo tự động</div>
         </div>`
     })}).catch(()=>{});
   }
@@ -3505,6 +3795,16 @@ function saveTask(editId) {
     tasks[idx] = task;
   } else {
     tasks.unshift(task);
+    const typeLabel = task.type === 'urgent' ? '🚨 Yêu cầu gấp' : '📅 Cần xử lý hôm nay';
+    const picMember = team.find(m=>m.email===task.pic);
+    sendTelegramMessage(
+      `${typeLabel} <b>mới</b>\n` +
+      `Nội dung: ${tgEscape(task.title)}\n` +
+      `Giao cho: ${tgEscape(picMember ? picMember.name : task.pic)}\n` +
+      (task.proj ? `Dự án: ${tgEscape(task.proj)}\n` : '') +
+      (task.deadline ? `Deadline: ${tgEscape(formatDateVN(task.deadline))}\n` : '') +
+      `Người tạo: ${tgEscape(currentUser ? currentUser.name : '')}`
+    );
   }
   closeModal();
   renderUrgent(); renderToday(); renderDashTasks(); updateTaskBadges();
@@ -3529,6 +3829,15 @@ function toggleTaskDone(id) {
     t.rejectReason = '';
   }
   t.done = !t.done;
+  if(t.done) {
+    const typeLabel = t.type === 'urgent' ? '🚨 Yêu cầu gấp' : '📅 Cần xử lý hôm nay';
+    const picMember = team.find(m=>m.email===t.pic);
+    sendTelegramMessage(
+      `✅ <b>Hoàn thành công việc</b>\n` +
+      `${typeLabel}: ${tgEscape(t.title)}\n` +
+      `Người thực hiện: ${tgEscape(picMember ? picMember.name : t.pic)}`
+    );
+  }
   renderUrgent(); renderToday(); renderDashTasks(); updateTaskBadges(); syncDataToDrive();
 }
 
@@ -3642,7 +3951,7 @@ function sendTaskEmail(taskId) {
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
       <div style="background:linear-gradient(135deg,${barColor});padding:22px 24px 18px">
-        <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject</div>
+        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px">${label}</div>
       </div>
       <div style="padding:22px 24px">
@@ -3658,19 +3967,28 @@ function sendTaskEmail(taskId) {
             ${t.note?`<tr><td style="color:#5c6578;font-weight:600;padding:5px 16px 5px 0">Ghi chú</td><td style="color:#9aa3b5">${t.note}</td></tr>`:''}
           </table>
         </div>
-        <p style="font-size:12px;color:#5c6578">Vui lòng xử lý và cập nhật trạng thái trên MechaProject.</p>
+        <p style="font-size:12px;color:#5c6578">Vui lòng xử lý và cập nhật trạng thái trên PTI-Project.</p>
       </div>
-      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Thông báo tự động · Không reply email này</div>
+      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Thông báo tự động · Không reply email này</div>
     </div>`;
   const plainBody = `${label}\n\nNội dung: ${t.title}\n`
     + (requester?`Người YC: ${requester.name}\n`:'')
     + (proj?`Dự án: ${proj.id} — ${proj.name}\n`:'')
     + `Deadline: ${dlText}\n`
     + (t.note?`Ghi chú: ${t.note}`:'');
+  sendTelegramMessage(
+    `${label}\n` +
+    `👤 Giao cho: ${tgEscape(member.name)}\n` +
+    `📝 Nội dung: ${tgEscape(t.title)}\n` +
+    (requester?`Người YC: ${tgEscape(requester.name)}\n`:'') +
+    (proj?`Dự án: ${tgEscape(proj.id)} — ${tgEscape(proj.name)}\n`:'') +
+    `⏰ Deadline: ${tgEscape(dlText)}` +
+    (t.note?`\nGhi chú: ${tgEscape(t.note)}`:'')
+  );
   const payload = {
     action: 'send_email',
     to: member.email,
-    subject: `[MechaProject] ${label}: ${t.title}`,
+    subject: `[PTI-Project] ${label}: ${t.title}`,
     body: plainBody,
     htmlBody
   };
@@ -3712,7 +4030,7 @@ function confirmTask(taskId) {
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
       <div style="background:linear-gradient(135deg,#34d399,#059669);padding:22px 24px 18px">
-        <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject</div>
+        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.9);margin-top:4px">✅ Công việc đã được xác nhận tiếp nhận</div>
       </div>
       <div style="padding:22px 24px">
@@ -3741,7 +4059,7 @@ function confirmTask(taskId) {
         <p style="font-size:12px;color:#5c6578">Bạn sẽ nhận thêm thông báo khi công việc hoàn thành.</p>
       </div>
       <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">
-        MechaProject · Thông báo tự động · Không reply email này
+        PTI-Project · Thông báo tự động · Không reply email này
       </div>
     </div>`;
   const plainBody = `✅ Xác nhận tiếp nhận công việc\n\n`
@@ -3750,12 +4068,17 @@ function confirmTask(taskId) {
     + `Loại: ${label}\n`
     + `Deadline: ${dlText}\n`
     + (t.note ? `Ghi chú: ${t.note}` : '');
+  sendTelegramMessage(
+    `✅ <b>Xác nhận nhận việc</b>\n` +
+    `${tgEscape(picName)} đã xác nhận lúc ${tgEscape(timeStr)}\n` +
+    `Công việc: ${tgEscape(t.title)}`
+  );
   fetch(DRIVE_API_URL, {
     method: 'POST',
     body: JSON.stringify({
       action: 'send_email',
       to: requester.email,
-      subject: `[MechaProject] ✅ ${picName} đã xác nhận nhận việc: ${t.title}`,
+      subject: `[PTI-Project] ✅ ${picName} đã xác nhận nhận việc: ${t.title}`,
       body: plainBody,
       htmlBody
     })
@@ -3839,27 +4162,23 @@ function initLoginScreen() {
   const sel = document.getElementById('login-user');
   sel.innerHTML = '<option value="">— Chọn tên của bạn —</option>'
     + team.map(t=>`<option value="${t.email}">${t.name} — ${t.role.split('/')[0].trim()}</option>`).join('');
-
-  // Kiểm tra nếu có mật khẩu đã lưu
+  
   const savedPass = localStorage.getItem('mp_saved_password');
   const savedEmail = localStorage.getItem('mp_saved_email');
-
-  // Nếu có email và mật khẩu đã lưu, tự động điền
+  
   if(savedEmail) {
     sel.value = savedEmail;
     if(savedPass) {
       document.getElementById('login-pass').value = savedPass;
       document.getElementById('remember-me').checked = true;
-      // Tự động đăng nhập nếu có cả email và pass
       onLoginUserChange(savedEmail);
-      // Đăng nhập luôn nếu pass khớp
       const member = team.find(t=>t.email===savedEmail);
       if(member && savedPass === member.password) {
         setTimeout(() => { doLogin(); }, 300);
       }
     }
   }
-
+  
   const saved = sessionStorage.getItem('mp_user');
   if(saved) {
     try { const u=JSON.parse(saved); if(team.find(t=>t.email===u.email)){applyLogin(u);return;} } catch(e){}
@@ -3873,21 +4192,19 @@ function onLoginUserChange(email) {
   if(m){ prev.style.display='block'; prev.innerHTML=`👷 <strong style="color:var(--text0)">${m.name}</strong> · ${m.role} · <span class="badge ${m.status==='Bận'?'badge-amber':'badge-green'}">${m.status}</span>`; }
   else prev.style.display='none';
   document.getElementById('login-err').style.display='none';
-
-  // Nếu có mật khẩu đã lưu cho email này, tự động điền
+  
   const savedPass = localStorage.getItem('mp_saved_password');
   const savedEmail = localStorage.getItem('mp_saved_email');
   if(email === savedEmail && savedPass) {
     document.getElementById('login-pass').value = savedPass;
     document.getElementById('remember-me').checked = true;
   } else {
-    // Nếu không, xóa mật khẩu và bỏ checkbox
     document.getElementById('login-pass').value = '';
     document.getElementById('remember-me').checked = false;
   }
 }
 
-const EMERGENCY_ADMIN_PASSWORD = 'Mecha@2025!'; 
+const EMERGENCY_ADMIN_PASSWORD = 'PTI-@2025!'; 
 
 function emergencyAdminLogin() {
   const inputEl = document.getElementById('emergency-pass');
@@ -3898,12 +4215,13 @@ function emergencyAdminLogin() {
     toast('❌ Sai mật khẩu Admin khẩn cấp'); return;
   }
   const adminUser = {
-    email: 'admin@mechaproject.local',
+    email: 'admin@PTI-project.local',
     name: 'Admin (Khẩn cấp)',
     role: 'System Administrator',
     color: '#f87171',
     perms: {...ROLE_TEMPLATES.admin},
-    password: EMERGENCY_ADMIN_PASSWORD
+    password: EMERGENCY_ADMIN_PASSWORD,
+    drivePerm: 'owner'
   };
   if(!team.find(t=>t.email===adminUser.email)) {
     team.push({...adminUser, projects:[], status:'Sẵn sàng', roleTemplate:'admin'});
@@ -3923,13 +4241,11 @@ function doLogin() {
   if(pass!==correctPass){
     errEl.textContent='Sai mật khẩu. Vui lòng thử lại.';errEl.style.display='block';
     document.getElementById('login-pass').value='';document.getElementById('login-pass').focus();
-    // Xóa mật khẩu đã lưu nếu sai
     localStorage.removeItem('mp_saved_password');
     localStorage.removeItem('mp_saved_email');
     return;
   }
-
-  // Lưu mật khẩu nếu checkbox được chọn
+  
   if(rememberMe) {
     localStorage.setItem('mp_saved_email', email);
     localStorage.setItem('mp_saved_password', pass);
@@ -3937,7 +4253,7 @@ function doLogin() {
     localStorage.removeItem('mp_saved_email');
     localStorage.removeItem('mp_saved_password');
   }
-
+  
   applyLogin({email,name:member.name,role:member.role,color:stringToColor(email)});
 }
 
@@ -4013,6 +4329,112 @@ function stockLevelClass(qty, min) {
   if(qty <= 0) return 'stock-low';
   if(qty < min) return 'stock-mid';
   return 'stock-ok';
+}
+
+// ── NHẬP / XUẤT EXCEL ──
+function normHeader(s) {
+  return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+function pickField(row, aliases) {
+  const keys = Object.keys(row);
+  for (const alias of aliases) {
+    const target = normHeader(alias);
+    const found = keys.find(k => normHeader(k) === target);
+    if (found !== undefined) return row[found];
+  }
+  for (const alias of aliases) {
+    const target = normHeader(alias);
+    const found = keys.find(k => normHeader(k).includes(target) || target.includes(normHeader(k)));
+    if (found !== undefined) return row[found];
+  }
+  return '';
+}
+const STOCK_XLSX_HEADERS = {
+  code:     ['Mã VT', 'Mã vật tư', 'Code', 'Mã'],
+  name:     ['Tên vật tư / Linh kiện', 'Tên vật tư', 'Tên', 'Name'],
+  unit:     ['Đơn vị', 'Unit'],
+  qty:      ['Tồn kho', 'Số lượng', 'Qty'],
+  minQty:   ['Tối thiểu', 'Tồn tối thiểu', 'Min', 'MinQty'],
+  location: ['Vị trí kho', 'Vị trí', 'Location'],
+  supplier: ['Nhà cung cấp', 'Supplier'],
+  note:     ['Ghi chú', 'Note']
+};
+function exportStockExcel() {
+  if (typeof XLSX === 'undefined') { toast('⚠️ Thư viện Excel chưa tải xong, vui lòng thử lại sau'); return; }
+  const rows = warehouseStock.map(s => ({
+    'Mã VT': s.code, 'Tên vật tư / Linh kiện': s.name, 'Đơn vị': s.unit,
+    'Tồn kho': s.qty || 0, 'Tối thiểu': s.minQty || 0,
+    'Vị trí kho': s.location || '', 'Nhà cung cấp': s.supplier || '', 'Ghi chú': s.note || ''
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{
+    'Mã VT': '', 'Tên vật tư / Linh kiện': '', 'Đơn vị': '', 'Tồn kho': '', 'Tối thiểu': '', 'Vị trí kho': '', 'Nhà cung cấp': '', 'Ghi chú': ''
+  }]);
+  ws['!cols'] = [{wch:12},{wch:34},{wch:9},{wch:9},{wch:9},{wch:16},{wch:20},{wch:28}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Kho vật tư');
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  XLSX.writeFile(wb, `Kho_vat_tu_${dateStr}.xlsx`);
+  toast(rows.length ? '📤 Đã xuất danh mục kho ra Excel' : '📤 Đã xuất file mẫu Excel (kho đang trống)');
+}
+function parseStockExcelRows(rows) {
+  const toAdd = [], toUpdate = [];
+  let skipped = 0;
+  rows.forEach(row => {
+    const code = String(pickField(row, STOCK_XLSX_HEADERS.code) || '').trim();
+    const name = String(pickField(row, STOCK_XLSX_HEADERS.name) || '').trim();
+    const unit = String(pickField(row, STOCK_XLSX_HEADERS.unit) || '').trim();
+    if (!code || !name || !unit) { skipped++; return; }
+    const entry = {
+      code, name, unit,
+      qty:      parseInt(pickField(row, STOCK_XLSX_HEADERS.qty))    || 0,
+      minQty:   parseInt(pickField(row, STOCK_XLSX_HEADERS.minQty)) || 0,
+      location: String(pickField(row, STOCK_XLSX_HEADERS.location) || '').trim(),
+      supplier: String(pickField(row, STOCK_XLSX_HEADERS.supplier) || '').trim(),
+      note:     String(pickField(row, STOCK_XLSX_HEADERS.note)     || '').trim()
+    };
+    const existingIdx = warehouseStock.findIndex(s => s.code.toLowerCase() === code.toLowerCase());
+    if (existingIdx > -1) toUpdate.push({ idx: existingIdx, entry });
+    else toAdd.push(entry);
+  });
+  return { toAdd, toUpdate, skipped };
+}
+function applyStockExcelImport(parsed) {
+  parsed.toUpdate.forEach(({idx, entry}) => { warehouseStock[idx] = { ...warehouseStock[idx], ...entry }; });
+  parsed.toAdd.forEach((entry, i) => { warehouseStock.push({ id: 'ST-' + Date.now() + '-' + i, ...entry }); });
+  renderStock(); syncDataToDrive();
+  toast(`✅ Đã nhập Excel: +${parsed.toAdd.length} mới, cập nhật ${parsed.toUpdate.length}${parsed.skipped ? `, bỏ qua ${parsed.skipped} dòng thiếu dữ liệu` : ''}`);
+}
+function handleStockExcelImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (typeof XLSX === 'undefined') { toast('⚠️ Thư viện Excel chưa tải xong, vui lòng thử lại sau'); event.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+      const parsed = parseStockExcelRows(rows);
+      if (parsed.toAdd.length === 0 && parsed.toUpdate.length === 0) {
+        toast('⚠️ Không tìm thấy dữ liệu hợp lệ (thiếu Mã VT / Tên vật tư / Đơn vị)');
+        return;
+      }
+      showConfirm({
+        title: 'Xác nhận nhập Excel', icon: '📥', iconBg: 'var(--accent-dim)',
+        msg: `Phát hiện <strong>${parsed.toAdd.length} vật tư mới</strong> và <strong>${parsed.toUpdate.length} vật tư sẽ được cập nhật</strong> (khớp theo Mã VT)${parsed.skipped ? `, bỏ qua ${parsed.skipped} dòng thiếu dữ liệu` : ''}. Tiếp tục nhập vào kho?`,
+        okText: 'Nhập dữ liệu', okClass: 'btn-accent',
+        onOk: () => applyStockExcelImport(parsed)
+      });
+    } catch (err) {
+      console.error(err);
+      toast('❌ Lỗi đọc file Excel: ' + (err.message || 'File không hợp lệ'));
+    } finally {
+      event.target.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 function renderStock() {
@@ -4184,7 +4606,7 @@ function sendCartOrderEmail(order, mgr) {
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
       <div style="background:linear-gradient(135deg,#4f8ef7,#6366f1);padding:22px 24px 18px">
-        <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject — Kho vật tư</div>
+        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project — Kho vật tư</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.9);margin-top:4px">🛒 Phiếu order mới cần duyệt — ${order.id}</div>
       </div>
       <div style="padding:22px 24px">
@@ -4199,13 +4621,19 @@ function sendCartOrderEmail(order, mgr) {
           <tr><td style="color:#5c6578;padding:4px 14px 4px 0">Ngày tạo</td><td style="color:#eef0f4">${order.date}</td></tr>
           ${order.note?`<tr><td style="color:#5c6578;padding:4px 14px 4px 0">Ghi chú</td><td style="color:#9aa3b5">${order.note}</td></tr>`:''}
         </table>
-        <p style="font-size:12px;color:#5c6578">Đăng nhập MechaProject → Kho → Order từ kho để Xác nhận hoặc Từ chối.</p>
+        <p style="font-size:12px;color:#5c6578">Đăng nhập PTI-Project → Kho → Order từ kho để Xác nhận hoặc Từ chối.</p>
       </div>
-      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Kho vật tư · Không reply email này</div>
+      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Kho vật tư · Không reply email này</div>
     </div>`;
+  sendTelegramMessage(
+    `🛒 <b>Phiếu order vật tư mới</b> — ${tgEscape(order.id)}\n` +
+    `Người order: ${tgEscape(order.orderer)}\n` +
+    order.items.map(i=>`• ${tgEscape(i.stockName)}: ${tgEscape(i.qty)} ${tgEscape(i.unit)}`).join('\n') +
+    (proj?`\nDự án: ${tgEscape(proj.id)} — ${tgEscape(proj.name)}`:'')
+  );
   fetch(DRIVE_API_URL,{method:'POST',body:JSON.stringify({
     action:'send_email', to:mgr.email,
-    subject:`[MechaProject Kho] Phiếu order mới ${order.id} — ${order.items.length} loại vật tư`,
+    subject:`[PTI-Project Kho] Phiếu order mới ${order.id} — ${order.items.length} loại vật tư`,
     body:'Phiếu order mới: '+order.id+'\nNgười order: '+order.orderer+'\nVật tư:\n'+order.items.map(function(i){return '- '+i.stockName+': '+i.qty+' '+i.unit}).join('\n'),
     htmlBody
   })}).then(r=>r.json()).then(res=>{
@@ -4292,7 +4720,7 @@ function sendOrderResultEmail(o, action, recipient, timeStr) {
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
       <div style="background:linear-gradient(135deg,${barColor});padding:22px 24px 18px">
-        <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject — Kho vật tư</div>
+        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project — Kho vật tư</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.9);margin-top:4px">${statusLabel}</div>
       </div>
       <div style="padding:22px 24px">
@@ -4312,11 +4740,17 @@ function sendOrderResultEmail(o, action, recipient, timeStr) {
         </div>
         <p style="font-size:12px;color:#5c6578">${approved?'Vui lòng đến kho nhận vật tư trong giờ hành chính.':'Liên hệ quản lý kho để biết thêm chi tiết.'}</p>
       </div>
-      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Kho vật tư · Không reply email này</div>
+      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Kho vật tư · Không reply email này</div>
     </div>`;
+  sendTelegramMessage(
+    `${statusLabel} <b>Order vật tư</b> — ${tgEscape(o.id)}\n` +
+    `Vật tư: ${tgEscape(o.stockName)} × ${tgEscape(o.qty)} ${tgEscape(o.unit)}\n` +
+    `Người order: ${tgEscape(recipient.name)}\n` +
+    `Duyệt bởi: ${tgEscape(o.confirmedBy)} lúc ${tgEscape(timeStr)}`
+  );
   fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
     action:'send_email', to: recipient.email,
-    subject: `[MechaProject Kho] ${statusLabel}: ${o.stockName} × ${o.qty} ${o.unit}`,
+    subject: `[PTI-Project Kho] ${statusLabel}: ${o.stockName} × ${o.qty} ${o.unit}`,
     body: `${statusLabel}\n\nPhiếu: ${o.id}\nVật tư: ${o.stockName}\nSố lượng: ${o.qty} ${o.unit}\nDuyệt bởi: ${o.confirmedBy}\nThời gian: ${timeStr}`,
     htmlBody
   })}).then(r=>r.json()).then(res=>{
@@ -4527,7 +4961,7 @@ function sendTxnResultEmail(txn, action, recipient, timeStr, rejectReason) {
   const htmlBody = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
       <div style="background:linear-gradient(135deg,${barColor});padding:22px 24px 18px">
-        <div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject — Kho vật tư</div>
+        <div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project — Kho vật tư</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.9);margin-top:4px">
           ${isImport?'📥 Phiếu Nhập kho':'📤 Phiếu Xuất kho'} — ${statusLabel}
         </div>
@@ -4553,11 +4987,18 @@ function sendTxnResultEmail(txn, action, recipient, timeStr, rejectReason) {
         </div>
         <p style="font-size:12px;color:#5c6578">${approved?(isImport?'Vật tư đã được cập nhật vào kho.':'Vui lòng đến kho nhận vật tư.'):'Liên hệ thủ kho để biết thêm chi tiết.'}</p>
       </div>
-      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Kho vật tư · Không reply email này</div>
+      <div style="padding:14px 24px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Kho vật tư · Không reply email này</div>
     </div>`;
+  sendTelegramMessage(
+    `${isImport?'📥':'📤'} <b>${isImport?'Phiếu Nhập kho':'Phiếu Xuất kho'}</b> ${statusLabel} — ${tgEscape(txn.id)}\n` +
+    `Vật tư: ${tgEscape(txn.stockName)} × ${tgEscape(txn.qty)} ${tgEscape(txn.unit)}\n` +
+    `Người tạo: ${tgEscape(recipient.name)}\n` +
+    `Thủ kho: ${tgEscape(txn.confirmedBy)} lúc ${tgEscape(timeStr)}` +
+    (rejectReason?`\nLý do từ chối: ${tgEscape(rejectReason)}`:'')
+  );
   fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
     action:'send_email', to: recipient.email,
-    subject: `[MechaProject Kho] ${statusLabel}: ${txn.stockName} × ${txn.qty} ${txn.unit}`,
+    subject: `[PTI-Project Kho] ${statusLabel}: ${txn.stockName} × ${txn.qty} ${txn.unit}`,
     body: `${statusLabel}\nPhiếu: ${txn.id}\nVật tư: ${txn.stockName}\nSố lượng: ${txn.qty} ${txn.unit}\nThủ kho: ${txn.confirmedBy}\n${rejectReason?'Lý do: '+rejectReason:''}`,
     htmlBody
   })}).then(r=>r.json()).then(res=>{
@@ -4941,7 +5382,7 @@ function sendChatMessage() {
       const htmlBody = `
         <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">
           <div style="background:linear-gradient(135deg,#6366f1,#4f8ef7);padding:20px 22px 16px">
-            <div style="font-size:17px;font-weight:700;color:#fff">💬 MechaProject Chat</div>
+            <div style="font-size:17px;font-weight:700;color:#fff">💬 PTI-Project Chat</div>
             <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:3px">Bạn được nhắc đến trong ${roomName}</div>
           </div>
           <div style="padding:20px 22px">
@@ -4950,13 +5391,17 @@ function sendChatMessage() {
             <div style="background:#1e2330;border-left:3px solid #6366f1;border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:#eef0f4;line-height:1.6;margin-bottom:16px">
               ${text.replace(/@([\w\sÀ-ỹ]+)/g,'<strong style="color:#a78bfa">@$1</strong>')}
             </div>
-            <p style="font-size:12px;color:#5c6578">Đăng nhập MechaProject → Chat để xem toàn bộ cuộc trò chuyện.</p>
+            <p style="font-size:12px;color:#5c6578">Đăng nhập PTI-Project → Chat để xem toàn bộ cuộc trò chuyện.</p>
           </div>
-          <div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Chat · Không reply email này</div>
+          <div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Chat · Không reply email này</div>
         </div>`;
+      sendTelegramMessage(
+        `💬 <b>${tgEscape(senderName)}</b> nhắc đến <b>${tgEscape(mentioned.name)}</b> trong ${tgEscape(roomName)}:\n` +
+        `“${tgEscape(text)}”`
+      );
       fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
         action:'send_email', to: mentioned.email,
-        subject:`[MechaProject] ${senderName} nhắc đến bạn trong ${roomName}`,
+        subject:`[PTI-Project] ${senderName} nhắc đến bạn trong ${roomName}`,
         body:`${senderName} nhắc đến bạn lúc ${timeStr} trong ${roomName}:\n\n${text}`,
         htmlBody
       })}).then(r=>r.json()).then(res=>{
@@ -5001,7 +5446,7 @@ function sendChatFiles(input) {
 }
 
 function syncChatToDrive() {
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns };
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, settings };
   fetch(DRIVE_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(()=>{});
 }
 
@@ -5024,7 +5469,7 @@ function buildAIContext() {
     projects: projects.map(p=>({
       id: p.id, name: p.name, client: p.client,
       status: p.status, deadline: p.deadline,
-      progress: Math.round((p.phases||[]).reduce((a,b)=>a+b,0)/getPH(p).length),
+      progress: Math.round((p.phases||[]).reduce((a,b)=>a+b,0)/8),
       phases: (p.phases||[]).map((pct,i)=>({ phase:`P${i+1}`, pct, pic: p.phasePIC?.[i]||'—', deadline: p.phaseDeadlines?.[i]||'—' }))
     })),
     team: team.map(t=>({ name:t.name, role:t.role, status:t.status, email:t.email })),
@@ -5045,7 +5490,7 @@ function buildAIContext() {
 }
 
 function buildSystemPrompt() {
-  return `Bạn là AI trợ lý nội bộ của MechaProject — hệ thống quản lý dự án cơ khí chế tạo máy.
+  return `Bạn là AI trợ lý nội bộ của PTI-Project — hệ thống quản lý dự án cơ khí chế tạo máy.
 Bạn có thể trả lời bằng tiếng Việt hoặc tiếng Anh tùy theo ngôn ngữ người dùng hỏi.
 Bạn hiểu sâu về: cơ khí chế tạo máy, gia công CNC, uốn tôn, hàn, lắp ráp, PLC/HMI, quản lý dự án.
 
@@ -5104,7 +5549,7 @@ function renderAIMessages() {
         </div>
         <div style="font-size:16px;font-weight:700;margin-bottom:6px">Xin chào, ${userName}!</div>
         <div style="font-size:13px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.6">
-          Tôi là AI trợ lý của MechaProject. Tôi có quyền truy cập dữ liệu thực tế của hệ thống và có thể giúp bạn phân tích tiến độ, tư vấn kỹ thuật cơ khí, và nhiều hơn.
+          Tôi là AI trợ lý của PTI-Project. Tôi có quyền truy cập dữ liệu thực tế của hệ thống và có thể giúp bạn phân tích tiến độ, tư vấn kỹ thuật cơ khí, và nhiều hơn.
         </div>
         <div style="margin-top:16px;font-size:12px;color:var(--text2)">Chọn câu hỏi gợi ý bên trái hoặc tự nhập ↓</div>
       </div>`;
@@ -5134,7 +5579,7 @@ function renderAIMessages() {
   el.scrollTop = el.scrollHeight;
 }
 
-const GROQ_API_KEY = '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';
+const GROQ_API_KEY = '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';
 const GROQ_MODEL   = 'llama-3.3-70b-versatile';
 
 async function sendAIMessage() {
@@ -5225,7 +5670,7 @@ function triggerDailyReport(manual) {
       }
     });
   });
-  const PM_EMAIL = team.find(t=>t.roleTemplate==='admin'&&t.email!=='admin@mechaproject.local')?.email
+  const PM_EMAIL = team.find(t=>t.roleTemplate==='admin'&&t.email!=='admin@PTI-project.local')?.email
                 || currentUser?.email;
   if(!PM_EMAIL) { toast('Không tìm thấy email PM'); return; }
   const urgent = allPending.filter(x=>x.dlUrgent);
@@ -5258,7 +5703,7 @@ function triggerDailyReport(manual) {
   }
   const pmHtml = '<div style="font-family:Arial,sans-serif;max-width:700px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">'
     + '<div style="background:linear-gradient(135deg,#3a7de0,#6366f1);padding:22px 24px 18px">'
-    +   '<div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject</div>'
+    +   '<div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>'
     +   '<div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px">📊 Báo cáo tồn đọng hàng ngày — ' + dateStr + '</div>'
     + '</div>'
     + '<div style="padding:20px 22px">'
@@ -5267,12 +5712,20 @@ function triggerDailyReport(manual) {
     +   buildTable(normal, '📋 Đang thực hiện', '#4f8ef7')
     +   (allPending.length===0 ? '<div style="color:#34d399;padding:12px">✅ Không có giai đoạn tồn đọng hôm nay!</div>' : '')
     + '</div>'
-    + '<div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Báo cáo tự động · Không reply</div>'
+    + '<div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Báo cáo tự động · Không reply</div>'
     + '</div>';
   showLoading('Đang gửi báo cáo...');
+  const tgUrgentLines = urgent.slice(0, 15).map(x => `⚠️ ${tgEscape(x.projId)} | ${tgEscape(x.phase)} | ${x.pct}% | ${tgEscape(x.dlStatus)} | ${tgEscape(x.pic)}`);
+  const tgReport =
+    `📊 <b>Báo cáo tồn đọng hàng ngày</b> — ${tgEscape(dateStr)}\n` +
+    `Tổng: ${allPending.length} giai đoạn chưa hoàn thành (${urgent.length} cần xử lý ngay)\n\n` +
+    (allPending.length === 0
+      ? '✅ Không có giai đoạn tồn đọng hôm nay!'
+      : (tgUrgentLines.length ? tgUrgentLines.join('\n') + (urgent.length > 15 ? `\n… và ${urgent.length - 15} mục khác` : '') : '📋 Không có mục cần xử lý gấp.'));
+  sendTelegramMessage(tgReport);
   fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
     action:'send_email', to: PM_EMAIL,
-    subject: '[MechaProject] 📊 Báo cáo tồn đọng ' + dateStr + ' — ' + allPending.length + ' giai đoạn',
+    subject: '[PTI-Project] 📊 Báo cáo tồn đọng ' + dateStr + ' — ' + allPending.length + ' giai đoạn',
     body: 'Báo cáo '+dateStr+'\nTổng tồn đọng: '+allPending.length+' giai đoạn\nCần xử lý ngay: '+urgent.length+'\n\n'+allPending.map(function(x){return x.projId+' | '+x.phase+' | '+x.pct+'% | '+x.dlStatus+' | '+x.pic;}).join('\n'),
     htmlBody: pmHtml
   })}).then(r=>r.json()).then(res=>{
@@ -5285,7 +5738,7 @@ function triggerDailyReport(manual) {
     const uItems = items.filter(x=>x.dlUrgent);
     const picHtml = '<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;background:#111318;color:#eef0f4;border-radius:12px;overflow:hidden;border:1px solid #262d3d">'
       + '<div style="background:linear-gradient(135deg,#1e2330,#2f3850);padding:22px 24px 18px;border-bottom:2px solid #4f8ef7">'
-      +   '<div style="font-size:18px;font-weight:700;color:#fff">⚙ MechaProject</div>'
+      +   '<div style="font-size:18px;font-weight:700;color:#fff">⚙ PTI-Project</div>'
       +   '<div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:4px">📋 Công việc của bạn — ' + dateStr + '</div>'
       + '</div>'
       + '<div style="padding:20px 22px">'
@@ -5294,11 +5747,11 @@ function triggerDailyReport(manual) {
       +   buildTable(uItems, '⚠️ Cần xử lý ngay', '#f87171')
       +   buildTable(items.filter(function(x){ return !x.dlUrgent; }), '📋 Đang thực hiện', '#4f8ef7')
       + '</div>'
-      + '<div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">MechaProject · Báo cáo tự động · Không reply</div>'
+      + '<div style="padding:12px 22px;border-top:1px solid #262d3d;font-size:11px;color:#5c6578">PTI-Project · Báo cáo tự động · Không reply</div>'
       + '</div>';
     fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
       action:'send_email', to: email,
-      subject: '[MechaProject] 📋 Công việc của bạn ' + dateStr + ' — ' + items.length + ' giai đoạn',
+      subject: '[PTI-Project] 📋 Công việc của bạn ' + dateStr + ' — ' + items.length + ' giai đoạn',
       body: items.map(function(x){ return x.projId+' | '+x.phase+' | '+x.pct+'% | '+x.dlStatus; }).join('\n'),
       htmlBody: picHtml
     })}).then(r=>r.json()).then(res=>{
@@ -5314,26 +5767,6 @@ function renderAll() {
   renderWarehouse(); renderAIContext(); renderAIChips();
   const sel = document.getElementById('phase-proj-sel');
   if(sel) sel.innerHTML = '<option value="">— Chọn dự án —</option>' + projects.map(p=>'<option value="'+p.id+'">'+p.id+' — '+p.name+'</option>').join('');
-}
-
-// ── SAFETY NET: nếu có lỗi JS runtime, vẫn cố hiện UI thay vì màn hình đen ──
-window.addEventListener('error', function(e) {
-  console.error('Global error caught:', e.error || e.message);
-  const loadingEl = document.getElementById('global-loading');
-  if(loadingEl && loadingEl.style.opacity !== '0') {
-    try { hideLoading(); } catch(_) {}
-    const loginEl = document.getElementById('login-screen');
-    if(loginEl) loginEl.style.display = 'flex';
-  }
-});
-
-// ── PWA: Đăng ký Service Worker (bắt buộc để có thể "Cài đặt" app) ──
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => {
-      console.warn('SW registration failed (không ảnh hưởng chức năng app):', err);
-    });
-  });
 }
 
 window.onload = () => { fetchDataFromDrive(); };
