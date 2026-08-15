@@ -2739,11 +2739,12 @@ function viewPhaseDocs(pId, idx) {
     ? `<div class="empty-state">Chưa có tài liệu nào</div>`
     : `<div class="tbl-wrap"><table class="tbl" style="min-width:auto;width:100%;table-layout:fixed">
         <thead><tr>
-          <th style="width:36%">Tên file</th>
-          <th style="width:10%">Loại</th>
-          <th style="width:13%">Dung lượng</th>
-          <th style="width:14%">Ngày</th>
-          <th style="width:27%">Tải xuống</th>
+          <th style="width:32%">Tên file</th>
+          <th style="width:9%">Loại</th>
+          <th style="width:12%">Dung lượng</th>
+          <th style="width:13%">Ngày</th>
+          <th style="width:${isAdmin()?'24%':'34%'}">Tải xuống</th>
+          ${isAdmin() ? `<th style="width:10%">Xóa</th>` : ''}
         </tr></thead>
         <tbody>
           ${docList.map((d,di) => {
@@ -2772,11 +2773,33 @@ function viewPhaseDocs(pId, idx) {
               <td class="tbl-code">${d.size}</td>
               <td class="tbl-code">${d.date}</td>
               <td>${dlBtn}</td>
+              ${isAdmin() ? `<td><button class="btn btn-xs btn-danger" title="Xóa file (Admin)" onclick="deletePhaseDoc('${pId}',${idx},${di})">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+              </button></td>` : ''}
             </tr>`;
           }).join('')}
         </tbody>
       </table></div>`;
   document.getElementById('modal-ft').innerHTML = `<button class="btn btn-ghost" onclick="closeModal()">Đóng</button>`;
+}
+
+function deletePhaseDoc(pId, idx, di) {
+  if(!isAdmin()){ showNoPermToast(); return; }
+  const p = projects.find(x=>x.id===pId);
+  if(!p || !p.phaseDocs || !p.phaseDocs[idx] || !p.phaseDocs[idx][di]) return;
+  const doc = p.phaseDocs[idx][di];
+  showConfirm({
+    title: 'Xóa tài liệu giai đoạn', icon: '🗑️', iconBg: 'var(--red-dim)',
+    msg: `Xác nhận xóa file <strong>${doc.name}</strong>?<br><span style="font-size:11px;color:var(--text2)">File trên Drive không bị xóa — chỉ xóa khỏi danh sách tài liệu giai đoạn.</span>`,
+    okText: 'Xóa', okClass: 'btn-danger',
+    onOk: () => {
+      p.phaseDocs[idx].splice(di, 1);
+      syncDataToDrive();
+      viewPhaseDocs(pId, idx);
+      loadPhases(pId);
+      toast('Đã xóa tài liệu khỏi giai đoạn');
+    }
+  });
 }
 
 // ── RENDER GANTT ──
