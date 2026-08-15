@@ -1,5 +1,5 @@
 // sw.js — Service Worker cho PTI-Project PWA
-const CACHE_NAME = 'pti-project-shell-v1';
+const CACHE_NAME = 'pti-project-shell-v2';
 const SHELL_FILES = [
   './index.html',
   './manifest.json'
