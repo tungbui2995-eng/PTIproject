@@ -2617,6 +2617,13 @@ function savePIC(pId, idx, email) {
       `👤 PIC: ${tgEscape(member.name)}\n` +
       `📅 Deadline: ${tgEscape(deadlineText)}`
     );
+    sendTelegramPersonal(member.email,
+      `📌 <b>Bạn được phân công phụ trách giai đoạn</b>\n` +
+      `📁 Dự án: ${tgEscape(p.id)} — ${tgEscape(p.name)}\n` +
+      `📐 Giai đoạn: P${idx+1} — ${tgEscape(phase.name)}\n` +
+      `📅 Deadline: ${tgEscape(deadlineText)}\n` +
+      `Người giao: ${tgEscape(currentUser ? currentUser.name : '')}`
+    ).then(ok => { if(!ok) toast('⚠️ Không gửi được DM Telegram cho ' + member.name + ' — kiểm tra Chat ID cá nhân'); });
   }
   if(email && member && sendEmail) {
     sendEmailNotification({
@@ -2958,7 +2965,7 @@ function renderTeam() {
     const drivePermBadge = getDrivePermBadge(t.drivePerm || 'read');
     const canManageDrive = isAdmin() || (isSelf && canManageDrivePermissions(t.email));
     return `<tr>
-      <td style="font-weight:600">${t.name}${isSelf?` <span style="font-size:10px;color:var(--accent)">(bạn)</span>`:''}</td>
+      <td style="font-weight:600">${t.name}${isSelf?` <span style="font-size:10px;color:var(--accent)">(bạn)</span>`:''}${t.telegramChatId?` <span title="Đã liên kết Telegram cá nhân" style="font-size:11px">✈️</span>`:''}</td>
       <td><a href="mailto:${t.email}" style="color:var(--accent);font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         ${t.email}</a></td>
@@ -3185,11 +3192,42 @@ function editMember(idx) {
         ).join('')}
       </select>
     </div>
+    <div class="form-row">
+      <label class="form-label">Telegram Chat ID cá nhân</label>
+      <div style="display:flex;gap:6px">
+        <input class="form-ctrl" id="em-tg-chatid" value="${t.telegramChatId||''}" placeholder="VD: 123456789" style="flex:1">
+        <button type="button" class="btn btn-sm btn-ghost" onclick="testPersonalTelegram()">📤 Gửi thử</button>
+      </div>
+      <div id="em-tg-test-result" style="font-size:11px;margin-top:6px"></div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">
+        Để nhận thông báo riêng (giao việc, nhắc deadline) qua Telegram cá nhân. Cách lấy: người đó mở Telegram, tìm bot của app, bấm <strong>Start</strong> hoặc nhắn bất kỳ (chat riêng, không phải trong nhóm) — sau đó admin mở
+        <span style="color:var(--accent)">api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</span>, tìm bản ghi có <code>chat.type: "private"</code> ứng với người này để lấy Chat ID.
+      </div>
+    </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn btn-accent" onclick="saveMember(${idx})">Lưu thay đổi</button>
   `;
+}
+
+function testPersonalTelegram() {
+  const chatId  = document.getElementById('em-tg-chatid').value.trim();
+  const resEl   = document.getElementById('em-tg-test-result');
+  if(!chatId){ resEl.innerHTML = '<span style="color:var(--red)">Vui lòng nhập Chat ID trước</span>'; return; }
+  if(!settings.telegramBotToken){ resEl.innerHTML = '<span style="color:var(--red)">Chưa cấu hình Bot Token (vào Cài đặt Telegram nhóm trước)</span>'; return; }
+  resEl.innerHTML = '<span style="color:var(--text2)">Đang gửi thử...</span>';
+  fetch(`https://api.telegram.org/bot${settings.telegramBotToken}/sendMessage`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: '✅ Đây là tin nhắn thử từ PTI-Project — Chat ID cá nhân đã liên kết thành công!', parse_mode: 'HTML' })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.ok) resEl.innerHTML = '<span style="color:var(--green)">✅ Gửi thành công! Kiểm tra Telegram cá nhân.</span>';
+    else resEl.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${res.description||'Không gửi được'}</span>` +
+      (res.description && res.description.includes('chat not found') ? '<br><span style="color:var(--text2)">→ Người này chưa từng mở chat riêng (private) với bot. Cần bấm Start trước.</span>' : '');
+  })
+  .catch(() => { resEl.innerHTML = '<span style="color:var(--red)">❌ Lỗi kết nối tới Telegram</span>'; });
 }
 
 function saveMember(idx) {
@@ -3202,7 +3240,8 @@ function saveMember(idx) {
     email,
     role: document.getElementById('em-role').value.trim(),
     status: document.getElementById('em-status').value,
-    drivePerm: document.getElementById('em-drive-perm').value
+    drivePerm: document.getElementById('em-drive-perm').value,
+    telegramChatId: document.getElementById('em-tg-chatid').value.trim()
   };
   closeModal(); renderTeam(); syncDataToDrive();
   toast('Đã cập nhật thông tin nhân sự');
@@ -3229,7 +3268,8 @@ function addMember() {
     roleTemplate: 'engineer',
     perms: {...ROLE_TEMPLATES.engineer},
     password: pass,
-    drivePerm: document.getElementById('nm-drive-perm')?.value || 'read'
+    drivePerm: document.getElementById('nm-drive-perm')?.value || 'read',
+    telegramChatId: document.getElementById('nm-tg-chatid')?.value.trim() || ''
   });
   closeModal(); renderTeam(); syncDataToDrive();
   toast(`Đã thêm ${name} vào danh sách nhân sự`);
@@ -3317,6 +3357,11 @@ function openModal(type, data) {
             `<option value="${key}" ${key==='read'?'selected':''}>${val.icon} ${val.label}</option>`
           ).join('')}
         </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Telegram Chat ID cá nhân (tùy chọn)</label>
+        <input class="form-ctrl" id="nm-tg-chatid" placeholder="VD: 123456789">
+        <div style="font-size:10px;color:var(--text2);margin-top:3px">Có thể bổ sung sau trong mục Sửa nhân sự</div>
       </div>
       ${admin ? `
       <div class="form-row">
@@ -3529,9 +3574,9 @@ function syncDataToDrive() {
 // ── TELEGRAM NOTIFICATIONS ──
 function sendTelegramMessage(text, opts) {
   if (!settings.telegramEnabled) return Promise.resolve(false);
-  if (!settings.telegramBotToken || !settings.telegramChatId) return Promise.resolve(false);
   const token  = (opts && opts.token)  || settings.telegramBotToken;
   const chatId = (opts && opts.chatId) || settings.telegramChatId;
+  if (!token || !chatId) return Promise.resolve(false);
   return fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -3543,6 +3588,12 @@ function sendTelegramMessage(text, opts) {
     return !!res.ok;
   })
   .catch(err => { console.error('Telegram fetch error:', err); return false; });
+}
+function sendTelegramPersonal(email, text) {
+  if (!settings.telegramEnabled) return Promise.resolve(false);
+  const member = team.find(t=>t.email===email);
+  if(!member || !member.telegramChatId) return Promise.resolve(false);
+  return sendTelegramMessage(text, { chatId: member.telegramChatId });
 }
 function tgEscape(s) {
   return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -3764,6 +3815,17 @@ function saveTask(editId) {
       (task.deadline ? `Deadline: ${tgEscape(formatDateVN(task.deadline))}\n` : '') +
       `Người tạo: ${tgEscape(currentUser ? currentUser.name : '')}`
     );
+    if(picMember) {
+      sendTelegramPersonal(picMember.email,
+        `📌 <b>Bạn được giao việc mới</b>\n` +
+        `${typeLabel}\n` +
+        `Nội dung: ${tgEscape(task.title)}\n` +
+        (task.proj ? `Dự án: ${tgEscape(task.proj)}\n` : '') +
+        (task.deadline ? `Deadline: ${tgEscape(formatDateVN(task.deadline))}\n` : '') +
+        `Người giao: ${tgEscape(currentUser ? currentUser.name : '')}` +
+        (task.note ? `\nGhi chú: ${tgEscape(task.note)}` : '')
+      ).then(ok => { if(!ok) toast('⚠️ Không gửi được DM Telegram cho ' + picMember.name + ' — kiểm tra Chat ID cá nhân'); });
+    }
   }
   closeModal();
   renderUrgent(); renderToday(); renderDashTasks(); updateTaskBadges();
@@ -5161,6 +5223,18 @@ function sendChatMessage() {
   sendTelegramMessage(
     `💬 <b>${tgEscape(currentUser.name)}</b> — ${tgEscape(roomName)}\n${tgEscape(text)}`
   );
+  const mentions = [...text.matchAll(/@([\w\sÀ-ỹ]+?)(?=\s|$|[,.!?])/g)].map(m=>m[1].trim());
+  if(mentions.length > 0) {
+    mentions.forEach(mentionName => {
+      const mentioned = team.find(t => t.name.toLowerCase() === mentionName.toLowerCase() || t.name.toLowerCase().includes(mentionName.toLowerCase()));
+      if(!mentioned) return;
+      sendTelegramPersonal(mentioned.email,
+        `💬 <b>Bạn được nhắc đến</b>\n` +
+        `${tgEscape(currentUser.name)} nhắc bạn trong ${tgEscape(roomName)}:\n` +
+        `“${tgEscape(text)}”`
+      ).then(ok => { if(!ok) console.warn('Không gửi được DM mention Telegram cho', mentioned.email); });
+    });
+  }
 }
 
 function sendChatFiles(input) {
@@ -5391,6 +5465,40 @@ function initAI() {
 }
 
 // ── RENDER ALL ──
+function sendPersonalReminders(allPending) {
+  const byPerson = {};
+  allPending.forEach(item => {
+    if(!item.picEmail) return;
+    if(!byPerson[item.picEmail]) byPerson[item.picEmail] = { phases: [], tasks: [] };
+    byPerson[item.picEmail].phases.push(item);
+  });
+  tasks.filter(t=>!t.done && !t.rejected && t.pic).forEach(t => {
+    if(!byPerson[t.pic]) byPerson[t.pic] = { phases: [], tasks: [] };
+    byPerson[t.pic].tasks.push(t);
+  });
+  let sentCount = 0;
+  Object.keys(byPerson).forEach(email => {
+    const member = team.find(m=>m.email===email);
+    if(!member || !member.telegramChatId) return;
+    const { phases, tasks: personTasks } = byPerson[email];
+    if(phases.length===0 && personTasks.length===0) return;
+    let msg = `🔔 <b>Nhắc việc — ${tgEscape(member.name)}</b>`;
+    if(phases.length) {
+      msg += `\n\n📐 Giai đoạn phụ trách (${phases.length}):\n` +
+        phases.slice(0,10).map(p=>`${p.dlUrgent?'⚠️':'•'} ${tgEscape(p.projId)} | ${tgEscape(p.phase)} | ${p.pct}% | ${tgEscape(p.dlStatus)}`).join('\n') +
+        (phases.length>10 ? `\n… và ${phases.length-10} mục khác` : '');
+    }
+    if(personTasks.length) {
+      msg += `\n\n📋 Công việc chưa hoàn thành (${personTasks.length}):\n` +
+        personTasks.slice(0,10).map(t=>`${t.type==='urgent'?'🚨':'📅'} ${tgEscape(t.title)}${t.deadline?' — '+tgEscape(formatDateVN(t.deadline)):''}`).join('\n') +
+        (personTasks.length>10 ? `\n… và ${personTasks.length-10} việc khác` : '');
+    }
+    sendTelegramPersonal(email, msg);
+    sentCount++;
+  });
+  return sentCount;
+}
+
 function triggerDailyReport(manual) {
   if(!isAdmin()) { toast('⛔ Chỉ Admin mới gửi được báo cáo'); return; }
   const today = new Date();
@@ -5425,9 +5533,10 @@ function triggerDailyReport(manual) {
     (allPending.length === 0
       ? '✅ Không có giai đoạn tồn đọng hôm nay!'
       : (tgUrgentLines.length ? tgUrgentLines.join('\n') + (urgent.length > 15 ? `\n… và ${urgent.length - 15} mục khác` : '') : '📋 Không có mục cần xử lý gấp.'));
+  const sentReminders = sendPersonalReminders(allPending);
   sendTelegramMessage(tgReport).then(ok => {
     hideLoading();
-    if(ok) toast('📊 Đã gửi báo cáo qua Telegram');
+    if(ok) toast(`📊 Đã gửi báo cáo nhóm + nhắc việc riêng cho ${sentReminders} người`);
     else toast('Telegram chưa được bật hoặc chưa cấu hình');
   });
 }
