@@ -327,6 +327,7 @@ body {
 .phase-docs-modal .tbl { min-width: auto; width: 100%; }
 .phase-docs-modal .tbl th, .phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
 .phase-docs-modal .tbl-wrap { overflow-x: auto; }
+.wide-modal .modal { width: 90vw; max-width: 880px; }
 
 .form-row { margin-bottom: 14px; }
 .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
@@ -505,44 +506,6 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 .mention-item { padding:8px 12px; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:8px; transition:background .1s; }
 .mention-item:hover { background:var(--accent-dim); color:var(--accent); }
 
-.ai-layout { display:grid; grid-template-columns:220px 1fr; gap:14px; height:calc(100vh - var(--topbar-h) - 40px); }
-.ai-sidebar { display:flex; flex-direction:column; gap:10px; }
-.ai-info-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r2); padding:14px; }
-.ai-info-title { font-size:12px; font-weight:700; margin-bottom:8px; background:linear-gradient(90deg,#a78bfa,#4f8ef7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.ai-context-item { display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:var(--r); font-size:11px; cursor:pointer; color:var(--text2); transition:all .12s; border:1px solid transparent; }
-.ai-context-item:hover { background:var(--bg3); color:var(--text1); }
-.ai-context-item.active { background:var(--accent-dim); color:var(--accent); border-color:rgba(79,142,247,0.2); }
-.ai-context-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.ai-prompt-chip { display:inline-flex; align-items:center; padding:5px 10px; border-radius:20px; font-size:11px; background:var(--bg3); border:1px solid var(--border2); color:var(--text1); cursor:pointer; transition:all .12s; margin:3px; white-space:nowrap; }
-.ai-prompt-chip:hover { background:var(--accent-dim); color:var(--accent); border-color:rgba(79,142,247,0.25); }
-
-.ai-main { display:flex; flex-direction:column; background:var(--bg1); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
-.ai-messages { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:14px; }
-.ai-msg { display:flex; gap:10px; animation:fadeIn .2s ease; }
-.ai-msg.user { flex-direction:row-reverse; }
-.ai-msg-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
-.ai-msg-avatar.bot { background:linear-gradient(135deg,#6366f1,#4f8ef7); box-shadow:0 2px 8px rgba(99,102,241,0.3); }
-.ai-msg-avatar.user-av { background:var(--accent-dim); color:var(--accent); font-size:11px; font-weight:700; border:1px solid rgba(79,142,247,0.3); }
-.ai-msg-bubble { max-width:75%; padding:10px 14px; border-radius:4px 14px 14px 14px; font-size:13px; line-height:1.6; color:var(--text0); background:var(--bg3); border:1px solid var(--border); }
-.ai-msg.user .ai-msg-bubble { border-radius:14px 4px 14px 14px; background:var(--accent-dim); border-color:rgba(79,142,247,0.2); }
-.ai-msg-bubble pre { background:var(--bg0); border:1px solid var(--border2); border-radius:var(--r); padding:10px 12px; margin:8px 0; font-family:'JetBrains Mono',monospace; font-size:11px; overflow-x:auto; white-space:pre-wrap; }
-.ai-msg-bubble strong { color:var(--text0); }
-.ai-msg-bubble ul, .ai-msg-bubble ol { padding-left:18px; margin:6px 0; }
-.ai-msg-bubble li { margin-bottom:3px; }
-.ai-typing { display:flex; gap:5px; align-items:center; padding:10px 14px; background:var(--bg3); border:1px solid var(--border); border-radius:4px 14px 14px 14px; width:fit-content; }
-.ai-typing span { width:7px; height:7px; border-radius:50%; background:var(--accent); animation:aiTyping 1.2s infinite; }
-.ai-typing span:nth-child(2) { animation-delay:.2s; }
-.ai-typing span:nth-child(3) { animation-delay:.4s; }
-@keyframes aiTyping { 0%,80%,100%{opacity:.3;transform:translateY(0)} 40%{opacity:1;transform:translateY(-4px)} }
-.ai-input-area { border-top:1px solid var(--border); padding:12px 14px; background:var(--bg2); flex-shrink:0; }
-.ai-input-row { display:flex; gap:8px; align-items:flex-end; }
-.ai-input-box { flex:1; background:var(--bg3); border:1px solid var(--border2); border-radius:var(--r2); padding:10px 14px; font-size:13px; font-family:inherit; color:var(--text0); resize:none; min-height:42px; max-height:120px; transition:border-color .15s; line-height:1.5; }
-.ai-input-box:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
-.ai-send-btn { background:linear-gradient(135deg,#6366f1,#4f8ef7); border:none; border-radius:var(--r2); width:42px; height:42px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; flex-shrink:0; }
-.ai-send-btn:hover { transform:scale(1.05); box-shadow:0 4px 14px rgba(99,102,241,0.4); }
-.ai-send-btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
-.ai-model-badge { font-size:10px; color:var(--text2); background:var(--bg3); border:1px solid var(--border); border-radius:10px; padding:2px 8px; margin-bottom:8px; display:inline-flex; align-items:center; gap:4px; }
-.ai-model-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); display:inline-block; }
 .wh-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:18px; }
 .wh-tab { padding:10px 18px; font-size:13px; font-weight:500; color:var(--text2); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
 .wh-tab:hover { color:var(--text0); }
@@ -725,6 +688,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   .chat-layout { grid-template-columns: 1fr; }
   .perm-grid { grid-template-columns: 1fr; }
   .phase-docs-modal .modal { width: 95vw; }
+  .wide-modal .modal { width: 95vw; }
 
   body { overflow-x: hidden; }
   .sidebar {
@@ -887,9 +851,9 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Kho vật tư <span class="nav-badge" id="b-warehouse-order" style="display:none">0</span>
     </div>
-    <div class="nav-item" onclick="nav('ai',this)" id="nav-ai">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      <span style="background:linear-gradient(90deg,#a78bfa,#4f8ef7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:600">AI Trợ lý</span>
+    <div class="nav-item" onclick="nav('approval',this)" id="nav-approval">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Đề nghị - Phê duyệt <span class="nav-badge red" id="b-approval" style="display:none">0</span>
     </div>
   </div>
 
@@ -1473,55 +1437,102 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       </div>
     </div>
 
-    <!-- AI CHATBOT VIEW -->
-    <div class="view" id="view-ai">
-      <div class="ai-layout">
-        <!-- Sidebar -->
-        <div class="ai-sidebar">
-          <div class="ai-info-card">
-            <div class="ai-info-title">⚡ AI Trợ lý PTI-Project</div>
-            <div style="font-size:11px;color:var(--text2);line-height:1.6">
-              Trợ lý AI hiểu ngữ cảnh dự án của bạn. Có thể hỏi về tiến độ, nhân sự, vật tư, kỹ thuật cơ khí và nhiều hơn.
-            </div>
-            <div class="ai-model-badge" style="margin-top:10px">⚡ Groq · Llama 3.3 70B</div>
-          </div>
+    <!-- APPROVAL VIEW -->
+    <div class="view" id="view-approval">
+      <div class="wh-tabs">
+        <div class="wh-tab active" id="appr-tab-material" onclick="switchApprTab('material')">
+          📝 Đề nghị mua vật tư
+        </div>
+        <div class="wh-tab" id="appr-tab-handover" onclick="switchApprTab('handover')">
+          📦 Bàn giao hàng hóa
+        </div>
+        <div class="wh-tab" id="appr-tab-leave" onclick="switchApprTab('leave')">
+          🗓️ Đơn xin nghỉ phép <span class="nav-badge red" id="b-appr-leave-pending" style="display:none;margin-left:4px">0</span>
+        </div>
+      </div>
 
-          <div class="ai-info-card">
-            <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">📊 Ngữ cảnh đưa vào AI</div>
-            <div id="ai-context-list"></div>
-            <div style="font-size:10px;color:var(--text2);margin-top:8px">AI được cấp dữ liệu dự án thực tế của bạn</div>
+      <!-- TAB: MATERIAL REQUEST -->
+      <div id="appr-panel-material">
+        <div class="section-hd">
+          <div class="section-hd-left">
+            <h2>📝 Phiếu đề nghị mua vật tư</h2>
+            <p>Lập phiếu đề nghị mua vật tư và gửi phê duyệt</p>
           </div>
-
-          <div class="ai-info-card">
-            <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">💡 Gợi ý câu hỏi</div>
-            <div id="ai-chips"></div>
-          </div>
-
-          <div class="ai-info-card" style="margin-top:auto">
-            <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="clearAIChat()">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-              Xóa lịch sử chat
-            </button>
+          <button class="btn btn-sm btn-accent" onclick="openModal_newMaterialRequest()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tạo phiếu
+          </button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table class="tbl" id="appr-material-table">
+              <thead>
+                <tr>
+                  <th>Mã phiếu</th><th>Người đề nghị</th><th>Bộ phận</th><th>Số mục</th>
+                  <th>Người duyệt</th><th>Ngày tạo</th><th>Trạng thái</th><th>Tiến độ mua</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="appr-material-tbody"></tbody>
+            </table>
           </div>
         </div>
+      </div>
 
-        <!-- Main chat -->
-        <div class="ai-main">
-          <div class="ai-messages" id="ai-messages"></div>
-          <div class="ai-input-area">
-            <div class="ai-input-row">
-              <textarea class="ai-input-box" id="ai-input"
-                placeholder="Hỏi AI về dự án, tiến độ, kỹ thuật cơ khí..."
-                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIMessage()}"
-                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
-              <button class="ai-send-btn" id="ai-send-btn" onclick="sendAIMessage()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              </button>
-            </div>
+      <!-- TAB: HANDOVER RECORD -->
+      <div id="appr-panel-handover" style="display:none">
+        <div class="section-hd">
+          <div class="section-hd-left">
+            <h2>📦 Biên bản bàn giao hàng hóa</h2>
+            <p>Lập biên bản bàn giao giữa các bên và gửi xác nhận</p>
+          </div>
+          <button class="btn btn-sm btn-accent" onclick="openModal_newHandover()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tạo phiếu
+          </button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table class="tbl" id="appr-handover-table">
+              <thead>
+                <tr>
+                  <th>Mã phiếu</th><th>Bên giao</th><th>Bên nhận</th><th>Số mục</th>
+                  <th>Người duyệt</th><th>Ngày</th><th>Trạng thái</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="appr-handover-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: LEAVE REQUEST -->
+      <div id="appr-panel-leave" style="display:none">
+        <div class="section-hd">
+          <div class="section-hd-left">
+            <h2>🗓️ Đơn xin nghỉ phép</h2>
+            <p>Gửi đơn xin nghỉ phép — cần Trưởng phòng phê duyệt</p>
+          </div>
+          <button class="btn btn-sm btn-accent" onclick="openModal_newLeave()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tạo đơn
+          </button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table class="tbl" id="appr-leave-table">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th><th>Người xin nghỉ</th><th>Bộ phận</th><th>Từ ngày</th><th>Đến ngày</th>
+                  <th>Số ngày</th><th>Trưởng phòng duyệt</th><th>Trạng thái</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="appr-leave-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -1547,6 +1558,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 // ═══════════════════════════════════════════════════════════════
 
 const DRIVE_API_URL = "https://script.google.com/macros/s/AKfycbzEEx69y1kyP4J9UJUZP8senAH8hqkUsNVBGO73oahMuSxU5vLhmvTeNzy5Fn4q_yd-/exec";
+// Cờ đánh dấu đã tải xong dữ liệu thật từ Drive — chặn mọi thao tác lưu (sync)
+// cho tới khi tải thành công, tránh trường hợp mất mạng/lỗi tải làm ghi đè
+// dữ liệu thật trên Drive bằng dữ liệu rỗng cục bộ.
+let driveLoaded = false;
 
 // Giai đoạn mặc định toàn hệ thống
 const PH_DEFAULT = [
@@ -1574,20 +1589,20 @@ function getProjAvg(p) {
 let projects = [], issues = [], docs = [];
 
 // ── PERMISSION LEVELS ──
-const MODULES = ['dashboard','projects','phases','gantt','issues','docs','team','chat','urgent','today','warehouse','ai'];
+const MODULES = ['dashboard','projects','phases','gantt','issues','docs','team','chat','urgent','today','warehouse','approval'];
 const MODULE_LABELS = {
   dashboard:'Dashboard', projects:'Dự án', phases:'Giai đoạn & CV',
   gantt:'Tiến độ Gantt', issues:'NCR & Vấn đề', docs:'Thư viện tham khảo',
   team:'Nhân sự', chat:'Chat', urgent:'Yêu cầu gấp', today:'Xử lý hôm nay',
-  warehouse:'Kho vật tư', ai:'AI Trợ lý'
+  warehouse:'Kho vật tư', approval:'Đề nghị - Phê duyệt'
 };
 const PERM_LABELS = ['Không xem','Chỉ xem','Xem + Sửa','Toàn quyền'];
 const PERM_ICONS = ['🚫','👁️','✏️','⚡'];
 
 const ROLE_TEMPLATES = {
-  admin:    { dashboard:3, projects:3, phases:3, gantt:3, issues:3, docs:3, team:3, chat:3, urgent:3, today:3, warehouse:3, ai:3 },
-  engineer: { dashboard:1, projects:1, phases:2, gantt:1, issues:2, docs:2, team:1, chat:3, urgent:3, today:3, warehouse:2, ai:3 },
-  viewer:   { dashboard:1, projects:1, phases:1, gantt:1, issues:1, docs:1, team:0, chat:1, urgent:0, today:0, warehouse:1, ai:1 }
+  admin:    { dashboard:3, projects:3, phases:3, gantt:3, issues:3, docs:3, team:3, chat:3, urgent:3, today:3, warehouse:3, approval:3 },
+  engineer: { dashboard:1, projects:1, phases:2, gantt:1, issues:2, docs:2, team:1, chat:3, urgent:3, today:3, warehouse:2, approval:2 },
+  viewer:   { dashboard:1, projects:1, phases:1, gantt:1, issues:1, docs:1, team:0, chat:1, urgent:0, today:0, warehouse:1, approval:1 }
 };
 
 // ── DRIVE PERMISSION LEVELS ──
@@ -1609,6 +1624,7 @@ let tasks = [];
 let warehouseStock  = [];
 let warehouseOrders = [];
 let warehouseTxns   = [];
+let approvalRequests = [];
 let settings = { telegramBotToken: '', telegramChatId: '', telegramEnabled: false };
 
 const PAGE_TITLES = {
@@ -1623,7 +1639,7 @@ const PAGE_TITLES = {
   today: '📅 Cần xử lý hôm nay',
   chat: '💬 Chat nhóm',
   warehouse: '📦 Kho vật tư',
-  ai: '🤖 AI Trợ lý'
+  approval: '📝 Đề nghị - Phê duyệt'
 };
 
 // ── HELPER FUNCTIONS ──
@@ -3286,13 +3302,19 @@ function filterProj(v) {
 function openModal(type, data) {
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
+  overlay.classList.remove('wide-modal');
   const hd = document.getElementById('modal-hd-title');
 
   if(type==='new-project'){
     hd.textContent = '➕  Tạo dự án mới';
+    const suggestedId = suggestNextProjectId();
     document.getElementById('modal-body').innerHTML = `
       <div class="form-grid">
-        <div class="form-row"><label class="form-label">Mã DA *</label><input class="form-ctrl" id="f-id" placeholder="TL-2025-001"></div>
+        <div class="form-row">
+          <label class="form-label">Mã DA *</label>
+          <input class="form-ctrl" id="f-id" placeholder="TL-2025-001" value="${suggestedId}" oninput="checkProjectIdDuplicate(this.value)">
+          <div id="f-id-hint" style="font-size:10px;margin-top:3px;min-height:14px;color:var(--text2)">💡 Mã gợi ý tự động — có thể chỉnh sửa</div>
+        </div>
         <div class="form-row"><label class="form-label">Trạng thái</label><select class="form-ctrl" id="f-status"><option>Đang thực hiện</option><option>Chờ triển khai</option><option>Hoàn thành</option></select></div>
       </div>
       <div class="form-row"><label class="form-label">Tên thiết bị / Máy *</label><input class="form-ctrl" id="f-name" placeholder="Máy hàn tự động, Băng tải, ..."></div>
@@ -3404,14 +3426,109 @@ function closeModal() {
   const ov = document.getElementById('overlay');
   ov.classList.remove('open');
   ov.classList.remove('phase-docs-modal');
+  ov.classList.remove('wide-modal');
 }
 
 // ── SAVE FUNCTIONS ──
+function suggestNextProjectId() {
+  const year = new Date().getFullYear();
+  const defaultPrefix = `TL-${year}-`;
+  // Gom nhóm theo tiền tố (phần trước dãy số cuối) để tìm số lớn nhất từng nhóm
+  const groups = {};
+  projects.forEach(p => {
+    const id = (p.id || '').trim();
+    const m = id.match(/^(.*?)(\d+)$/);
+    if (!m) return;
+    const prefix = m[1];
+    const numStr = m[2];
+    const num = parseInt(numStr, 10);
+    if (!groups[prefix] || num > groups[prefix].num) {
+      groups[prefix] = { num, width: numStr.length };
+    }
+  });
+  // Ưu tiên tiền tố theo năm hiện tại; nếu chưa có, dùng tiền tố của dự án gần nhất (mới tạo nhất)
+  let prefix = defaultPrefix;
+  if (!groups[prefix] && projects.length) {
+    const lastId = (projects[0].id || '').trim();
+    const m0 = lastId.match(/^(.*?)(\d+)$/);
+    if (m0) prefix = m0[1];
+  }
+  const g = groups[prefix];
+  const width = g ? g.width : 3;
+  const nextNum = g ? g.num + 1 : 1;
+  return prefix + String(nextNum).padStart(width, '0');
+}
+
+function isProjectIdTaken(id) {
+  const norm = (id||'').trim().toLowerCase();
+  if(!norm) return false;
+  return projects.some(p => (p.id||'').trim().toLowerCase() === norm);
+}
+
+// Tính số tiếp theo cho một tiền tố bất kỳ (VD: "SYV26-" -> "SYV26-001")
+function computeSuggestionForPrefix(prefix) {
+  let maxNum = null, width = 3;
+  const lower = prefix.toLowerCase();
+  projects.forEach(p => {
+    const id = (p.id || '').trim();
+    if (id.toLowerCase().startsWith(lower)) {
+      const rest = id.slice(prefix.length);
+      const m = rest.match(/^(\d+)/);
+      if (m) {
+        const num = parseInt(m[1], 10);
+        if (maxNum === null || num > maxNum) { maxNum = num; width = m[1].length; }
+      }
+    }
+  });
+  const next = maxNum === null ? 1 : maxNum + 1;
+  return prefix + String(next).padStart(width, '0');
+}
+
+function fillSuggestedProjectId(id) {
+  const input = document.getElementById('f-id');
+  if(!input) return;
+  input.value = id;
+  checkProjectIdDuplicate(id);
+  input.focus();
+}
+
+function checkProjectIdDuplicate(val) {
+  const hint = document.getElementById('f-id-hint');
+  const input = document.getElementById('f-id');
+  if(!hint || !input) return;
+  const trimmed = (val||'').trim();
+  if(!trimmed) {
+    hint.innerHTML = '💡 Mã gợi ý tự động — có thể chỉnh sửa';
+    hint.style.color = 'var(--text2)';
+    input.style.borderColor = '';
+    return;
+  }
+  // Tách phần tiền tố (bỏ dãy số ở cuối, nếu có) để tính gợi ý số tiếp theo
+  const prefixPart = trimmed.match(/^(.*?)(\d*)$/)[1];
+  const suggestion = computeSuggestionForPrefix(prefixPart);
+  const escSuggestion = suggestion.replace(/'/g,"\\'");
+  if(isProjectIdTaken(trimmed)) {
+    hint.innerHTML = suggestion.toLowerCase() !== trimmed.toLowerCase()
+      ? `⚠️ Mã DA này đã tồn tại. <span style="cursor:pointer;text-decoration:underline;color:var(--accent)" onclick="fillSuggestedProjectId('${escSuggestion}')">Dùng ${suggestion}?</span>`
+      : '⚠️ Mã DA này đã tồn tại, vui lòng chọn mã khác';
+    hint.style.color = 'var(--red)';
+    input.style.borderColor = 'var(--red)';
+  } else if(suggestion.toLowerCase() !== trimmed.toLowerCase()) {
+    hint.innerHTML = `💡 Gợi ý: <span style="cursor:pointer;text-decoration:underline;color:var(--accent)" onclick="fillSuggestedProjectId('${escSuggestion}')">${suggestion}</span>`;
+    hint.style.color = 'var(--text2)';
+    input.style.borderColor = '';
+  } else {
+    hint.textContent = '';
+    input.style.borderColor = '';
+  }
+}
+
 function saveProject() {
   const id = document.getElementById('f-id').value.trim();
   const name = document.getElementById('f-name').value.trim();
   const client = document.getElementById('f-client').value.trim();
   if(!id || !name || !client){ toast('Vui lòng điền đủ thông tin bắt buộc'); return; }
+  if(isProjectIdTaken(id)){ toast(`⛔ Mã DA "${id}" đã tồn tại, vui lòng chọn mã khác`); return; }
   projects.unshift({
     id, name, client,
     val: document.getElementById('f-val').value||0,
@@ -3547,7 +3664,9 @@ function fetchDataFromDrive() {
       if(data.warehouseStock)  warehouseStock  = data.warehouseStock;
       if(data.warehouseOrders) warehouseOrders = data.warehouseOrders;
       if(data.warehouseTxns)   warehouseTxns   = data.warehouseTxns;
+      if(data.approvalRequests) approvalRequests = data.approvalRequests;
       if(data.settings) settings = { ...settings, ...data.settings };
+      driveLoaded = true;
       renderAll(); initChat(); hideLoading();
       initLoginScreen();
       document.getElementById('drive-status-text').textContent = 'Drive đã kết nối';
@@ -3556,6 +3675,7 @@ function fetchDataFromDrive() {
     })
     .catch(err => {
       console.error(err); hideLoading();
+      driveLoaded = false;
       document.getElementById('drive-status-text').textContent = 'Lỗi kết nối';
       document.getElementById('drive-dot').style.background = 'var(--red)';
       toast("Không thể kết nối Drive — dùng dữ liệu cục bộ");
@@ -3564,8 +3684,22 @@ function fetchDataFromDrive() {
 }
 
 function syncDataToDrive() {
+  if(!driveLoaded) {
+    showConfirm({
+      title: 'Chưa tải xong dữ liệu Drive', icon: '⚠️', iconBg: 'var(--red-dim)',
+      msg: 'Ứng dụng chưa đồng bộ được dữ liệu thật từ Google Drive (mất mạng hoặc lỗi kết nối). Nếu tiếp tục lưu ngay bây giờ, dữ liệu cũ trên Drive có thể bị GHI ĐÈ và MẤT. Bạn nên thử tải lại trước.',
+      okText: 'Thử tải lại', okClass: 'btn-accent', cancelText: 'Vẫn lưu (rủi ro)',
+      onOk: () => { fetchDataFromDrive(); },
+      onCancel: () => { doSyncDataToDrive(); }
+    });
+    return;
+  }
+  doSyncDataToDrive();
+}
+
+function doSyncDataToDrive() {
   showLoading("Đang đồng bộ lên Google Drive...");
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, settings };
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, settings };
   fetch(DRIVE_API_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) })
     .then(() => { hideLoading(); toast("Đã lưu dữ liệu lên Drive!"); renderAll(); })
     .catch(err => { hideLoading(); alert("Lỗi đồng bộ: " + err); });
@@ -5011,6 +5145,887 @@ function renderWarehouse() {
   if(b){ b.textContent=pending; b.style.display=pending?'':'none'; }
 }
 
+// ── APPROVAL / ĐỀ NGHỊ - PHÊ DUYỆT ──
+let apprCurrentTab = 'material';
+let materialItemsTmp = [];
+let materialApproversTmp = [];
+let handoverItemsTmp = [];
+
+function nowDateStr() {
+  const now = new Date();
+  return `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+}
+function nowDateTimeStr() {
+  const now = new Date();
+  return `${nowDateStr()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+
+function switchApprTab(tab) {
+  apprCurrentTab = tab;
+  ['material','handover','leave'].forEach(t=>{
+    const tabEl = document.getElementById('appr-tab-'+t);
+    const panelEl = document.getElementById('appr-panel-'+t);
+    if(tabEl) tabEl.classList.toggle('active', t===tab);
+    if(panelEl) panelEl.style.display = t===tab ? '' : 'none';
+  });
+  renderApproval();
+}
+
+function apprStatusBadge(status) {
+  if(status==='approved') return `<span class="badge badge-green">✅ Đã duyệt</span>`;
+  if(status==='rejected') return `<span class="badge badge-red">❌ Từ chối</span>`;
+  return `<span class="badge badge-amber">⏳ Chờ duyệt</span>`;
+}
+
+function apprApproverOptions(selected) {
+  return '<option value="">— Chọn người phê duyệt —</option>' +
+    team.map(t=>`<option value="${t.email}" ${t.email===selected?'selected':''}>${t.name}${t.role?(' — '+t.role):''}</option>`).join('');
+}
+
+function renderApproval() {
+  if(apprCurrentTab==='material') renderMaterialRequests();
+  else if(apprCurrentTab==='handover') renderHandoverRequests();
+  else renderLeaveRequests();
+
+  const pendingLeave = approvalRequests.filter(r=>r.kind==='leave' && r.status==='pending').length;
+  const bLeave = document.getElementById('b-appr-leave-pending');
+  if(bLeave){ bLeave.textContent=pendingLeave; bLeave.style.display=pendingLeave?'':'none'; }
+
+  const myPending = approvalRequests.filter(r=>{
+    if(r.status!=='pending') return false;
+    if(isAdmin()) return true;
+    if(r.kind==='material') return isMaterialApproverTurn(r, currentUser?.email);
+    return r.approverEmail===currentUser?.email;
+  }).length;
+  const navB = document.getElementById('b-approval');
+  if(navB){ navB.textContent=myPending; navB.style.display=myPending?'':'none'; }
+}
+
+function getMaterialApprovers(r) {
+  if(r.approvers && r.approvers.length) return r.approvers;
+  if(r.approverEmail) return [{ email:r.approverEmail, name:r.approverName||'', status:r.status, approvedAt:r.approvedAt||'', approvedBy:r.approvedBy||'', rejectReason:r.rejectReason||'' }];
+  return [];
+}
+
+function computeMaterialOverallStatus(r) {
+  const list = getMaterialApprovers(r);
+  if(list.some(a=>a.status==='rejected')) return 'rejected';
+  if(list.length>0 && list.every(a=>a.status==='approved')) return 'approved';
+  return 'pending';
+}
+
+// Kiểm tra xem người này đã "đến lượt" phê duyệt chưa (tất cả người trước trong danh sách đã duyệt)
+function isMaterialApproverTurn(r, email) {
+  const list = getMaterialApprovers(r);
+  const idx = list.findIndex(a=>a.email===email);
+  if(idx===-1) return false;
+  if(list[idx].status!=='pending') return false;
+  for(let i=0;i<idx;i++){ if(list[i].status!=='approved') return false; }
+  return true;
+}
+
+function purchaseStatusLabel(status) {
+  if(status==='bought') return '✅ Đã mua';
+  if(status==='buying') return '🛒 Đang mua';
+  return '⏳ Chưa mua';
+}
+function purchaseStatusSelectHtml(reqId, idx, status) {
+  status = status || 'notyet';
+  const opts = [['notyet','⏳ Chưa mua'],['buying','🛒 Đang mua'],['bought','✅ Đã mua']];
+  return `<select class="form-ctrl" style="min-width:118px;font-size:11px;padding:4px 6px" onchange="updateMaterialItemPurchaseStatus('${reqId}',${idx},this.value)">
+    ${opts.map(([v,l])=>`<option value="${v}" ${v===status?'selected':''}>${l}</option>`).join('')}
+  </select>`;
+}
+function updateMaterialItemPurchaseStatus(reqId, idx, value) {
+  const r = approvalRequests.find(x=>x.id===reqId);
+  if(!r || !r.items || !r.items[idx]) return;
+  r.items[idx].purchaseStatus = value;
+  syncDataToDrive();
+  renderApproval();
+  toast('Đã cập nhật trạng thái mua vật tư');
+}
+
+function apprMaterialApproverCell(r) {
+  const list = getMaterialApprovers(r);
+  if(list.length===0) return '—';
+  return list.map(a=>{
+    const icon = a.status==='approved' ? '✅' : a.status==='rejected' ? '❌' : '⏳';
+    return `${icon} ${a.name||a.email}`;
+  }).join('<br>');
+}
+
+function apprDeleteBtnHtml(id) {
+  if(!isAdmin()) return '';
+  return `<button class="btn btn-xs btn-danger" title="Xóa phiếu (Admin)" onclick="event.stopPropagation();confirmDeleteApprovalRequest('${id}')">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg> Xóa
+  </button>`;
+}
+function confirmDeleteApprovalRequest(id) {
+  const r = approvalRequests.find(x=>x.id===id);
+  if(!r) return;
+  const kindLabel = r.kind==='material' ? 'Phiếu đề nghị mua vật tư' : r.kind==='handover' ? 'Biên bản bàn giao hàng hóa' : 'Đơn xin nghỉ phép';
+  showConfirm({
+    title: 'Xóa phiếu?',
+    msg: `Bạn có chắc muốn xóa ${kindLabel} <strong>${tgEscape(r.id)}</strong>? Hành động này không thể hoàn tác.`,
+    icon: '🗑️', iconBg: 'var(--red-dim)',
+    okText: 'Xóa', okClass: 'btn-danger',
+    onOk: () => deleteApprovalRequest(id)
+  });
+}
+function deleteApprovalRequest(id) {
+  const idx = approvalRequests.findIndex(x=>x.id===id);
+  if(idx===-1) return;
+  const removed = approvalRequests[idx];
+  approvalRequests.splice(idx,1);
+  closeModal();
+  renderApproval();
+  syncDataToDrive();
+  toast(`🗑️ Đã xóa ${removed.id}`);
+}
+
+function renderMaterialRequests() {
+  const tbody = document.getElementById('appr-material-tbody');
+  if(!tbody) return;
+  const list = approvalRequests.filter(r=>r.kind==='material').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📝</div><div class="empty-state-title">Chưa có phiếu đề nghị mua vật tư</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(r=>`
+    <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td><strong>${r.id}</strong></td>
+      <td>${r.requester}</td>
+      <td>${r.dept||'—'}</td>
+      <td>${(r.items||[]).length} mục</td>
+      <td style="font-size:11px;line-height:1.6">${apprMaterialApproverCell(r)}</td>
+      <td>${r.createdAt}</td>
+      <td>${apprStatusBadge(r.status)}</td>
+      <td style="font-size:11px;white-space:nowrap">${materialPurchaseProgressCell(r)}</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px"><button class="btn btn-xs btn-ghost" onclick="openModal_viewApproval('${r.id}')">Xem</button>${apprDeleteBtnHtml(r.id)}</td>
+    </tr>`).join('');
+}
+
+function materialPurchaseProgressCell(r) {
+  const items = r.items||[];
+  if(!items.length) return '—';
+  const bought = items.filter(it=>it.purchaseStatus==='bought').length;
+  const buying = items.filter(it=>it.purchaseStatus==='buying').length;
+  const notyet = items.length - bought - buying;
+  return `✅${bought} · 🛒${buying} · ⏳${notyet}`;
+}
+
+function renderHandoverRequests() {
+  const tbody = document.getElementById('appr-handover-tbody');
+  if(!tbody) return;
+  const list = approvalRequests.filter(r=>r.kind==='handover').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📦</div><div class="empty-state-title">Chưa có biên bản bàn giao hàng hóa</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(r=>`
+    <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td><strong>${r.id}</strong></td>
+      <td>${r.partyAName||'—'}</td>
+      <td>${r.partyBName||'—'}</td>
+      <td>${(r.items||[]).length} mục</td>
+      <td>${r.approverName||'—'}</td>
+      <td>${r.date||r.createdAt}</td>
+      <td>${apprStatusBadge(r.status)}</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px"><button class="btn btn-xs btn-ghost" onclick="openModal_viewApproval('${r.id}')">Xem</button>${apprDeleteBtnHtml(r.id)}</td>
+    </tr>`).join('');
+}
+
+function renderLeaveRequests() {
+  const tbody = document.getElementById('appr-leave-tbody');
+  if(!tbody) return;
+  const list = approvalRequests.filter(r=>r.kind==='leave').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🗓️</div><div class="empty-state-title">Chưa có đơn xin nghỉ phép</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(r=>`
+    <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td><strong>${r.id}</strong></td>
+      <td>${r.requester}</td>
+      <td>${r.dept||'—'}</td>
+      <td>${r.fromDate||'—'}</td>
+      <td>${r.toDate||'—'}</td>
+      <td>${r.days||'—'} ngày</td>
+      <td>${r.approverName||'—'}</td>
+      <td>${apprStatusBadge(r.status)}</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:4px"><button class="btn btn-xs btn-ghost" onclick="openModal_viewApproval('${r.id}')">Xem</button>${apprDeleteBtnHtml(r.id)}</td>
+    </tr>`).join('');
+}
+
+
+// ── PHIẾU ĐỀ NGHỊ MUA VẬT TƯ ──
+function openModal_newMaterialRequest() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  materialItemsTmp = [{ name:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' }];
+  materialApproversTmp = [{ email:'' }];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  overlay.classList.add('wide-modal');
+  document.getElementById('modal-hd-title').textContent = '📝 Tạo phiếu đề nghị mua vật tư';
+  const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Kính gửi</label><input class="form-ctrl" id="mr-to" placeholder="Ban Giám đốc Công ty PTI"></div>
+      <div class="form-row"><label class="form-label">Bộ phận đề nghị</label><input class="form-ctrl" id="mr-dept" placeholder="Phòng Kỹ thuật & Cơ khí"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Người đề nghị</label><input class="form-ctrl" id="mr-requester" value="${currentUser.name}"></div>
+      <div class="form-row"><label class="form-label">Chức danh</label><input class="form-ctrl" id="mr-title" value="${myRole}"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Mục đích sử dụng</label><textarea class="form-ctrl" id="mr-purpose" rows="2" placeholder="Phục vụ sản xuất, lắp ráp dự án..."></textarea></div>
+    <datalist id="mr-dvt-options">
+      <option value="Cái"></option>
+      <option value="Bộ"></option>
+      <option value="Hệ thống"></option>
+      <option value="Chiếc"></option>
+      <option value="Cuộn"></option>
+      <option value="Mét"></option>
+      <option value="Mét vuông"></option>
+      <option value="Kg"></option>
+      <option value="Lít"></option>
+      <option value="Thùng"></option>
+      <option value="Hộp"></option>
+      <option value="Bao"></option>
+      <option value="Tấm"></option>
+      <option value="Ống"></option>
+      <option value="Bình"></option>
+      <option value="Con"></option>
+    </datalist>
+    <div class="form-row">
+      <label class="form-label">Danh mục vật tư đề nghị mua</label>
+      <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
+        <table class="tbl" style="min-width:720px" id="mr-items-table">
+          <thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
+          <tbody id="mr-items-tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-xs btn-ghost" onclick="addMaterialRow()">+ Thêm dòng</button>
+        <label class="btn btn-xs btn-ghost" style="cursor:pointer;margin:0">
+          📥 Tải danh mục từ Excel
+          <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMaterialItemsExcel(this)">
+        </label>
+        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Thông số kỹ thuật, ĐVT, SL, Tồn kho, Ghi chú</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người phê duyệt * <span style="font-weight:400;color:var(--text2);font-size:11px">(có thể thêm nhiều người — sẽ duyệt LẦN LƯỢT theo thứ tự, người sau chỉ nhận thông báo khi người trước đã duyệt)</span></label>
+      <div id="mr-approvers-list" style="margin-top:6px"></div>
+      <button class="btn btn-xs btn-ghost" style="margin-top:4px" onclick="addMaterialApproverRow()">+ Thêm người phê duyệt</button>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitMaterialRequest()">📤 Gửi phê duyệt</button>
+  `;
+  renderMaterialItemsTable();
+  renderMaterialApproversRows();
+}
+
+function renderMaterialApproversRows() {
+  const wrap = document.getElementById('mr-approvers-list');
+  if(!wrap) return;
+  wrap.innerHTML = materialApproversTmp.map((a,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+      <select class="form-ctrl" style="flex:1" onchange="materialApproversTmp[${i}].email=this.value">
+        ${apprApproverOptions(a.email)}
+      </select>
+      <button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMaterialApproverRow(${i})">✕</button>
+    </div>`).join('');
+}
+function addMaterialApproverRow() {
+  materialApproversTmp.push({ email:'' });
+  renderMaterialApproversRows();
+}
+function removeMaterialApproverRow(i) {
+  if(materialApproversTmp.length<=1){ toast('Cần ít nhất 1 người phê duyệt'); return; }
+  materialApproversTmp.splice(i,1);
+  renderMaterialApproversRows();
+}
+
+function renderMaterialItemsTable() {
+  const tbody = document.getElementById('mr-items-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = materialItemsTmp.map((it,i)=>`
+    <tr>
+      <td><input class="form-ctrl" style="min-width:140px" value="${it.name}" oninput="materialItemsTmp[${i}].name=this.value" placeholder="Tên vật tư"></td>
+      <td><input class="form-ctrl" style="min-width:150px" value="${it.spec||''}" oninput="materialItemsTmp[${i}].spec=this.value" placeholder="Thông số kỹ thuật"></td>
+      <td><input class="form-ctrl" style="width:90px" list="mr-dvt-options" value="${it.unit}" oninput="materialItemsTmp[${i}].unit=this.value" placeholder="Cái"></td>
+      <td><input class="form-ctrl" type="number" min="0" style="width:70px" value="${it.qty}" oninput="materialItemsTmp[${i}].qty=this.value"></td>
+      <td><input class="form-ctrl" style="width:80px" value="${it.stock}" oninput="materialItemsTmp[${i}].stock=this.value" placeholder="0"></td>
+      <td><input class="form-ctrl" style="min-width:120px" value="${it.note}" oninput="materialItemsTmp[${i}].note=this.value" placeholder="Ghi chú"></td>
+      <td><button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMaterialRow(${i})">✕</button></td>
+    </tr>`).join('');
+}
+function addMaterialRow() {
+  materialItemsTmp.push({ name:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' });
+  renderMaterialItemsTable();
+}
+function removeMaterialRow(i) {
+  if(materialItemsTmp.length<=1){ toast('Cần ít nhất 1 dòng vật tư'); return; }
+  materialItemsTmp.splice(i,1);
+  renderMaterialItemsTable();
+}
+
+function importMaterialItemsExcel(input) {
+  const file = input.files && input.files[0];
+  if(!file) return;
+  if(typeof XLSX === 'undefined'){ toast('Chưa tải được thư viện đọc Excel'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type:'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
+      if(!rows.length){ toast('File Excel không có dữ liệu'); return; }
+      const findKey = (row, keys) => Object.keys(row).find(k => keys.some(x => String(k).toLowerCase().trim().includes(x)));
+      const imported = rows.map(row=>{
+        const nameKey  = findKey(row, ['tên vật tư','ten vat tu','tên hàng','tên','name']);
+        const specKey  = findKey(row, ['thông số kỹ thuật','thong so ky thuat','thông số','thong so','quy cách','quy cach','spec']);
+        const unitKey  = findKey(row, ['đvt','dvt','đơn vị','don vi','unit']);
+        const qtyKey   = findKey(row, ['số lượng','so luong','sl','qty']);
+        const stockKey = findKey(row, ['tồn kho','ton kho','stock']);
+        const noteKey  = findKey(row, ['ghi chú','ghi chu','note']);
+        return {
+          name: String(nameKey ? row[nameKey] : '').trim(),
+          spec: String(specKey ? row[specKey] : '').trim(),
+          unit: String(unitKey ? row[unitKey] : '').trim(),
+          qty: qtyKey && row[qtyKey]!=='' ? row[qtyKey] : 1,
+          stock: String(stockKey ? row[stockKey] : '').trim(),
+          note: String(noteKey ? row[noteKey] : '').trim(),
+          purchaseStatus: 'notyet'
+        };
+      }).filter(it=>it.name);
+      if(!imported.length){ toast('Không tìm thấy dòng vật tư hợp lệ (cần cột Tên vật tư)'); return; }
+      if(materialItemsTmp.length===1 && !materialItemsTmp[0].name.trim()) materialItemsTmp = imported;
+      else materialItemsTmp = materialItemsTmp.concat(imported);
+      renderMaterialItemsTable();
+      toast(`📥 Đã nhập ${imported.length} dòng vật tư từ Excel`);
+    } catch(err) {
+      toast('Lỗi đọc file Excel: '+(err.message||err));
+    } finally {
+      input.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function submitMaterialRequest() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const to = document.getElementById('mr-to').value.trim();
+  const dept = document.getElementById('mr-dept').value.trim();
+  const requester = document.getElementById('mr-requester').value.trim() || currentUser.name;
+  const title = document.getElementById('mr-title').value.trim();
+  const purpose = document.getElementById('mr-purpose').value.trim();
+  const items = materialItemsTmp.filter(it=>it.name.trim());
+  if(items.length===0){ toast('Vui lòng nhập ít nhất 1 vật tư'); return; }
+  const approverEmails = [...new Set(materialApproversTmp.map(a=>a.email).filter(Boolean))];
+  if(approverEmails.length===0){ toast('Vui lòng chọn ít nhất 1 người phê duyệt'); return; }
+  const approvers = approverEmails.map(email=>{
+    const m = team.find(t=>t.email===email);
+    return { email, name: m?m.name:'', status:'pending', approvedAt:'', approvedBy:'', rejectReason:'' };
+  });
+  const id = 'PDNMVT-'+Date.now();
+  const req = {
+    id, kind:'material', to, dept, requester, requesterEmail: currentUser.email, title, purpose,
+    items, approvers,
+    status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
+  };
+  approvalRequests.push(req);
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`📤 Đã gửi phiếu ${id} chờ ${approvers.length} người phê duyệt`);
+  notifyNextMaterialApprover(req);
+}
+
+// Gửi thông báo (nhóm chung + cá nhân) cho người phê duyệt TIẾP THEO trong danh sách
+// (chỉ người đến lượt mới được báo — người sau chỉ nhận thông báo sau khi người trước đã duyệt)
+function notifyNextMaterialApprover(r) {
+  const list = getMaterialApprovers(r);
+  const next = list.find(a=>a.status==='pending');
+  if(!next) return;
+  const stepInfo = `(bước ${list.indexOf(next)+1}/${list.length})`;
+  const msg = `📝 <b>Phiếu đề nghị mua vật tư chờ bạn phê duyệt</b> ${tgEscape(stepInfo)} — ${tgEscape(r.id)}\n` +
+    `Người đề nghị: ${tgEscape(r.requester)}\nSố mục: ${tgEscape((r.items||[]).length)}\nVui lòng vào PTI-Project để phê duyệt.`;
+  sendTelegramMessage(msg);
+  sendTelegramPersonal(next.email, msg);
+}
+
+// ── BIÊN BẢN BÀN GIAO HÀNG HÓA ──
+function openModal_newHandover() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  handoverItemsTmp = [{ name:'', spec:'', unit:'', qty:1, note:'' }];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  overlay.classList.add('wide-modal');
+  document.getElementById('modal-hd-title').textContent = '📦 Tạo biên bản bàn giao hàng hóa';
+  const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-row"><label class="form-label">Ngày bàn giao</label><input class="form-ctrl" type="date" id="ho-date"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:8px">Bên A (Bên giao hàng) — bạn</div>
+        <div class="form-row"><label class="form-label">Đại diện</label><input class="form-ctrl" id="ho-a-name" value="${currentUser.name}" placeholder="Ông/Bà..."></div>
+        <div class="form-row"><label class="form-label">Bộ phận</label><input class="form-ctrl" id="ho-a-dept" value="${myRole}"></div>
+        <div class="form-row"><label class="form-label">Địa chỉ</label><input class="form-ctrl" id="ho-a-addr"></div>
+        <div class="form-row"><label class="form-label">Điện thoại</label><input class="form-ctrl" id="ho-a-phone"></div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:8px">Bên B (Bên nhận hàng)</div>
+        <div class="form-row"><label class="form-label">Đại diện</label><input class="form-ctrl" id="ho-b-name" placeholder="Ông/Bà..."></div>
+        <div class="form-row"><label class="form-label">Bộ phận</label><input class="form-ctrl" id="ho-b-dept"></div>
+        <div class="form-row"><label class="form-label">Địa chỉ</label><input class="form-ctrl" id="ho-b-addr"></div>
+        <div class="form-row"><label class="form-label">Điện thoại</label><input class="form-ctrl" id="ho-b-phone"></div>
+      </div>
+    </div>
+    <datalist id="ho-dvt-options">
+      <option value="Cái"></option>
+      <option value="Bộ"></option>
+      <option value="Hệ thống"></option>
+      <option value="Chiếc"></option>
+      <option value="Cuộn"></option>
+      <option value="Mét"></option>
+      <option value="Mét vuông"></option>
+      <option value="Kg"></option>
+      <option value="Lít"></option>
+      <option value="Thùng"></option>
+      <option value="Hộp"></option>
+      <option value="Bao"></option>
+      <option value="Tấm"></option>
+      <option value="Ống"></option>
+      <option value="Bình"></option>
+      <option value="Con"></option>
+    </datalist>
+    <div class="form-row">
+      <label class="form-label">Danh mục sản phẩm / thiết bị bàn giao</label>
+      <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
+        <table class="tbl" style="min-width:650px" id="ho-items-table">
+          <thead><tr><th>Tên sản phẩm/thiết bị</th><th>Quy cách & thông số</th><th>ĐVT</th><th>SL</th><th>Ghi chú</th><th></th></tr></thead>
+          <tbody id="ho-items-tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-xs btn-ghost" onclick="addHandoverRow()">+ Thêm dòng</button>
+        <label class="btn btn-xs btn-ghost" style="cursor:pointer;margin:0">
+          📥 Tải danh mục từ Excel
+          <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importHandoverItemsExcel(this)">
+        </label>
+        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên sản phẩm/thiết bị, Quy cách & thông số, ĐVT, SL, Ghi chú</span>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người phê duyệt / xác nhận *</label>
+      <select class="form-ctrl" id="ho-approver">${apprApproverOptions()}</select>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitHandover()">📤 Gửi xác nhận</button>
+  `;
+  const dEl = document.getElementById('ho-date');
+  if(dEl) dEl.value = new Date().toISOString().slice(0,10);
+  renderHandoverItemsTable();
+}
+
+function renderHandoverItemsTable() {
+  const tbody = document.getElementById('ho-items-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = handoverItemsTmp.map((it,i)=>`
+    <tr>
+      <td><input class="form-ctrl" style="min-width:140px" value="${it.name}" oninput="handoverItemsTmp[${i}].name=this.value" placeholder="Tên sản phẩm"></td>
+      <td><input class="form-ctrl" style="min-width:140px" value="${it.spec}" oninput="handoverItemsTmp[${i}].spec=this.value" placeholder="Quy cách, thông số"></td>
+      <td><input class="form-ctrl" style="width:90px" list="ho-dvt-options" value="${it.unit}" oninput="handoverItemsTmp[${i}].unit=this.value" placeholder="Cái"></td>
+      <td><input class="form-ctrl" type="number" min="0" style="width:70px" value="${it.qty}" oninput="handoverItemsTmp[${i}].qty=this.value"></td>
+      <td><input class="form-ctrl" style="min-width:120px" value="${it.note}" oninput="handoverItemsTmp[${i}].note=this.value" placeholder="Ghi chú"></td>
+      <td><button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeHandoverRow(${i})">✕</button></td>
+    </tr>`).join('');
+}
+function addHandoverRow() {
+  handoverItemsTmp.push({ name:'', spec:'', unit:'', qty:1, note:'' });
+  renderHandoverItemsTable();
+}
+function removeHandoverRow(i) {
+  if(handoverItemsTmp.length<=1){ toast('Cần ít nhất 1 dòng'); return; }
+  handoverItemsTmp.splice(i,1);
+  renderHandoverItemsTable();
+}
+
+function importHandoverItemsExcel(input) {
+  const file = input.files && input.files[0];
+  if(!file) return;
+  if(typeof XLSX === 'undefined'){ toast('Chưa tải được thư viện đọc Excel'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type:'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval:'' });
+      if(!rows.length){ toast('File Excel không có dữ liệu'); return; }
+      const findKey = (row, keys) => Object.keys(row).find(k => keys.some(x => String(k).toLowerCase().trim().includes(x)));
+      const imported = rows.map(row=>{
+        const nameKey = findKey(row, ['tên sản phẩm','ten san pham','tên thiết bị','tên','name']);
+        const specKey = findKey(row, ['quy cách','quy cach','thông số','thong so','spec']);
+        const unitKey = findKey(row, ['đvt','dvt','đơn vị','don vi','unit']);
+        const qtyKey  = findKey(row, ['số lượng','so luong','sl','qty']);
+        const noteKey = findKey(row, ['ghi chú','ghi chu','note']);
+        return {
+          name: String(nameKey ? row[nameKey] : '').trim(),
+          spec: String(specKey ? row[specKey] : '').trim(),
+          unit: String(unitKey ? row[unitKey] : '').trim(),
+          qty: qtyKey && row[qtyKey]!=='' ? row[qtyKey] : 1,
+          note: String(noteKey ? row[noteKey] : '').trim()
+        };
+      }).filter(it=>it.name);
+      if(!imported.length){ toast('Không tìm thấy dòng hợp lệ (cần cột Tên sản phẩm/thiết bị)'); return; }
+      if(handoverItemsTmp.length===1 && !handoverItemsTmp[0].name.trim()) handoverItemsTmp = imported;
+      else handoverItemsTmp = handoverItemsTmp.concat(imported);
+      renderHandoverItemsTable();
+      toast(`📥 Đã nhập ${imported.length} dòng từ Excel`);
+    } catch(err) {
+      toast('Lỗi đọc file Excel: '+(err.message||err));
+    } finally {
+      input.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function submitHandover() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const items = handoverItemsTmp.filter(it=>it.name.trim());
+  if(items.length===0){ toast('Vui lòng nhập ít nhất 1 sản phẩm/thiết bị'); return; }
+  const approverEmail = document.getElementById('ho-approver').value;
+  if(!approverEmail){ toast('Vui lòng chọn người phê duyệt'); return; }
+  const approver = team.find(t=>t.email===approverEmail);
+  const dateVal = document.getElementById('ho-date').value;
+  const dateDisp = dateVal ? dateVal.split('-').reverse().join('/') : nowDateStr();
+  const id = 'BBBGHH-'+Date.now();
+  const req = {
+    id, kind:'handover', date: dateDisp,
+    partyAName: document.getElementById('ho-a-name').value.trim(),
+    partyADept: document.getElementById('ho-a-dept').value.trim(),
+    partyAAddr: document.getElementById('ho-a-addr').value.trim(),
+    partyAPhone: document.getElementById('ho-a-phone').value.trim(),
+    partyBName: document.getElementById('ho-b-name').value.trim(),
+    partyBDept: document.getElementById('ho-b-dept').value.trim(),
+    partyBAddr: document.getElementById('ho-b-addr').value.trim(),
+    partyBPhone: document.getElementById('ho-b-phone').value.trim(),
+    items, requester: currentUser.name, requesterEmail: currentUser.email,
+    approverEmail, approverName: approver?approver.name:'',
+    status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
+  };
+  approvalRequests.push(req);
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`📤 Đã tạo biên bản ${id} chờ xác nhận`);
+  if(approver) sendTelegramPersonal(approver.email,
+    `📦 <b>Biên bản bàn giao hàng hóa mới</b> — ${tgEscape(id)}\nNgười tạo: ${tgEscape(currentUser.name)}\nSố mục: ${tgEscape(items.length)}\nVui lòng vào PTI-Project để xác nhận.`);
+}
+
+// ── ĐƠN XIN NGHỈ PHÉP ──
+function openModal_newLeave() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = '🗓️ Tạo đơn xin nghỉ phép';
+  const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Người xin nghỉ</label><input class="form-ctrl" id="lv-requester" value="${currentUser.name}"></div>
+      <div class="form-row"><label class="form-label">Bộ phận</label><input class="form-ctrl" id="lv-dept" value="${myRole}"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Từ ngày *</label><input class="form-ctrl" type="date" id="lv-from" onchange="calcLeaveDays()"></div>
+      <div class="form-row"><label class="form-label">Đến ngày *</label><input class="form-ctrl" type="date" id="lv-to" onchange="calcLeaveDays()"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Số ngày nghỉ</label><input class="form-ctrl" id="lv-days" readonly style="opacity:.7"></div>
+    <div class="form-row"><label class="form-label">Lý do nghỉ phép</label><textarea class="form-ctrl" id="lv-reason" rows="2" placeholder="Việc gia đình, ốm, ..."></textarea></div>
+    <div class="form-row">
+      <label class="form-label">Trưởng phòng phê duyệt *</label>
+      <select class="form-ctrl" id="lv-approver">${apprApproverOptions()}</select>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitLeave()">📤 Gửi phê duyệt</button>
+  `;
+}
+
+function calcLeaveDays() {
+  const from = document.getElementById('lv-from')?.value;
+  const to = document.getElementById('lv-to')?.value;
+  const out = document.getElementById('lv-days');
+  if(!out) return;
+  if(from && to) {
+    const d1 = new Date(from), d2 = new Date(to);
+    const diff = Math.round((d2-d1)/86400000)+1;
+    out.value = diff>0 ? diff+' ngày' : '';
+  } else out.value = '';
+}
+
+function submitLeave() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const requester = document.getElementById('lv-requester').value.trim() || currentUser.name;
+  const dept = document.getElementById('lv-dept').value.trim();
+  const fromVal = document.getElementById('lv-from').value;
+  const toVal = document.getElementById('lv-to').value;
+  const reason = document.getElementById('lv-reason').value.trim();
+  const approverEmail = document.getElementById('lv-approver').value;
+  if(!fromVal || !toVal){ toast('Vui lòng chọn ngày nghỉ'); return; }
+  const d1 = new Date(fromVal), d2 = new Date(toVal);
+  const days = Math.round((d2-d1)/86400000)+1;
+  if(days<=0){ toast('Khoảng ngày không hợp lệ'); return; }
+  if(!approverEmail){ toast('Vui lòng chọn Trưởng phòng phê duyệt'); return; }
+  const approver = team.find(t=>t.email===approverEmail);
+  const id = 'DXNP-'+Date.now();
+  const req = {
+    id, kind:'leave', requester, requesterEmail: currentUser.email, dept, reason,
+    fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), days,
+    approverEmail, approverName: approver?approver.name:'',
+    status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
+  };
+  approvalRequests.push(req);
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`📤 Đã gửi đơn ${id} chờ Trưởng phòng phê duyệt`);
+  if(approver) sendTelegramPersonal(approver.email,
+    `🗓️ <b>Đơn xin nghỉ phép mới</b> — ${tgEscape(id)}\nNgười xin nghỉ: ${tgEscape(requester)}\nTừ ${tgEscape(req.fromDate)} đến ${tgEscape(req.toDate)} (${tgEscape(days)} ngày)\nLý do: ${tgEscape(reason||'—')}\nVui lòng vào PTI-Project để phê duyệt.`);
+}
+
+// ── XEM CHI TIẾT / PHÊ DUYỆT ──
+function openModal_viewApproval(id) {
+  const r = approvalRequests.find(x=>x.id===id);
+  if(!r) return;
+  // Với phiếu mua vật tư (nhiều người duyệt), nút duyệt/từ chối hiển thị theo từng dòng người duyệt bên dưới
+  const canApprove = r.kind!=='material' && r.status==='pending' && (isAdmin() || r.approverEmail===currentUser?.email);
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  if(r.kind==='material' || r.kind==='handover') overlay.classList.add('wide-modal'); else overlay.classList.remove('wide-modal');
+
+  let title = '', rows = [], itemsHtml = '', approversHtml = '';
+  if(r.kind==='material') {
+    title = `📝 Phiếu đề nghị mua vật tư — ${r.id}`;
+    rows = [
+      ['Kính gửi', r.to||'—'],
+      ['Người đề nghị', r.requester],
+      ['Chức danh', r.title||'—'],
+      ['Bộ phận đề nghị', r.dept||'—'],
+      ['Mục đích sử dụng', r.purpose||'—'],
+    ];
+    itemsHtml = `<table class="tbl" style="min-width:700px"><thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th></tr></thead><tbody>
+      ${(r.items||[]).map((it,i)=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.stock||'—'}</td><td>${it.note||'—'}</td><td>${purchaseStatusSelectHtml(r.id,i,it.purchaseStatus)}</td></tr>`).join('')}
+    </tbody></table>`;
+    const alist = getMaterialApprovers(r);
+    approversHtml = `
+      <div style="margin-top:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:8px">Người phê duyệt (${alist.filter(a=>a.status==='approved').length}/${alist.length} đã duyệt)</div>
+        ${alist.map((a,ai)=>{
+          const myTurn = isMaterialApproverTurn(r, a.email);
+          const canActRow = a.status==='pending' && ((a.email===currentUser?.email && myTurn) || isAdmin());
+          const waitingTurn = a.status==='pending' && !myTurn;
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;gap:10px">
+            <div style="min-width:0">
+              <div style="font-weight:600">${ai+1}. ${a.name||a.email}</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:2px">${apprStatusBadge(a.status)}${a.approvedAt?(' · '+a.approvedAt):''}${waitingTurn?' · <span style="color:var(--text2)">chờ đến lượt</span>':''}</div>
+              ${a.status==='rejected' && a.rejectReason ? `<div style="font-size:11px;color:var(--red);margin-top:2px">Lý do: ${a.rejectReason}</div>` : ''}
+            </div>
+            ${canActRow ? `
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                <button class="btn btn-xs btn-danger" onclick="closeModal();promptRejectMaterialApprover('${r.id}','${a.email}')">❌ Từ chối</button>
+                <button class="btn btn-xs btn-green" onclick="approveMaterialApprover('${r.id}','${a.email}')">✅ Duyệt</button>
+              </div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>`;
+  } else if(r.kind==='handover') {
+    title = `📦 Biên bản bàn giao hàng hóa — ${r.id}`;
+    rows = [
+      ['Ngày bàn giao', r.date||'—'],
+      ['Bên giao (A)', `${r.partyAName||'—'}${r.partyADept?(' — '+r.partyADept):''}`],
+      ['ĐT / Địa chỉ bên A', `${r.partyAPhone||'—'} / ${r.partyAAddr||'—'}`],
+      ['Bên nhận (B)', `${r.partyBName||'—'}${r.partyBDept?(' — '+r.partyBDept):''}`],
+      ['ĐT / Địa chỉ bên B', `${r.partyBPhone||'—'} / ${r.partyBAddr||'—'}`],
+      ['Người tạo', r.requester],
+      ['Người phê duyệt', r.approverName||'—'],
+    ];
+    itemsHtml = `<table class="tbl" style="min-width:600px"><thead><tr><th>Sản phẩm/thiết bị</th><th>Quy cách</th><th>ĐVT</th><th>SL</th><th>Ghi chú</th></tr></thead><tbody>
+      ${(r.items||[]).map(it=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.note||'—'}</td></tr>`).join('')}
+    </tbody></table>`;
+  } else {
+    title = `🗓️ Đơn xin nghỉ phép — ${r.id}`;
+    rows = [
+      ['Người xin nghỉ', r.requester],
+      ['Bộ phận', r.dept||'—'],
+      ['Từ ngày', r.fromDate],
+      ['Đến ngày', r.toDate],
+      ['Số ngày nghỉ', r.days+' ngày'],
+      ['Lý do', r.reason||'—'],
+      ['Trưởng phòng phê duyệt', r.approverName||'—'],
+    ];
+  }
+  if(r.kind!=='material' && r.status!=='pending') {
+    rows.push(['Thời gian phê duyệt', r.approvedAt||'—']);
+    rows.push(['Người xử lý', r.approvedBy||'—']);
+    if(r.status==='rejected') rows.push(['Lý do từ chối', `<span style="color:var(--red)">${r.rejectReason||'—'}</span>`]);
+  }
+
+  document.getElementById('modal-hd-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="margin-bottom:12px">${apprStatusBadge(r.status)}</div>
+    <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:14px">
+      ${rows.map(([k,v])=>`
+        <tr style="border-bottom:1px solid var(--border)">
+          <td style="padding:8px 12px 8px 0;color:var(--text2);font-weight:600;white-space:nowrap;min-width:150px;vertical-align:top">${k}</td>
+          <td style="padding:8px 0">${v}</td>
+        </tr>`).join('')}
+    </table>
+    ${itemsHtml ? `<div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)">${itemsHtml}</div>` : ''}
+    ${approversHtml}
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    ${isAdmin() ? `<button class="btn btn-danger btn-sm" style="margin-right:auto" onclick="confirmDeleteApprovalRequest('${r.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg> Xóa phiếu</button>` : ''}
+    <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>
+    ${canApprove ? `
+      <button class="btn btn-danger btn-sm" onclick="closeModal();promptRejectApproval('${r.id}')">❌ Từ chối</button>
+      <button class="btn btn-green btn-sm" onclick="approveRequest('${r.id}')">✅ Phê duyệt</button>` : ''}
+  `;
+}
+
+function approveMaterialApprover(reqId, email) {
+  const r = approvalRequests.find(x=>x.id===reqId);
+  if(!r) return;
+  if(!r.approvers || !r.approvers.length) r.approvers = getMaterialApprovers(r);
+  const a = r.approvers.find(x=>x.email===email);
+  if(!a) return;
+  if(a.status!=='pending') return;
+  if(!isAdmin() && !isMaterialApproverTurn(r, email)) { toast('⏳ Chưa đến lượt phê duyệt của bạn'); return; }
+  a.status = 'approved';
+  a.approvedAt = nowDateTimeStr();
+  a.approvedBy = currentUser?.name || '';
+  const overall = computeMaterialOverallStatus(r);
+  r.status = overall;
+  if(overall!=='pending'){ r.approvedAt = nowDateTimeStr(); r.approvedBy = a.approvedBy; }
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`✅ ${a.name||a.email} đã phê duyệt ${reqId}`);
+  notifyMaterialApprovalProgress(r, a, 'approved');
+  if(overall==='pending') notifyNextMaterialApprover(r);
+}
+
+function promptRejectMaterialApprover(reqId, email) {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = `❌ Từ chối phiếu ${reqId}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-row">
+      <label class="form-label">Lý do từ chối *</label>
+      <textarea class="form-ctrl" id="appr-reject-reason" rows="3" placeholder="Nhập lý do từ chối..."></textarea>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-danger" onclick="doRejectMaterialApprover('${reqId}','${email}')">❌ Xác nhận từ chối</button>
+  `;
+}
+
+function doRejectMaterialApprover(reqId, email) {
+  const reasonEl = document.getElementById('appr-reject-reason');
+  const reason = reasonEl ? reasonEl.value.trim() : '';
+  if(!reason){ toast('Vui lòng nhập lý do từ chối'); return; }
+  const r = approvalRequests.find(x=>x.id===reqId);
+  if(!r) return;
+  if(!r.approvers || !r.approvers.length) r.approvers = getMaterialApprovers(r);
+  const a = r.approvers.find(x=>x.email===email);
+  if(!a) return;
+  if(a.status!=='pending') return;
+  if(!isAdmin() && !isMaterialApproverTurn(r, email)) { toast('⏳ Chưa đến lượt phê duyệt của bạn'); return; }
+  a.status = 'rejected';
+  a.rejectReason = reason;
+  a.approvedAt = nowDateTimeStr();
+  a.approvedBy = currentUser?.name || '';
+  r.status = 'rejected';
+  r.approvedAt = nowDateTimeStr();
+  r.approvedBy = a.approvedBy;
+  r.rejectReason = reason;
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`❌ Đã từ chối ${reqId}`);
+  notifyMaterialApprovalProgress(r, a, 'rejected');
+}
+
+function notifyMaterialApprovalProgress(r, actor, action) {
+  const requesterMember = team.find(t=>t.email===r.requesterEmail);
+  if(!requesterMember) return;
+  if(action==='rejected') {
+    sendTelegramPersonal(requesterMember.email,
+      `📝 Phiếu đề nghị mua vật tư ❌ BỊ TỪ CHỐI — ${tgEscape(r.id)}\nNgười từ chối: ${tgEscape(actor.name||actor.email)}\nLý do: ${tgEscape(actor.rejectReason||'')}`);
+    return;
+  }
+  const list = getMaterialApprovers(r);
+  const approvedCount = list.filter(a=>a.status==='approved').length;
+  if(r.status==='approved') {
+    sendTelegramPersonal(requesterMember.email,
+      `📝 Phiếu đề nghị mua vật tư ✅ ĐÃ ĐƯỢC PHÊ DUYỆT ĐẦY ĐỦ — ${tgEscape(r.id)}`);
+  } else {
+    sendTelegramPersonal(requesterMember.email,
+      `📝 Phiếu đề nghị mua vật tư ${tgEscape(r.id)} vừa được ${tgEscape(actor.name||actor.email)} phê duyệt (${tgEscape(approvedCount)}/${tgEscape(list.length)}).`);
+  }
+}
+
+function approveRequest(id) {
+  const r = approvalRequests.find(x=>x.id===id);
+  if(!r) return;
+  r.status = 'approved';
+  r.approvedAt = nowDateTimeStr();
+  r.approvedBy = currentUser?.name || '';
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`✅ Đã phê duyệt ${id}`);
+  notifyApprovalResult(r);
+}
+
+function promptRejectApproval(id) {
+  const r = approvalRequests.find(x=>x.id===id);
+  if(!r) return;
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = `❌ Từ chối phiếu ${id}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-row">
+      <label class="form-label">Lý do từ chối *</label>
+      <textarea class="form-ctrl" id="appr-reject-reason" rows="3" placeholder="Nhập lý do từ chối..."></textarea>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-danger" onclick="doRejectApproval('${id}')">❌ Xác nhận từ chối</button>
+  `;
+}
+
+function doRejectApproval(id) {
+  const reasonEl = document.getElementById('appr-reject-reason');
+  const reason = reasonEl ? reasonEl.value.trim() : '';
+  if(!reason){ toast('Vui lòng nhập lý do từ chối'); return; }
+  const r = approvalRequests.find(x=>x.id===id);
+  if(!r) return;
+  r.status = 'rejected';
+  r.rejectReason = reason;
+  r.approvedAt = nowDateTimeStr();
+  r.approvedBy = currentUser?.name || '';
+  closeModal(); renderApproval(); syncDataToDrive();
+  toast(`❌ Đã từ chối ${id}`);
+  notifyApprovalResult(r);
+}
+
+function notifyApprovalResult(r) {
+  const requesterMember = team.find(t=>t.email===r.requesterEmail);
+  if(!requesterMember) return;
+  const kindLabel = r.kind==='material' ? 'Phiếu đề nghị mua vật tư' : r.kind==='handover' ? 'Biên bản bàn giao hàng hóa' : 'Đơn xin nghỉ phép';
+  const statusLabel = r.status==='approved' ? '✅ ĐÃ PHÊ DUYỆT' : '❌ BỊ TỪ CHỐI';
+  sendTelegramPersonal(requesterMember.email,
+    `${kindLabel} ${statusLabel} — ${tgEscape(r.id)}\nNgười duyệt: ${tgEscape(r.approvedBy||'')}` +
+    (r.status==='rejected' ? `\nLý do: ${tgEscape(r.rejectReason||'')}` : ''));
+}
+
 // ── CHAT ──
 let chatRooms = [
   { id:'general', name:'Toàn team', icon:'💬', color:'#4f8ef7', type:'general', messages:[] }
@@ -5272,196 +6287,9 @@ function sendChatFiles(input) {
 }
 
 function syncChatToDrive() {
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, settings };
+  if(!driveLoaded) return; // tránh ghi đè Drive khi chưa tải được dữ liệu thật
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, settings };
   fetch(DRIVE_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(()=>{});
-}
-
-// ── AI CHATBOT ──
-let aiMessages = [];
-let aiLoading = false;
-const AI_PROMPTS = [
-  '📊 Tóm tắt tiến độ tất cả dự án',
-  '⚠️ Dự án nào đang có vấn đề?',
-  '👷 Ai đang bận nhất hiện tại?',
-  '📦 Vật tư nào sắp hết tồn kho?',
-  '🔧 Hướng dẫn tính K-factor uốn tôn',
-  '📐 Dung sai lắp ghép H7/h6 là gì?',
-  '⚙️ Quy trình kiểm tra chất lượng hàn',
-  '📋 Tạo checklist nghiệm thu máy',
-];
-
-function buildAIContext() {
-  const ctx = {
-    projects: projects.map(p=>({
-      id: p.id, name: p.name, client: p.client,
-      status: p.status, deadline: p.deadline,
-      progress: getProjAvg(p),
-      phases: (p.phases||[]).map((pct,i)=>({ phase:`P${i+1}`, pct, pic: p.phasePIC?.[i]||'—', deadline: p.phaseDeadlines?.[i]||'—' }))
-    })),
-    team: team.map(t=>({ name:t.name, role:t.role, status:t.status, email:t.email })),
-    issues: issues.map(i=>({ id:i.id, proj:i.proj, title:i.title, priority:i.priority, status:i.status })),
-    tasks: tasks.filter(t=>!t.done).map(t=>({ type:t.type, title:t.title, pic:t.pic, deadline:t.deadline })),
-    warehouse: {
-      lowStock: warehouseStock?.filter(s=>s.qty < (s.minQty||0)).map(s=>({ code:s.code, name:s.name, qty:s.qty, min:s.minQty, unit:s.unit })) || [],
-      pendingOrders: warehouseOrders?.filter(o=>o.status==='pending').length || 0
-    },
-    summary: {
-      totalProjects: projects.length,
-      activeProjects: projects.filter(p=>p.status!=='Hoàn thành').length,
-      openIssues: issues.filter(i=>i.status==='Mở').length,
-      urgentTasks: tasks.filter(t=>t.type==='urgent'&&!t.done).length
-    }
-  };
-  return JSON.stringify(ctx, null, 2);
-}
-
-function buildSystemPrompt() {
-  return `Bạn là AI trợ lý nội bộ của PTI-Project — hệ thống quản lý dự án cơ khí chế tạo máy.
-Bạn có thể trả lời bằng tiếng Việt hoặc tiếng Anh tùy theo ngôn ngữ người dùng hỏi.
-Bạn hiểu sâu về: cơ khí chế tạo máy, gia công CNC, uốn tôn, hàn, lắp ráp, PLC/HMI, quản lý dự án.
-
-DỮ LIỆU THỰC TẾ CỦA HỆ THỐNG (cập nhật real-time):
-${buildAIContext()}
-
-HƯỚNG DẪN TRẢ LỜI:
-- Trả lời súc tích, có cấu trúc rõ ràng
-- Dùng emoji để dễ đọc
-- Khi đề cập số liệu, trích dẫn đúng dữ liệu thực tế bên trên
-- Với câu hỏi kỹ thuật: giải thích chi tiết, có ví dụ cụ thể
-- Không bịa đặt dữ liệu không có trong hệ thống
-- Format markdown: **bold**, \`code\`, danh sách bullet`;
-}
-
-function renderAIContext() {
-  const el = document.getElementById('ai-context-list');
-  if(!el) return;
-  const items = [
-    { label:`${projects.length} dự án`, color:'var(--accent)', icon:'📁' },
-    { label:`${team.length} nhân sự`, color:'var(--green)', icon:'👷' },
-    { label:`${issues.filter(i=>i.status==='Mở').length} NCR mở`, color:'var(--amber)', icon:'⚠️' },
-    { label:`${tasks.filter(t=>!t.done).length} task đang mở`, color:'var(--purple)', icon:'📋' },
-    { label:`${warehouseStock?.length||0} vật tư kho`, color:'var(--teal)', icon:'📦' },
-  ];
-  el.innerHTML = items.map(x=>`
-    <div class="ai-context-item active">
-      <div class="ai-context-dot" style="background:${x.color}"></div>
-      <span>${x.icon} ${x.label}</span>
-    </div>`).join('');
-}
-
-function renderAIChips() {
-  const el = document.getElementById('ai-chips');
-  if(!el) return;
-  el.innerHTML = AI_PROMPTS.map(p=>`
-    <span class="ai-prompt-chip" onclick="askAIChip('${p.replace(/'/g,"\\'")}')">
-      ${p}
-    </span>`).join('');
-}
-
-function askAIChip(prompt) {
-  document.getElementById('ai-input').value = prompt;
-  sendAIMessage();
-}
-
-function renderAIMessages() {
-  const el = document.getElementById('ai-messages');
-  if(!el) return;
-  if(aiMessages.length === 0) {
-    const userName = currentUser?.name || 'bạn';
-    el.innerHTML = `
-      <div style="margin:auto;text-align:center;padding:40px 20px">
-        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#6366f1,#4f8ef7);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 20px rgba(99,102,241,0.3)">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        </div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:6px">Xin chào, ${userName}!</div>
-        <div style="font-size:13px;color:var(--text2);max-width:320px;margin:0 auto;line-height:1.6">
-          Tôi là AI trợ lý của PTI-Project. Tôi có quyền truy cập dữ liệu thực tế của hệ thống và có thể giúp bạn phân tích tiến độ, tư vấn kỹ thuật cơ khí, và nhiều hơn.
-        </div>
-        <div style="margin-top:16px;font-size:12px;color:var(--text2)">Chọn câu hỏi gợi ý bên trái hoặc tự nhập ↓</div>
-      </div>`;
-    return;
-  }
-  el.innerHTML = aiMessages.map(m => {
-    const isUser = m.role === 'user';
-    const initial = currentUser?.name?.slice(-1)?.toUpperCase() || 'U';
-    const color = currentUser?.color || 'var(--accent)';
-    let html = m.content
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/`([^`]+)`/g, '<code style="background:var(--bg0);padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px">$1</code>')
-      .replace(/^#{1,3} (.+)$/gm, '<div style="font-weight:700;margin:8px 0 4px">$1</div>')
-      .replace(/^[-•] (.+)$/gm, '<div style="padding:2px 0 2px 12px;position:relative"><span style="position:absolute;left:0;color:var(--accent)">•</span>$1</div>')
-      .replace(/\n/g, '<br>');
-    return `<div class="ai-msg ${isUser?'user':''}">
-      <div class="ai-msg-avatar ${isUser?'user-av':'bot'}">${isUser?initial:'✨'}</div>
-      <div class="ai-msg-bubble">${html}</div>
-    </div>`;
-  }).join('');
-  if(aiLoading) {
-    el.innerHTML += `<div class="ai-msg">
-      <div class="ai-msg-avatar bot">✨</div>
-      <div class="ai-typing"><span></span><span></span><span></span></div>
-    </div>`;
-  }
-  el.scrollTop = el.scrollHeight;
-}
-
-const GROQ_API_KEY = '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';
-const GROQ_MODEL   = 'llama-3.3-70b-versatile';
-
-async function sendAIMessage() {
-  const input = document.getElementById('ai-input');
-  const text = input.value.trim();
-  if(!text || aiLoading) return;
-  aiMessages.push({ role:'user', content:text });
-  input.value = '';
-  input.style.height = 'auto';
-  aiLoading = true;
-  renderAIMessages();
-  const sendBtn = document.getElementById('ai-send-btn');
-  if(sendBtn) sendBtn.disabled = true;
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        max_tokens: 1500,
-        temperature: 0.7,
-        messages: [
-          { role: 'system', content: buildSystemPrompt() },
-          ...aiMessages.slice(-20)
-        ]
-      })
-    });
-    const data = await response.json();
-    if(data.error) throw new Error(data.error.message);
-    const reply = data?.choices?.[0]?.message?.content || 'Xin lỗi, tôi không nhận được phản hồi. Vui lòng thử lại.';
-    aiMessages.push({ role:'assistant', content:reply });
-  } catch(err) {
-    aiMessages.push({ role:'assistant', content:`⚠️ Lỗi: ${err.message||'Không kết nối được Groq API. Kiểm tra lại mạng.'}` });
-  }
-  aiLoading = false;
-  if(sendBtn) sendBtn.disabled = false;
-  renderAIMessages();
-  renderAIContext();
-}
-
-function clearAIChat() {
-  showConfirm({
-    title:'Xóa lịch sử AI', icon:'🤖', iconBg:'rgba(99,102,241,0.1)',
-    msg:'Xác nhận xóa toàn bộ lịch sử trò chuyện với AI?',
-    okText:'Xóa', okClass:'btn-danger',
-    onOk:()=>{ aiMessages=[]; renderAIMessages(); toast('Đã xóa lịch sử chat AI'); }
-  });
-}
-
-function initAI() {
-  renderAIMessages();
-  renderAIContext();
-  renderAIChips();
 }
 
 // ── RENDER ALL ──
@@ -5544,7 +6372,8 @@ function triggerDailyReport(manual) {
 function renderAll() {
   renderDashboard(); renderProjects(); renderGantt(); renderIssues();
   renderDocs(); renderTeam(); renderUrgent(); renderToday(); renderDashTasks();
-  renderWarehouse(); renderAIContext(); renderAIChips();
+  renderWarehouse();
+  renderApproval();
   const sel = document.getElementById('phase-proj-sel');
   if(sel) sel.innerHTML = '<option value="">— Chọn dự án —</option>' + projects.map(p=>'<option value="'+p.id+'">'+p.id+' — '+p.name+'</option>').join('');
 }
