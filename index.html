@@ -976,6 +976,26 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <div class="two-col" style="margin-top:14px">
         <div class="card">
           <div class="card-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span class="card-title">Đề nghị phê duyệt</span>
+            <span class="badge badge-amber" id="dash-appr-pending-count" style="margin-left:4px;display:none">0</span>
+            <button class="btn btn-xs btn-ghost" style="margin-left:auto" onclick="goToApprovalView()">Xem tất cả</button>
+          </div>
+          <div id="dash-appr-list" style="max-height:280px;overflow-y:auto"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="card-title">Trạng thái mua vật tư</span>
+            <button class="btn btn-xs btn-ghost" style="margin-left:auto" onclick="goToApprovalView()">Xem tất cả</button>
+          </div>
+          <div id="dash-material-purchase-list" style="max-height:280px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:14px">
+        <div class="card">
+          <div class="card-header">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <span class="card-title" style="color:var(--red)">🚨 Yêu cầu gấp</span>
             <span class="nav-badge red" id="dash-urgent-count" style="margin-left:4px">0</span>
@@ -1689,6 +1709,10 @@ function nav(viewId, el) {
   closeMobileSidebar();
 }
 
+function goToApprovalView() {
+  const navEl = document.getElementById('nav-approval');
+  if(navEl) nav('approval', navEl);
+}
 function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', notation: 'compact', maximumFractionDigits: 1 }).format(n); }
 function getFileTypeCls(ext) {
   const e = (ext||'').toLowerCase();
@@ -1880,6 +1904,58 @@ function renderDashboard() {
       </div>`;
     }).join('');
   }
+
+  renderDashApprovalStatus();
+  renderDashMaterialPurchaseStatus();
+}
+
+function renderDashApprovalStatus() {
+  const list = document.getElementById('dash-appr-list');
+  if(!list) return;
+  const pending = (approvalRequests||[]).filter(r=>r.status==='pending').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
+  const cnt = document.getElementById('dash-appr-pending-count');
+  if(cnt){ cnt.textContent = pending.length; cnt.style.display = pending.length ? '' : 'none'; }
+  if(pending.length===0) {
+    list.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:var(--green);font-size:12px;padding:12px 16px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Không có phiếu nào đang chờ phê duyệt
+    </div>`;
+    return;
+  }
+  const kindLabel = { material:'📝 Mua vật tư', handover:'📦 Bàn giao hàng hóa', leave:'🗓️ Nghỉ phép' };
+  list.innerHTML = pending.slice(0,6).map(r=>{
+    const sub = r.kind==='material' ? apprMaterialApproverCell(r).replace(/<br>/g,' · ') : (r.approverName||'—');
+    return `<div style="padding:9px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <div style="display:flex;justify-content:space-between;gap:8px">
+        <span style="font-size:12px;font-weight:600">${kindLabel[r.kind]||r.kind} — ${r.id}</span>
+        <span style="font-size:10px;color:var(--text2);white-space:nowrap">${r.createdAt}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.requester} · Chờ: ${sub}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDashMaterialPurchaseStatus() {
+  const list = document.getElementById('dash-material-purchase-list');
+  if(!list) return;
+  const materialReqs = (approvalRequests||[]).filter(r=>r.kind==='material' && r.status==='approved' && (r.items||[]).length)
+    .filter(r=>!r.items.every(it=>normalizePurchaseStatus(it.purchaseStatus)==='done'))
+    .sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
+  if(materialReqs.length===0) {
+    list.innerHTML = `<div style="display:flex;align-items:center;gap:8px;color:var(--green);font-size:12px;padding:12px 16px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      Không có vật tư nào đang chờ mua
+    </div>`;
+    return;
+  }
+  list.innerHTML = materialReqs.slice(0,6).map(r=>`
+    <div style="padding:9px 16px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <div style="display:flex;justify-content:space-between;gap:8px">
+        <span style="font-size:12px;font-weight:600">${r.id}</span>
+        <span style="font-size:11px;white-space:nowrap">${materialPurchaseProgressCell(r)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.requester} · ${(r.items||[]).length} mục</div>
+    </div>`).join('');
 }
 
 function renderProjects() {
@@ -4639,7 +4715,7 @@ function submitCartOrder() {
   const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
   const proj  = document.getElementById('cart-proj')?.value||'';
   const note  = document.getElementById('cart-note')?.value.trim()||'';
-  const orderId = 'ORD-'+Date.now();
+  const orderId = generateDocId('ORD', warehouseOrders);
   const order = {
     id: orderId,
     items: orderCart.map(c=>({ stockId:c.stockId, stockName:c.stockName, stockCode:c.stockCode, qty:c.qty, unit:c.unit })),
@@ -5062,7 +5138,7 @@ async function submitTxn(txnType) {
     }
   }
   const txn = {
-    id: (txnType==='import'?'IMP':'EXP')+'-'+Date.now(),
+    id: generateDocId(txnType==='import'?'IMP':'EXP', warehouseTxns.filter(t=>t.type===txnType)),
     type: txnType, stockId, stockName: stock.name, stockCode: stock.code,
     qty, unit: stock.unit,
     proj:         document.getElementById('txn-proj').value,
@@ -5149,6 +5225,7 @@ function renderWarehouse() {
 let apprCurrentTab = 'material';
 let materialItemsTmp = [];
 let materialApproversTmp = [];
+let materialDistributorTmp = '';
 let handoverItemsTmp = [];
 
 function nowDateStr() {
@@ -5158,6 +5235,23 @@ function nowDateStr() {
 function nowDateTimeStr() {
   const now = new Date();
   return `${nowDateStr()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// Sinh mã phiếu chuẩn: {TênLoạiPhiếu}-{YYYYMMDD}.{stt}
+// Ví dụ: PDNMVT-20260819.01 — stt chạy riêng theo từng loại phiếu, reset mỗi ngày
+function generateDocId(prefix, existingList) {
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}`;
+  const base = `${prefix}-${dateStr}.`;
+  let maxSeq = 0;
+  (existingList||[]).forEach(item => {
+    const itemId = (item && item.id) || '';
+    if(itemId.indexOf(base)===0) {
+      const num = parseInt(itemId.slice(base.length), 10);
+      if(!isNaN(num) && num>maxSeq) maxSeq = num;
+    }
+  });
+  return base + String(maxSeq+1).padStart(2,'0');
 }
 
 function switchApprTab(tab) {
@@ -5224,15 +5318,22 @@ function isMaterialApproverTurn(r, email) {
   return true;
 }
 
+// Chuẩn hoá giá trị trạng thái mua cũ (buying/bought) về giá trị mới (shipping/done) để tương thích dữ liệu cũ
+function normalizePurchaseStatus(status) {
+  if(status==='bought') return 'done';
+  if(status==='buying') return 'shipping';
+  return status || 'notyet';
+}
 function purchaseStatusLabel(status) {
-  if(status==='bought') return '✅ Đã mua';
-  if(status==='buying') return '🛒 Đang mua';
+  status = normalizePurchaseStatus(status);
+  if(status==='done') return '✅ Hoàn thành';
+  if(status==='shipping') return '🚚 Đang vận chuyển';
   return '⏳ Chưa mua';
 }
 function purchaseStatusSelectHtml(reqId, idx, status) {
-  status = status || 'notyet';
-  const opts = [['notyet','⏳ Chưa mua'],['buying','🛒 Đang mua'],['bought','✅ Đã mua']];
-  return `<select class="form-ctrl" style="min-width:118px;font-size:11px;padding:4px 6px" onchange="updateMaterialItemPurchaseStatus('${reqId}',${idx},this.value)">
+  status = normalizePurchaseStatus(status);
+  const opts = [['notyet','⏳ Chưa mua'],['shipping','🚚 Đang vận chuyển'],['done','✅ Hoàn thành']];
+  return `<select class="form-ctrl" style="min-width:130px;font-size:11px;padding:4px 6px" onchange="updateMaterialItemPurchaseStatus('${reqId}',${idx},this.value)">
     ${opts.map(([v,l])=>`<option value="${v}" ${v===status?'selected':''}>${l}</option>`).join('')}
   </select>`;
 }
@@ -5243,6 +5344,34 @@ function updateMaterialItemPurchaseStatus(reqId, idx, value) {
   syncDataToDrive();
   renderApproval();
   toast('Đã cập nhật trạng thái mua vật tư');
+  checkMaterialPurchaseComplete(r);
+}
+
+// Đánh dấu tất cả các mục vật tư trong phiếu là "Hoàn thành"
+function markAllMaterialItemsDone(reqId) {
+  const r = approvalRequests.find(x=>x.id===reqId);
+  if(!r || !r.items || !r.items.length) return;
+  r.items.forEach(it=>{ it.purchaseStatus = 'done'; });
+  syncDataToDrive();
+  renderApproval();
+  if(document.getElementById('overlay')?.classList.contains('open')) openModal_viewApproval(reqId);
+  toast(`✅ Đã đánh dấu ${r.items.length} mục vật tư hoàn thành`);
+  checkMaterialPurchaseComplete(r);
+}
+
+// Khi TẤT CẢ các mục vật tư trong phiếu đã "Hoàn thành" -> báo cho người đặt (chỉ báo 1 lần)
+function checkMaterialPurchaseComplete(r) {
+  if(!r || r.kind!=='material' || !r.items || !r.items.length) return;
+  const allDone = r.items.every(it=>normalizePurchaseStatus(it.purchaseStatus)==='done');
+  if(allDone && !r.purchaseCompleteNotified) {
+    r.purchaseCompleteNotified = true;
+    const requesterMember = team.find(t=>t.email===r.requesterEmail);
+    const msg = `🛒 <b>Mua vật tư đã HOÀN THÀNH</b> — ${tgEscape(r.id)}\nTất cả ${tgEscape(r.items.length)} mục vật tư đã được mua xong. Vui lòng kiểm tra và nhận hàng.`;
+    if(requesterMember) sendTelegramPersonal(requesterMember.email, msg);
+    syncDataToDrive();
+  } else if(!allDone && r.purchaseCompleteNotified) {
+    r.purchaseCompleteNotified = false;
+  }
 }
 
 function apprMaterialApproverCell(r) {
@@ -5308,10 +5437,10 @@ function renderMaterialRequests() {
 function materialPurchaseProgressCell(r) {
   const items = r.items||[];
   if(!items.length) return '—';
-  const bought = items.filter(it=>it.purchaseStatus==='bought').length;
-  const buying = items.filter(it=>it.purchaseStatus==='buying').length;
-  const notyet = items.length - bought - buying;
-  return `✅${bought} · 🛒${buying} · ⏳${notyet}`;
+  const done = items.filter(it=>normalizePurchaseStatus(it.purchaseStatus)==='done').length;
+  const shipping = items.filter(it=>normalizePurchaseStatus(it.purchaseStatus)==='shipping').length;
+  const notyet = items.length - done - shipping;
+  return `✅${done} · 🚚${shipping} · ⏳${notyet}`;
 }
 
 function renderHandoverRequests() {
@@ -5363,6 +5492,7 @@ function openModal_newMaterialRequest() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   materialItemsTmp = [{ name:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' }];
   materialApproversTmp = [{ email:'' }];
+  materialDistributorTmp = '';
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('wide-modal');
@@ -5400,7 +5530,7 @@ function openModal_newMaterialRequest() {
       <label class="form-label">Danh mục vật tư đề nghị mua</label>
       <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
         <table class="tbl" style="min-width:720px" id="mr-items-table">
-          <thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
+          <thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
           <tbody id="mr-items-tbody"></tbody>
         </table>
       </div>
@@ -5410,13 +5540,17 @@ function openModal_newMaterialRequest() {
           📥 Tải danh mục từ Excel
           <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMaterialItemsExcel(this)">
         </label>
-        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Thông số kỹ thuật, ĐVT, SL, Tồn kho, Ghi chú</span>
+        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Thông số kỹ thuật / Kích thước phôi, ĐVT, SL, Tồn kho, Ghi chú</span>
       </div>
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt * <span style="font-weight:400;color:var(--text2);font-size:11px">(có thể thêm nhiều người — sẽ duyệt LẦN LƯỢT theo thứ tự, người sau chỉ nhận thông báo khi người trước đã duyệt)</span></label>
       <div id="mr-approvers-list" style="margin-top:6px"></div>
       <button class="btn btn-xs btn-ghost" style="margin-top:4px" onclick="addMaterialApproverRow()">+ Thêm người phê duyệt</button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người được phân phối (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để tiến hành mua hàng sau khi TẤT CẢ đã phê duyệt xong)</span></label>
+      <select class="form-ctrl" id="mr-distributor" onchange="materialDistributorTmp=this.value">${apprApproverOptions(materialDistributorTmp)}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -5454,7 +5588,7 @@ function renderMaterialItemsTable() {
   tbody.innerHTML = materialItemsTmp.map((it,i)=>`
     <tr>
       <td><input class="form-ctrl" style="min-width:140px" value="${it.name}" oninput="materialItemsTmp[${i}].name=this.value" placeholder="Tên vật tư"></td>
-      <td><input class="form-ctrl" style="min-width:150px" value="${it.spec||''}" oninput="materialItemsTmp[${i}].spec=this.value" placeholder="Thông số kỹ thuật"></td>
+      <td><input class="form-ctrl" style="min-width:150px" value="${it.spec||''}" oninput="materialItemsTmp[${i}].spec=this.value" placeholder="Thông số kỹ thuật / Kích thước phôi"></td>
       <td><input class="form-ctrl" style="width:90px" list="mr-dvt-options" value="${it.unit}" oninput="materialItemsTmp[${i}].unit=this.value" placeholder="Cái"></td>
       <td><input class="form-ctrl" type="number" min="0" style="width:70px" value="${it.qty}" oninput="materialItemsTmp[${i}].qty=this.value"></td>
       <td><input class="form-ctrl" style="width:80px" value="${it.stock}" oninput="materialItemsTmp[${i}].stock=this.value" placeholder="0"></td>
@@ -5486,7 +5620,7 @@ function importMaterialItemsExcel(input) {
       const findKey = (row, keys) => Object.keys(row).find(k => keys.some(x => String(k).toLowerCase().trim().includes(x)));
       const imported = rows.map(row=>{
         const nameKey  = findKey(row, ['tên vật tư','ten vat tu','tên hàng','tên','name']);
-        const specKey  = findKey(row, ['thông số kỹ thuật','thong so ky thuat','thông số','thong so','quy cách','quy cach','spec']);
+        const specKey  = findKey(row, ['thông số kỹ thuật','thong so ky thuat','kích thước phôi','kich thuoc phoi','thông số','thong so','quy cách','quy cach','spec']);
         const unitKey  = findKey(row, ['đvt','dvt','đơn vị','don vi','unit']);
         const qtyKey   = findKey(row, ['số lượng','so luong','sl','qty']);
         const stockKey = findKey(row, ['tồn kho','ton kho','stock']);
@@ -5530,11 +5664,15 @@ function submitMaterialRequest() {
     const m = team.find(t=>t.email===email);
     return { email, name: m?m.name:'', status:'pending', approvedAt:'', approvedBy:'', rejectReason:'' };
   });
-  const id = 'PDNMVT-'+Date.now();
+  const distributorEmail = document.getElementById('mr-distributor')?.value || '';
+  const distributor = distributorEmail ? team.find(t=>t.email===distributorEmail) : null;
+  const id = generateDocId('PDNMVT', approvalRequests.filter(r=>r.kind==='material'));
   const req = {
     id, kind:'material', to, dept, requester, requesterEmail: currentUser.email, title, purpose,
     items, approvers,
-    status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
+    distributorEmail, distributorName: distributor ? distributor.name : '',
+    status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:'',
+    purchaseCompleteNotified:false
   };
   approvalRequests.push(req);
   closeModal(); renderApproval(); syncDataToDrive();
@@ -5703,7 +5841,7 @@ function submitHandover() {
   const approver = team.find(t=>t.email===approverEmail);
   const dateVal = document.getElementById('ho-date').value;
   const dateDisp = dateVal ? dateVal.split('-').reverse().join('/') : nowDateStr();
-  const id = 'BBBGHH-'+Date.now();
+  const id = generateDocId('BBBGHH', approvalRequests.filter(r=>r.kind==='handover'));
   const req = {
     id, kind:'handover', date: dateDisp,
     partyAName: document.getElementById('ho-a-name').value.trim(),
@@ -5780,7 +5918,7 @@ function submitLeave() {
   if(days<=0){ toast('Khoảng ngày không hợp lệ'); return; }
   if(!approverEmail){ toast('Vui lòng chọn Trưởng phòng phê duyệt'); return; }
   const approver = team.find(t=>t.email===approverEmail);
-  const id = 'DXNP-'+Date.now();
+  const id = generateDocId('DXNP', approvalRequests.filter(r=>r.kind==='leave'));
   const req = {
     id, kind:'leave', requester, requesterEmail: currentUser.email, dept, reason,
     fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), days,
@@ -5813,8 +5951,12 @@ function openModal_viewApproval(id) {
       ['Chức danh', r.title||'—'],
       ['Bộ phận đề nghị', r.dept||'—'],
       ['Mục đích sử dụng', r.purpose||'—'],
+      ['Người được phân phối (Distributor)', r.distributorName || r.distributorEmail || '—'],
     ];
-    itemsHtml = `<table class="tbl" style="min-width:700px"><thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th></tr></thead><tbody>
+    itemsHtml = `<div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+        <button class="btn btn-xs btn-green" onclick="markAllMaterialItemsDone('${r.id}')">✅ Chọn tất cả đã hoàn thành</button>
+      </div>
+      <table class="tbl" style="min-width:700px"><thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th></tr></thead><tbody>
       ${(r.items||[]).map((it,i)=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.stock||'—'}</td><td>${it.note||'—'}</td><td>${purchaseStatusSelectHtml(r.id,i,it.purchaseStatus)}</td></tr>`).join('')}
     </tbody></table>`;
     const alist = getMaterialApprovers(r);
@@ -5966,10 +6108,19 @@ function notifyMaterialApprovalProgress(r, actor, action) {
   if(r.status==='approved') {
     sendTelegramPersonal(requesterMember.email,
       `📝 Phiếu đề nghị mua vật tư ✅ ĐÃ ĐƯỢC PHÊ DUYỆT ĐẦY ĐỦ — ${tgEscape(r.id)}`);
+    notifyDistributorToPurchase(r);
   } else {
     sendTelegramPersonal(requesterMember.email,
       `📝 Phiếu đề nghị mua vật tư ${tgEscape(r.id)} vừa được ${tgEscape(actor.name||actor.email)} phê duyệt (${tgEscape(approvedCount)}/${tgEscape(list.length)}).`);
   }
+}
+
+// Báo cho người được phân phối (Distributor) tiến hành mua hàng sau khi TẤT CẢ đã phê duyệt xong
+function notifyDistributorToPurchase(r) {
+  if(!r.distributorEmail) return;
+  sendTelegramPersonal(r.distributorEmail,
+    `🛒 <b>Phiếu đề nghị mua vật tư đã được phê duyệt đầy đủ</b> — ${tgEscape(r.id)}\n` +
+    `Người đề nghị: ${tgEscape(r.requester)}\nSố mục: ${tgEscape((r.items||[]).length)}\nVui lòng tiến hành mua hàng.`);
 }
 
 function approveRequest(id) {
