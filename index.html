@@ -308,7 +308,7 @@ body {
 .overlay.open { opacity: 1; pointer-events: all; }
 .modal {
   background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r3);
-  width: 520px; max-height: 88vh; overflow-y: auto;
+  width: 620px; max-height: 90vh; overflow-y: auto;
   transform: translateY(14px) scale(0.98); transition: transform .22s cubic-bezier(0.34,1.56,0.64,1);
   box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,0.04);
 }
@@ -327,7 +327,7 @@ body {
 .phase-docs-modal .tbl { min-width: auto; width: 100%; }
 .phase-docs-modal .tbl th, .phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
 .phase-docs-modal .tbl-wrap { overflow-x: auto; }
-.wide-modal .modal { width: 90vw; max-width: 880px; }
+.wide-modal .modal { width: 92vw; max-width: 1080px; }
 
 .form-row { margin-bottom: 14px; }
 .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
@@ -714,52 +714,102 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   .topbar-title { font-size: 13px; }
   .main { width: 100%; }
 }
-/* ── ORG CHART (Sơ đồ tổ chức) ── */
-.orgchart-scroll {
-  overflow-x: auto; overflow-y: hidden; padding: 28px 24px 36px;
+/* ── ORG CHART: CARD MODE (editable) ── */
+.oc-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.oc-save-state{font-size:10.5px;color:var(--text2)}
+.oc-doc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:20px}
+.oc-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid var(--accent)}
+.oc-title{font-size:20px;font-weight:800;color:var(--text0);outline:none;min-width:200px}
+.oc-title:focus{background:var(--accent-dim);border-radius:5px}
+.oc-badge{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;color:var(--text2);border:1px dashed var(--border3);border-radius:6px;padding:3px 9px;outline:none}
+.oc-badge:focus{border-color:var(--accent);color:var(--text1)}
+.oc-hcplan{font-size:11px;color:var(--text1);text-align:right;line-height:1.7}
+.oc-hcplan b{color:var(--text0);font-size:12px}
+.oc-hcplan span[contenteditable]{outline:none;border-bottom:1px dashed transparent;font-weight:700;color:var(--text0)}
+.oc-hcplan span[contenteditable]:focus{border-color:var(--accent)}
+.oc-hctable-wrap{margin-bottom:18px;overflow-x:auto}
+table.oc-hctable{border-collapse:collapse;font-size:11.5px}
+table.oc-hctable th, table.oc-hctable td{border:1px solid var(--border2);padding:6px 12px;text-align:center}
+table.oc-hctable th{background:var(--bg4);color:var(--text0);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;outline:none}
+table.oc-hctable td{outline:none;min-width:44px;font-weight:700;color:var(--text0)}
+table.oc-hctable td:focus{background:var(--accent-dim)}
+table.oc-hctable td.oc-rowlabel{background:var(--bg3);font-weight:700;color:var(--text1);text-align:left}
+table.oc-hctable th, table.oc-hctable td.oc-rowlabel{padding-right:22px}
+.oc-hc-remove{position:absolute;top:50%;right:3px;transform:translateY(-50%);width:15px;height:15px;border:none;
+  background:var(--bg5);border-radius:4px;font-size:8.5px;cursor:pointer;color:var(--text1);opacity:0;transition:.12s;
+  display:flex;align-items:center;justify-content:center;padding:0}
+table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .oc-hc-remove{opacity:1}
+.oc-hc-remove:hover{background:var(--red-dim);color:var(--red)}
+.oc-leader-strip{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;justify-content:center}
+.oc-leader-card{display:flex;gap:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:12px 16px 12px 12px;min-width:240px;align-items:center;position:relative}
+.oc-leader-tag{position:absolute;top:-9px;left:12px;background:var(--accent);color:#fff;font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:5px;letter-spacing:.4px}
+.oc-avatar{position:relative;width:54px;height:54px;border-radius:10px;background:var(--bg4);flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--border2)}
+.oc-avatar img{width:100%;height:100%;object-fit:cover}
+.oc-avatar svg{opacity:.35;color:var(--text2)}
+.oc-avatar .oc-years{position:absolute;top:-8px;left:-8px;background:var(--amber);color:#241300;font-size:9px;font-weight:800;border-radius:20px;padding:2px 6px;border:2px solid var(--bg2);outline:none;min-width:20px;text-align:center}
+.oc-info{flex:1;min-width:0}
+.oc-info .oc-name{font-weight:800;font-size:13px;color:var(--text0);outline:none}
+.oc-info .oc-role{font-size:10.5px;color:var(--text1);outline:none;margin-top:1px}
+.oc-info .oc-sub{font-size:10px;color:var(--text2);outline:none;margin-top:1px}
+.oc-info [contenteditable]:focus{background:var(--accent-dim);border-radius:3px}
+.oc-info .oc-dates{display:flex;gap:8px;margin-top:5px;font-size:9.5px;color:var(--text2)}
+.oc-info .oc-dates span[contenteditable]{outline:none;border-bottom:1px dashed var(--border2);font-weight:600;color:var(--text1)}
+.oc-info .oc-dates span[contenteditable]:focus{border-color:var(--accent)}
+.oc-star-toggle{position:absolute;top:-9px;right:8px;font-size:15px;cursor:pointer;opacity:.25;user-select:none}
+.oc-star-toggle.on{opacity:1;filter:drop-shadow(0 0 2px rgba(251,191,36,.6))}
+.oc-leader-remove{position:absolute;bottom:6px;right:6px;opacity:0;transition:.12s}
+.oc-leader-card:hover .oc-leader-remove{opacity:1}
+.oc-leader-tag[contenteditable]:focus{background:rgba(255,255,255,.25);border-radius:4px}
+.oc-add-leader-btn{border:2px dashed var(--border3);border-radius:var(--r2);background:transparent;color:var(--text2);
+  font-size:11px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;min-width:110px;padding:10px}
+.oc-add-leader-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.oc-dept-row{display:flex;gap:14px;align-items:flex-start;overflow-x:auto;padding-bottom:10px}
+.oc-dept-col{flex:0 0 240px;width:240px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding-bottom:10px;position:relative}
+.oc-dept-hd{border-radius:var(--r2) var(--r2) 0 0;padding:9px 12px;color:#fff;position:relative}
+.oc-dept-hd .oc-name{font-weight:800;font-size:12.5px;outline:none}
+.oc-dept-hd .oc-meta{font-size:10px;opacity:.85;margin-top:2px;display:flex;align-items:center;gap:6px}
+.oc-dept-hd .oc-delta{outline:none;font-weight:700}
+.oc-dept-hd-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px}
+.oc-icon-btn{width:19px;height:19px;border-radius:5px;background:rgba(255,255,255,.18);border:none;color:#fff;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.oc-icon-btn:hover{background:rgba(255,255,255,.32)}
+.oc-dept-body{padding:10px 8px 4px}
+.oc-staff-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:7px 8px 7px 7px;display:flex;gap:8px;margin-bottom:6px;position:relative;border-left:3px solid var(--oc-color,#8892a6)}
+.oc-staff-card.leader{background:var(--amber-dim);border-left-width:4px}
+.oc-staff-avatar{position:relative;width:36px;height:36px;border-radius:7px;background:var(--bg4);flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.oc-staff-avatar img{width:100%;height:100%;object-fit:cover}
+.oc-staff-avatar svg{width:15px;height:15px;opacity:.3;color:var(--text2)}
+.oc-staff-avatar .oc-years{position:absolute;top:-7px;left:-7px;background:var(--amber);color:#241300;font-size:8px;font-weight:800;border-radius:20px;padding:1px 4px;border:1.5px solid var(--bg2);outline:none;min-width:15px;text-align:center}
+.oc-staff-info{flex:1;min-width:0}
+.oc-staff-info .oc-name{font-weight:700;font-size:11.5px;color:var(--text0);outline:none;line-height:1.25}
+.oc-staff-info .oc-role{font-size:10px;color:var(--text1);outline:none;line-height:1.3}
+.oc-staff-info .oc-sub{font-size:9.5px;color:var(--text2);outline:none;line-height:1.3}
+.oc-staff-info [contenteditable]:focus{background:var(--accent-dim);border-radius:3px}
+.oc-staff-info .oc-dates{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap}
+.oc-staff-info .oc-dates span[contenteditable]{font-size:8.5px;color:var(--text2);outline:none;border-bottom:1px dashed var(--border2);font-weight:600}
+.oc-staff-info .oc-dates span[contenteditable]:focus{border-color:var(--accent);color:var(--text1)}
+.oc-card-actions{position:absolute;top:3px;right:3px;display:flex;gap:2px;opacity:0;transition:.12s}
+.oc-staff-card:hover .oc-card-actions{opacity:1}
+.oc-mini-btn{width:15px;height:15px;border:none;background:var(--bg4);border-radius:4px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text1);padding:0}
+.oc-mini-btn:hover{background:var(--bg5)}
+.oc-mini-btn.danger:hover{background:var(--red-dim);color:var(--red)}
+.oc-star-mini{position:absolute;bottom:3px;right:4px;font-size:11px;cursor:pointer;opacity:.25;user-select:none}
+.oc-star-mini.on{opacity:1}
+.oc-add-staff-btn{width:100%;background:transparent;border:1.5px dashed var(--border3);border-radius:var(--r);color:var(--text2);font-size:11px;font-weight:700;padding:7px 0;cursor:pointer;margin-top:2px}
+.oc-add-staff-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.oc-note-box{margin:8px 6px 0;border:1.5px dashed var(--green);border-radius:var(--r);padding:6px 8px;font-size:10px;color:var(--green);background:var(--green-dim);outline:none;min-height:16px}
+.oc-note-box.empty::before{content:attr(data-ph);opacity:.6}
+.oc-note-remove{font-size:9px;opacity:.6;cursor:pointer;float:right;margin-left:6px}
+.oc-add-dept-col{flex:0 0 120px;width:120px;display:flex;align-items:center;justify-content:center;min-height:150px}
+.oc-add-dept-btn{width:100%;height:100%;min-height:140px;border:2px dashed var(--border3);border-radius:var(--r2);background:transparent;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.oc-add-dept-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.oc-legend2{display:flex;gap:22px;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--text1);flex-wrap:wrap}
+.oc-legend2 b{color:var(--amber)}
+.oc-legend2 .oc-ts{margin-left:auto;color:var(--text2);font-size:10px}
+@media print{
+  .oc-toolbar,.oc-add-staff-btn,.oc-add-dept-col,.oc-dept-hd-actions,.oc-card-actions,.oc-star-mini,.oc-star-toggle,.oc-note-remove{display:none!important}
+  .oc-dept-row{flex-wrap:wrap;overflow:visible}
 }
-.orgchart-tree, .orgchart-tree ul {
-  display: flex; padding-top: 24px; position: relative;
-  justify-content: center;
-}
-.orgchart-tree ul { padding-top: 24px; }
-.orgchart-tree li {
-  display: flex; flex-direction: column; align-items: center;
-  list-style: none; position: relative; padding: 24px 10px 0;
-}
-/* connector lines */
-.orgchart-tree li::before, .orgchart-tree li::after {
-  content: ''; position: absolute; top: 0; right: 50%;
-  border-top: 2px solid var(--accent); width: 50%; height: 24px;
-}
-.orgchart-tree li::after { right: auto; left: 50%; border-left: 2px solid var(--accent); }
-.orgchart-tree li:only-child::before, .orgchart-tree li:only-child::after { display: none; }
-.orgchart-tree li:only-child { padding-top: 0; }
-.orgchart-tree li:first-child::before { border: 0 none; }
-.orgchart-tree li:last-child::after { border: 0 none; }
-.orgchart-tree li:last-child::before { border-right: 2px solid var(--accent); border-radius: 0 6px 0 0; }
-.orgchart-tree li:first-child::after { border-radius: 6px 0 0 0; }
-.orgchart-tree li:only-child::after, .orgchart-tree li:only-child::before { border: 0 none; }
-.orgchart-tree > li { padding-top: 0; }
-.orgchart-tree > li::before, .orgchart-tree > li::after { display: none; }
-.orgchart-tree ul::before {
-  content: ''; position: absolute; top: 0; left: 50%;
-  border-left: 2px solid var(--accent); width: 0; height: 24px;
-}
-.orgchart-node {
-  border: none; border-radius: var(--r); padding: 10px 16px;
-  background: var(--accent-dim); color: var(--text0);
-  font-size: 12px; font-weight: 600; text-align: center; white-space: nowrap;
-  box-shadow: -3px 0 0 var(--accent) inset; cursor: default;
-  min-width: 68px;
-}
-.orgchart-node.node-ceo { background: var(--accent); color: #fff; box-shadow: -3px 0 0 rgba(255,255,255,0.5) inset; font-size: 13px; }
-.orgchart-node.node-dept { background: var(--bg3); }
-.orgchart-node.node-leaf { background: var(--bg2); border: 1px solid var(--border2); box-shadow: -3px 0 0 var(--teal) inset; font-weight: 500; }
-.orgchart-node:hover { filter: brightness(1.08); }
-.orgchart-legend { display: flex; gap: 18px; flex-wrap: wrap; padding: 0 24px 16px; font-size: 11px; color: var(--text1); }
-.orgchart-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.orgchart-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 </style>
 </head>
 <body>
@@ -842,6 +892,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 </div>
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+<input type="file" id="oc-photo-input" accept="image/*" style="display:none">
 <nav class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-mark">
@@ -857,6 +908,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 
   <div class="nav-section">
     <div class="nav-label">Tổng quan</div>
+    <div class="nav-item" onclick="nav('orgchart',this)" id="nav-orgchart">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="17" width="6" height="4" rx="1"/><rect x="15" y="17" width="6" height="4" rx="1"/><path d="M12 7v5M12 12H6v5M12 12h6v5"/></svg>
+      Sơ đồ tổ chức
+    </div>
     <div class="nav-item active" onclick="nav('dashboard',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
@@ -869,6 +924,10 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 
   <div class="nav-section">
     <div class="nav-label">Quản lý</div>
+    <div class="nav-item" onclick="nav('approval',this)" id="nav-approval">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Đề nghị - Phê duyệt <span class="nav-badge red" id="b-approval" style="display:none">0</span>
+    </div>
     <div class="nav-item" onclick="nav('phases',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Giai đoạn & Công việc
@@ -881,6 +940,18 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       Vấn đề & NCR <span class="nav-badge red" id="b-issue">0</span>
     </div>
+    <div class="nav-item" onclick="nav('warehouse',this)" id="nav-warehouse">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Kho vật tư <span class="nav-badge" id="b-warehouse-order" style="display:none">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('chat',this)" id="nav-chat">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Chat nhóm <span class="nav-badge" id="b-chat" style="display:none">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('meetings',this)" id="nav-meetings">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="15" height="14" rx="2"/><path d="M18 9.5l4-2.5v10l-4-2.5"/></svg>
+      Cuộc họp <span class="nav-badge" id="b-meetings" style="display:none">0</span>
+    </div>
     <div class="nav-item" onclick="nav('docs',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Thư viện tham khảo
@@ -888,22 +959,6 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
     <div class="nav-item" onclick="nav('team',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Nhân sự
-    </div>
-    <div class="nav-item" onclick="nav('orgchart',this)" id="nav-orgchart">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="17" width="6" height="4" rx="1"/><rect x="15" y="17" width="6" height="4" rx="1"/><path d="M12 7v5M12 12H6v5M12 12h6v5"/></svg>
-      Sơ đồ tổ chức
-    </div>
-    <div class="nav-item" onclick="nav('chat',this)" id="nav-chat">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Chat nhóm <span class="nav-badge" id="b-chat" style="display:none">0</span>
-    </div>
-    <div class="nav-item" onclick="nav('warehouse',this)" id="nav-warehouse">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Kho vật tư <span class="nav-badge" id="b-warehouse-order" style="display:none">0</span>
-    </div>
-    <div class="nav-item" onclick="nav('approval',this)" id="nav-approval">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      Đề nghị - Phê duyệt <span class="nav-badge red" id="b-approval" style="display:none">0</span>
     </div>
   </div>
 
@@ -1068,6 +1123,14 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
 
     <!-- PROJECTS -->
     <div class="view" id="view-projects">
+      <div class="wh-tabs">
+        <div class="wh-tab active" id="proj-tab-active" onclick="switchProjTab('active')">
+          📁 Đang triển khai <span class="nav-badge" id="proj-tab-active-count" style="margin-left:4px">0</span>
+        </div>
+        <div class="wh-tab" id="proj-tab-done" onclick="switchProjTab('done')">
+          ✅ Dự án hoàn thành <span class="nav-badge" id="proj-tab-done-count" style="margin-left:4px">0</span>
+        </div>
+      </div>
       <div class="search-wrap">
         <div class="search-input-wrap">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1231,194 +1294,36 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
           <p>Cơ cấu tổ chức công ty theo phòng ban và nhân sự</p>
         </div>
       </div>
-      <div class="card">
-        <div class="card-header">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="9" y="3" width="6" height="4" rx="1"/><rect x="3" y="17" width="6" height="4" rx="1"/><rect x="15" y="17" width="6" height="4" rx="1"/><path d="M12 7v5M12 12H6v5M12 12h6v5"/></svg>
-          <span class="card-title">Cơ cấu tổ chức</span>
+      <div id="oc-panel-cards">
+        <div class="oc-toolbar">
+          <span class="oc-save-state" id="oc-save-state"></span>
+          <button class="btn btn-sm btn-accent" onclick="ocAddDepartment()">➕ Phòng ban</button>
+          <button class="btn btn-sm btn-accent" onclick="ocSave()">💾 Lưu</button>
+          <button class="btn btn-sm btn-ghost" onclick="ocResetTemplate()">🗑️ Làm mới mẫu</button>
+          <button class="btn btn-sm btn-ghost" onclick="window.print()">🖨️ In / Xuất PDF</button>
         </div>
-        <div class="orgchart-legend">
-          <span><i style="background:var(--accent)"></i>Ban điều hành</span>
-          <span><i style="background:var(--bg3);border:1px solid var(--border2)"></i>Phòng ban / Tổ nhóm</span>
-          <span><i style="background:var(--bg2);border:1px solid var(--teal)"></i>Nhân sự</span>
-        </div>
-        <div class="orgchart-scroll">
-          <ul class="orgchart-tree">
-            <li>
-              <div class="orgchart-node node-ceo">CEO</div>
-              <ul>
-                <li>
-                  <div class="orgchart-node node-ceo">Hưng NĐ</div>
-                  <ul>
-                    <!-- KỸ THUẬT -->
-                    <li>
-                      <div class="orgchart-node node-dept">Kỹ thuật</div>
-                      <ul>
-                        <li>
-                          <div class="orgchart-node node-leaf">Trường VX</div>
-                          <ul>
-                            <li>
-                              <div class="orgchart-node node-dept">QC</div>
-                              <ul><li><div class="orgchart-node node-leaf">Cường</div></li></ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Thiết kế (P.phòng)</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Tùng</div>
-                                  <ul>
-                                    <li><div class="orgchart-node node-leaf">Kiên</div></li>
-                                    <li><div class="orgchart-node node-leaf">Thực tập sinh CTV</div></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <!-- SẢN XUẤT -->
-                    <li>
-                      <div class="orgchart-node node-dept">Sản xuất</div>
-                      <ul>
-                        <li>
-                          <div class="orgchart-node node-leaf">Thành VV</div>
-                          <ul>
-                            <li>
-                              <div class="orgchart-node node-dept">Kỹ thuật sản xuất</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Dương</div>
-                                  <ul>
-                                    <li><div class="orgchart-node node-leaf">Thông</div></li>
-                                    <li><div class="orgchart-node node-leaf">Cường</div></li>
-                                    <li><div class="orgchart-node node-leaf">Huynh</div></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Kỹ thuật tấm</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Mạnh</div>
-                                  <ul>
-                                    <li><div class="orgchart-node node-leaf">Nam</div></li>
-                                    <li><div class="orgchart-node node-leaf">Thanh</div></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Sản xuất tấm</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Huy</div>
-                                  <ul>
-                                    <li>
-                                      <div class="orgchart-node node-dept">Tạo phôi</div>
-                                      <ul>
-                                        <li>
-                                          <div class="orgchart-node node-leaf">Bắc</div>
-                                          <ul>
-                                            <li><div class="orgchart-node node-leaf">Tính</div></li>
-                                            <li><div class="orgchart-node node-leaf">Sỹ</div></li>
-                                          </ul>
-                                        </li>
-                                      </ul>
-                                    </li>
-                                    <li>
-                                      <div class="orgchart-node node-dept">Tạo hình (QC)</div>
-                                      <ul>
-                                        <li>
-                                          <div class="orgchart-node node-leaf">Vinh</div>
-                                          <ul>
-                                            <li><div class="orgchart-node node-leaf">Lan</div></li>
-                                            <li><div class="orgchart-node node-leaf">Tiến</div></li>
-                                            <li><div class="orgchart-node node-leaf">Đ.Huy</div></li>
-                                          </ul>
-                                        </li>
-                                      </ul>
-                                    </li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <!-- CƠ ĐIỆN -->
-                    <li>
-                      <div class="orgchart-node node-dept">Cơ Điện</div>
-                      <ul>
-                        <li>
-                          <div class="orgchart-node node-leaf">Thắng PM</div>
-                          <ul>
-                            <li>
-                              <div class="orgchart-node node-dept">Đội lắp ráp phó</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Hiếu</div>
-                                  <ul>
-                                    <li><div class="orgchart-node node-leaf">Trí</div></li>
-                                    <li><div class="orgchart-node node-leaf">Nga</div></li>
-                                    <li><div class="orgchart-node node-leaf">Hà</div></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Kỹ thuật CĐ</div>
-                              <ul>
-                                <li>
-                                  <div class="orgchart-node node-leaf">Dũng</div>
-                                  <ul>
-                                    <li><div class="orgchart-node node-leaf">Nghiệp</div></li>
-                                    <li><div class="orgchart-node node-leaf">Cộng tác viên</div></li>
-                                  </ul>
-                                </li>
-                              </ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <!-- HC - TỔNG HỢP -->
-                    <li>
-                      <div class="orgchart-node node-dept">HC - Tổng hợp</div>
-                      <ul>
-                        <li>
-                          <div class="orgchart-node node-leaf">Hương NT</div>
-                          <ul>
-                            <li>
-                              <div class="orgchart-node node-dept">Kế toán nội bộ</div>
-                              <ul><li><div class="orgchart-node node-leaf">P.Linh</div></li></ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Kho</div>
-                              <ul><li><div class="orgchart-node node-leaf">H.Linh</div></li></ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Tạp vụ</div>
-                              <ul><li><div class="orgchart-node node-leaf">Hậu</div></li></ul>
-                            </li>
-                            <li>
-                              <div class="orgchart-node node-dept">Vận tải</div>
-                              <ul><li><div class="orgchart-node node-leaf">Hoàng</div></li></ul>
-                            </li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </li>
-                    <!-- QUẢN LÝ NGUỒN LỰC -->
-                    <li>
-                      <div class="orgchart-node node-dept">Quản lý nguồn lực</div>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-          </ul>
+        <div class="oc-doc" id="oc-doc">
+          <div class="oc-head">
+            <div>
+              <div class="oc-title" contenteditable data-path="title"></div>
+              <div class="oc-badge" contenteditable data-path="badge"></div>
+            </div>
+            <div class="oc-hcplan">
+              <div><b contenteditable data-path="hc.label"></b></div>
+              <div>Kế hoạch: <span contenteditable data-path="hc.plan"></span> người</div>
+              <div>Hiện tại: <span contenteditable data-path="hc.current"></span> người</div>
+            </div>
+          </div>
+          <div class="oc-hctable-wrap">
+            <table class="oc-hctable" id="oc-hctable"></table>
+          </div>
+          <div class="oc-leader-strip" id="oc-leader-strip"></div>
+          <div class="oc-dept-row" id="oc-dept-row"></div>
+          <div class="oc-legend2">
+            <span><b>★</b> = Sub Part Leader (phụ trách nhóm nhỏ)</span>
+            <span>🖱️ Nhấn ảnh để tải lên · Nhấn chữ để chỉnh sửa trực tiếp</span>
+            <span class="oc-ts" id="oc-ts-label"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -1552,6 +1457,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="stock-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã VT</th>
                   <th>Tên vật tư / Linh kiện</th>
                   <th>Đơn vị</th>
@@ -1690,6 +1596,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
           <table class="tbl" id="txn-table">
             <thead>
               <tr>
+                <th>STT</th>
                 <th>Mã phiếu</th>
                 <th>Loại</th>
                 <th>Vật tư</th>
@@ -1706,6 +1613,25 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
           </table>
         </div>
       </div>
+    </div>
+
+    <!-- MEETINGS -->
+    <div class="view" id="view-meetings">
+      <div class="section-hd">
+        <div class="section-hd-left">
+          <h2>📹 Cuộc họp</h2>
+          <p>Lên lịch họp qua Google Meet, mời nhân sự và lưu biên bản họp</p>
+        </div>
+        <button class="btn btn-sm btn-accent" onclick="openModal_newMeeting()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tạo cuộc họp
+        </button>
+      </div>
+      <div class="wh-tabs">
+        <div class="wh-tab active" id="mt-tab-upcoming" onclick="switchMeetingTab('upcoming')">🕓 Sắp diễn ra</div>
+        <div class="wh-tab" id="mt-tab-past" onclick="switchMeetingTab('past')">✅ Đã diễn ra</div>
+      </div>
+      <div id="meetings-container"></div>
     </div>
 
     <!-- APPROVAL VIEW -->
@@ -1749,6 +1675,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="appr-material-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã phiếu</th><th>Người đề nghị</th><th>Bộ phận</th><th>Số mục</th>
                   <th>Người duyệt</th><th>Ngày tạo</th><th>Trạng thái</th><th>Tiến độ mua</th><th></th>
                 </tr>
@@ -1780,6 +1707,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="appr-handover-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã phiếu</th><th>Bên giao</th><th>Bên nhận</th><th>Số mục</th>
                   <th>Người duyệt</th><th>Ngày</th><th>Trạng thái</th><th></th>
                 </tr>
@@ -1811,6 +1739,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="appr-leave-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã đơn</th><th>Người xin nghỉ</th><th>Bộ phận</th><th>Từ ngày</th><th>Đến ngày</th>
                   <th>Số ngày</th><th>Trưởng phòng duyệt</th><th>Trạng thái</th><th></th>
                 </tr>
@@ -1842,6 +1771,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="appr-advance-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã phiếu</th><th>Người đề nghị</th><th>Bộ phận</th><th>Số tiền tạm ứng</th>
                   <th>Người duyệt</th><th>Ngày tạo</th><th>Trạng thái</th><th></th>
                 </tr>
@@ -1873,6 +1803,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
             <table class="tbl" id="appr-settlement-table">
               <thead>
                 <tr>
+                  <th>STT</th>
                   <th>Mã phiếu</th><th>Người đề nghị</th><th>Số đã tạm ứng</th><th>Tổng chi thực tế</th>
                   <th>Chênh lệch</th><th>Người duyệt</th><th>Ngày tạo</th><th>Trạng thái</th><th></th>
                 </tr>
@@ -1940,20 +1871,20 @@ function getProjAvg(p) {
 let projects = [], issues = [], docs = [];
 
 // ── PERMISSION LEVELS ──
-const MODULES = ['dashboard','projects','phases','gantt','issues','docs','team','chat','urgent','today','warehouse','approval'];
+const MODULES = ['dashboard','projects','phases','gantt','issues','docs','team','chat','meetings','urgent','today','warehouse','approval'];
 const MODULE_LABELS = {
   dashboard:'Dashboard', projects:'Dự án', phases:'Giai đoạn & CV',
   gantt:'Tiến độ Gantt', issues:'NCR & Vấn đề', docs:'Thư viện tham khảo',
-  team:'Nhân sự', chat:'Chat', urgent:'Yêu cầu gấp', today:'Xử lý hôm nay',
+  team:'Nhân sự', chat:'Chat', meetings:'Cuộc họp', urgent:'Yêu cầu gấp', today:'Xử lý hôm nay',
   warehouse:'Kho vật tư', approval:'Đề nghị - Phê duyệt'
 };
 const PERM_LABELS = ['Không xem','Chỉ xem','Xem + Sửa','Toàn quyền'];
 const PERM_ICONS = ['🚫','👁️','✏️','⚡'];
 
 const ROLE_TEMPLATES = {
-  admin:    { dashboard:3, projects:3, phases:3, gantt:3, issues:3, docs:3, team:3, chat:3, urgent:3, today:3, warehouse:3, approval:3 },
-  engineer: { dashboard:1, projects:1, phases:2, gantt:1, issues:2, docs:2, team:1, chat:3, urgent:3, today:3, warehouse:2, approval:2 },
-  viewer:   { dashboard:1, projects:1, phases:1, gantt:1, issues:1, docs:1, team:0, chat:1, urgent:0, today:0, warehouse:1, approval:1 }
+  admin:    { dashboard:3, projects:3, phases:3, gantt:3, issues:3, docs:3, team:3, chat:3, meetings:3, urgent:3, today:3, warehouse:3, approval:3 },
+  engineer: { dashboard:1, projects:1, phases:2, gantt:1, issues:2, docs:2, team:1, chat:3, meetings:2, urgent:3, today:3, warehouse:2, approval:2 },
+  viewer:   { dashboard:1, projects:1, phases:1, gantt:1, issues:1, docs:1, team:0, chat:1, meetings:1, urgent:0, today:0, warehouse:1, approval:1 }
 };
 
 // ── DRIVE PERMISSION LEVELS ──
@@ -1976,6 +1907,8 @@ let warehouseStock  = [];
 let warehouseOrders = [];
 let warehouseTxns   = [];
 let approvalRequests = [];
+let meetings = [];
+let orgChart = null;
 let settings = { telegramBotToken: '', telegramChatId: '', telegramEnabled: false };
 
 const PAGE_TITLES = {
@@ -1990,6 +1923,7 @@ const PAGE_TITLES = {
   urgent: '🚨 Yêu cầu gấp',
   today: '📅 Cần xử lý hôm nay',
   chat: '💬 Chat nhóm',
+  meetings: '📹 Cuộc họp',
   warehouse: '📦 Kho vật tư',
   approval: '📝 Đề nghị - Phê duyệt'
 };
@@ -2300,13 +2234,33 @@ function renderDashMaterialPurchaseStatus() {
     </div>`).join('');
 }
 
+let projCurrentTab = 'active';
+function switchProjTab(tab) {
+  projCurrentTab = tab;
+  document.getElementById('proj-tab-active')?.classList.toggle('active', tab==='active');
+  document.getElementById('proj-tab-done')?.classList.toggle('active', tab==='done');
+  const input = document.querySelector('#view-projects .search-input');
+  if(input) input.value = '';
+  renderProjects();
+}
 function renderProjects() {
   const tbody = document.getElementById('proj-tbody');
-  if(projects.length===0) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📂</div><div class="empty-state-title">Chưa có dự án</div>Nhấn "Tạo dự án" để thêm</div></td></tr>`;
+  const activeCount = projects.filter(p=>p.status!=='Hoàn thành').length;
+  const doneCount = projects.filter(p=>p.status==='Hoàn thành').length;
+  const activeBadge = document.getElementById('proj-tab-active-count');
+  const doneBadge = document.getElementById('proj-tab-done-count');
+  if(activeBadge) activeBadge.textContent = activeCount;
+  if(doneBadge) doneBadge.textContent = doneCount;
+  const list = projects.filter(p => projCurrentTab==='done' ? p.status==='Hoàn thành' : p.status!=='Hoàn thành');
+  if(list.length===0) {
+    const emptyMsg = projCurrentTab==='done'
+      ? `<div class="empty-state-icon">✅</div><div class="empty-state-title">Chưa có dự án nào hoàn thành</div>`
+      : `<div class="empty-state-icon">📂</div><div class="empty-state-title">Chưa có dự án</div>Nhấn "Tạo dự án" để thêm`;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state">${emptyMsg}</div></td></tr>`;
+    document.getElementById('proj-count').textContent = `0 dự án`;
     return;
   }
-  tbody.innerHTML = projects.map(p => {
+  tbody.innerHTML = list.map(p => {
     const avg = getProjAvg(p);
     const color = avg >= 80 ? 'var(--green)' : avg >= 40 ? 'var(--accent)' : 'var(--amber)';
     return `<tr>
@@ -2333,7 +2287,7 @@ function renderProjects() {
       </td>
     </tr>`;
   }).join('');
-  document.getElementById('proj-count').textContent = `${projects.length} dự án`;
+  document.getElementById('proj-count').textContent = `${list.length} dự án`;
 }
 
 function deleteProject(id) {
@@ -3269,22 +3223,32 @@ function renderIssues() {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">Không có sự cố nào</div>Hệ thống hoạt động ổn định</div>`;
     return;
   }
-  container.innerHTML = issues.map(i => `
-    <div class="issue-row">
+  const sorted = [...issues].sort((a,b)=>{
+    const aClosed = a.status==='Đóng', bClosed = b.status==='Đóng';
+    if(aClosed!==bClosed) return aClosed?1:-1;
+    return 0;
+  });
+  container.innerHTML = sorted.map(i => {
+    const isClosed = i.status==='Đóng';
+    return `
+    <div class="issue-row" style="${isClosed?'opacity:0.45;':''}">
       <div style="display:flex;align-items:flex-start;gap:10px">
         <div style="flex:1">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
             <strong style="font-family:monospace;font-size:11px;color:var(--red)">${i.id}</strong>
             <span class="badge badge-amber">${i.priority||'Cao'}</span>
             <span style="font-size:11px;color:var(--text2)">${i.proj}</span>
+            ${isClosed ? `<span class="badge" style="background:var(--green-dim);color:var(--green)">✅ Đã đóng</span>` : ''}
           </div>
           <div style="font-size:13px">${i.title}</div>
           ${i.reporter ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">👤 Báo cáo bởi: ${i.reporter}</div>` : ''}
+          ${isClosed && i.closedBy ? `<div style="font-size:11px;color:var(--text2);margin-top:2px">✅ Đóng bởi: ${i.closedBy}</div>` : ''}
         </div>
-        <button class="btn btn-xs btn-ghost" style="color:var(--green);border-color:rgba(52,211,153,0.2)" onclick="closeIssue('${i.id}')">Đóng NCR</button>
+        ${isClosed ? '' : `<button class="btn btn-xs btn-ghost" style="color:var(--green);border-color:rgba(52,211,153,0.2)" onclick="closeIssue('${i.id}')">Đóng NCR</button>`}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function closeIssue(id){
@@ -3298,7 +3262,14 @@ function closeIssue(id){
         (i ? `Dự án: ${tgEscape(i.proj)}\nNội dung: ${tgEscape(i.title)}\n` : '') +
         `Đóng bởi: ${tgEscape(currentUser ? currentUser.name : '')}`
       );
-      issues=issues.filter(i=>i.id!==id);syncDataToDrive();
+      if(i){
+        i.status = 'Đóng';
+        i.closedBy = currentUser ? currentUser.name : '';
+        i.closedAt = new Date().toISOString();
+      }
+      syncDataToDrive();
+      renderIssues();
+      renderDashboard();
     }
   });
 }
@@ -4083,6 +4054,8 @@ function fetchDataFromDrive() {
       if(data.warehouseOrders) warehouseOrders = data.warehouseOrders;
       if(data.warehouseTxns)   warehouseTxns   = data.warehouseTxns;
       if(data.approvalRequests) approvalRequests = data.approvalRequests;
+      if(data.meetings) meetings = data.meetings;
+      if(data.orgChart) orgChart = ocMigrate(data.orgChart);
       if(data.settings) settings = { ...settings, ...data.settings };
       driveLoaded = true;
       renderAll(); initChat(); hideLoading();
@@ -4117,7 +4090,7 @@ function syncDataToDrive() {
 
 function doSyncDataToDrive() {
   showLoading("Đang đồng bộ lên Google Drive...");
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, settings };
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, meetings, orgChart, settings };
   fetch(DRIVE_API_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) })
     .then(() => { hideLoading(); toast("Đã lưu dữ liệu lên Drive!"); renderAll(); })
     .catch(err => { hideLoading(); alert("Lỗi đồng bộ: " + err); });
@@ -4922,13 +4895,14 @@ function renderStock() {
   const tbody = document.getElementById('stock-tbody');
   if(!tbody) return;
   if(warehouseStock.length===0) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">Kho chưa có vật tư nào</div>Nhấn "Thêm vật tư" để bắt đầu</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">Kho chưa có vật tư nào</div>Nhấn "Thêm vật tư" để bắt đầu</div></td></tr>`;
     return;
   }
   tbody.innerHTML = warehouseStock.map((s,i) => {
     const lvCls = stockLevelClass(s.qty, s.minQty);
     const lvIcon = s.qty <= 0 ? '🔴' : s.qty < s.minQty ? '🟡' : '🟢';
     return `<tr>
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td class="tbl-code">${s.code}</td>
       <td style="font-weight:500">${s.name}</td>
       <td style="color:var(--text2);font-size:12px">${s.unit}</td>
@@ -5259,10 +5233,10 @@ function renderTxns() {
   if(txnFilterType)   list = list.filter(t=>t.type===txnFilterType);
   if(txnFilterStatus) list = list.filter(t=>t.status===txnFilterStatus);
   if(list.length===0) {
-    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Chưa có phiếu xuất/nhập nào</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Chưa có phiếu xuất/nhập nào</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(t => {
+  tbody.innerHTML = list.map((t,i) => {
     const isImport = t.type==='import';
     const typeHtml = isImport
       ? `<span class="badge" style="background:var(--green-dim);color:var(--green)">📥 Nhập kho</span>`
@@ -5280,6 +5254,7 @@ function renderTxns() {
     const proj = projects.find(p=>p.id===t.proj);
     const canConfirm = isAdmin() && t.status==='pending';
     return `<tr>
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td class="tbl-code" style="cursor:pointer;color:var(--accent)" onclick="openModal('view-txn','${t.id}')">${t.id}</td>
       <td>${typeHtml}</td>
       <td style="font-size:12px;font-weight:500">${t.stockCode||''} ${t.stockName}</td>
@@ -5630,6 +5605,10 @@ function apprApproverOptions(selected, placeholder) {
   return `<option value="">— ${placeholder || 'Chọn người phê duyệt'} —</option>` +
     team.map(t=>`<option value="${t.email}" ${t.email===selected?'selected':''}>${t.name}${t.role?(' — '+t.role):''}</option>`).join('');
 }
+function apprProjectOptions(selected) {
+  return `<option value="">— Không liên quan dự án —</option>` +
+    projects.map(p=>`<option value="${p.id}" ${p.id===selected?'selected':''}>${p.id} — ${p.name}</option>`).join('');
+}
 
 function renderApproval() {
   if(apprCurrentTab==='material') renderMaterialRequests();
@@ -5815,9 +5794,9 @@ function checkMaterialPurchaseComplete(r) {
 function apprMaterialApproverCell(r) {
   const list = getMaterialApprovers(r);
   if(list.length===0) return '—';
-  return list.map(a=>{
+  return list.map((a,i)=>{
     const icon = a.status==='approved' ? '✅' : a.status==='rejected' ? '❌' : '⏳';
-    return `${icon} ${a.name||a.email}`;
+    return `${i+1}. ${icon} ${a.name||a.email}`;
   }).join('<br>');
 }
 
@@ -6040,11 +6019,12 @@ function renderMaterialRequests() {
   if(!tbody) return;
   const list = approvalRequests.filter(r=>r.kind==='material').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
   if(list.length===0){
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📝</div><div class="empty-state-title">Chưa có phiếu đề nghị mua vật tư</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📝</div><div class="empty-state-title">Chưa có phiếu đề nghị mua vật tư</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(r=>`
+  tbody.innerHTML = list.map((r,i)=>`
     <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.id}</strong></td>
       <td>${r.requester}</td>
       <td>${r.dept||'—'}</td>
@@ -6071,11 +6051,12 @@ function renderHandoverRequests() {
   if(!tbody) return;
   const list = approvalRequests.filter(r=>r.kind==='handover').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
   if(list.length===0){
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📦</div><div class="empty-state-title">Chưa có biên bản bàn giao hàng hóa</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📦</div><div class="empty-state-title">Chưa có biên bản bàn giao hàng hóa</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(r=>`
+  tbody.innerHTML = list.map((r,i)=>`
     <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.id}</strong></td>
       <td>${r.partyAName||'—'}</td>
       <td>${r.partyBName||'—'}</td>
@@ -6092,11 +6073,12 @@ function renderLeaveRequests() {
   if(!tbody) return;
   const list = approvalRequests.filter(r=>r.kind==='leave').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
   if(list.length===0){
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🗓️</div><div class="empty-state-title">Chưa có đơn xin nghỉ phép</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🗓️</div><div class="empty-state-title">Chưa có đơn xin nghỉ phép</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(r=>`
+  tbody.innerHTML = list.map((r,i)=>`
     <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.id}</strong></td>
       <td>${r.requester}</td>
       <td>${r.dept||'—'}</td>
@@ -6127,6 +6109,7 @@ function openModal_newMaterialRequest() {
       <div class="form-row"><label class="form-label">Kính gửi</label><input class="form-ctrl" id="mr-to" placeholder="Ban Giám đốc Công ty PTI"></div>
       <div class="form-row"><label class="form-label">Bộ phận đề nghị</label><input class="form-ctrl" id="mr-dept" placeholder="Phòng Kỹ thuật & Cơ khí"></div>
     </div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="mr-proj">${apprProjectOptions()}</select></div>
     <div class="form-grid">
       <div class="form-row"><label class="form-label">Người đề nghị</label><input class="form-ctrl" id="mr-requester" value="${currentUser.name}"></div>
       <div class="form-row"><label class="form-label">Chức danh</label><input class="form-ctrl" id="mr-title" value="${myRole}"></div>
@@ -6155,7 +6138,7 @@ function openModal_newMaterialRequest() {
       <label class="form-label">Danh mục vật tư đề nghị mua <span style="font-weight:400;color:var(--text2);font-size:11px">(gõ tên để xem gợi ý vật tư đang có trong kho)</span></label>
       <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
         <table class="tbl" style="min-width:720px" id="mr-items-table">
-          <thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
+          <thead><tr><th style="width:34px">STT</th><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
           <tbody id="mr-items-tbody"></tbody>
         </table>
       </div>
@@ -6165,6 +6148,7 @@ function openModal_newMaterialRequest() {
           📥 Tải danh mục từ Excel
           <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMaterialItemsExcel(this)">
         </label>
+        <button class="btn btn-xs btn-ghost" onclick="downloadMaterialTemplate()">📄 Tải form mẫu Excel</button>
         <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Thông số kỹ thuật / Kích thước phôi, ĐVT, SL, Tồn kho, Ghi chú</span>
       </div>
     </div>
@@ -6195,6 +6179,7 @@ function renderMaterialApproversRows() {
   if(!wrap) return;
   wrap.innerHTML = materialApproversTmp.map((a,i)=>`
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+      <span style="width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--bg4);color:var(--text1);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center" title="Thứ tự phê duyệt">${i+1}</span>
       <select class="form-ctrl" style="flex:1" onchange="materialApproversTmp[${i}].email=this.value">
         ${apprApproverOptions(a.email)}
       </select>
@@ -6251,6 +6236,7 @@ function renderMaterialItemsTable() {
   if(!tbody) return;
   tbody.innerHTML = materialItemsTmp.map((it,i)=>`
     <tr>
+      <td style="font-size:11px;color:var(--text2);text-align:center">${i+1}</td>
       <td>
         <input class="form-ctrl" style="min-width:150px" list="mr-stock-name-options" value="${it.name}" oninput="onMaterialNameInput(${i},this.value)" placeholder="Tên vật tư (gõ để xem gợi ý trong kho)">
         <div id="mr-item-hint-${i}">${materialStockHintHtml(it.name)}</div>
@@ -6271,6 +6257,19 @@ function removeMaterialRow(i) {
   if(materialItemsTmp.length<=1){ toast('Cần ít nhất 1 dòng vật tư'); return; }
   materialItemsTmp.splice(i,1);
   renderMaterialItemsTable();
+}
+
+function downloadMaterialTemplate() {
+  const aoa = [
+    ['Tên vật tư', 'Thông số kỹ thuật / Kích thước phôi', 'ĐVT', 'SL', 'Tồn kho', 'Ghi chú'],
+    ['Thép tấm SS400', 'Dày 3mm, khổ 1250x2500', 'Tấm', 5, '', 'Dùng cho gia công vỏ tủ điện'],
+    ['', '', '', '', '', '']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:24},{wch:34},{wch:10},{wch:8},{wch:10},{wch:28}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Danh mục vật tư');
+  XLSX.writeFile(wb, 'Form_mau_de_nghi_mua_vat_tu.xlsx');
 }
 
 function importMaterialItemsExcel(input) {
@@ -6322,6 +6321,7 @@ function submitMaterialRequest() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const to = document.getElementById('mr-to').value.trim();
   const dept = document.getElementById('mr-dept').value.trim();
+  const proj = document.getElementById('mr-proj')?.value || '';
   const requester = document.getElementById('mr-requester').value.trim() || currentUser.name;
   const title = document.getElementById('mr-title').value.trim();
   const purpose = document.getElementById('mr-purpose').value.trim();
@@ -6338,7 +6338,7 @@ function submitMaterialRequest() {
   const neededDate = document.getElementById('mr-needed-date')?.value || '';
   const id = generateDocId('PDNMVT', approvalRequests.filter(r=>r.kind==='material'));
   const req = {
-    id, kind:'material', to, dept, requester, requesterEmail: currentUser.email, title, purpose,
+    id, kind:'material', to, dept, proj, requester, requesterEmail: currentUser.email, title, purpose,
     items, approvers,
     distributorEmail, distributorName: distributor ? distributor.name : '',
     neededDate,
@@ -6375,6 +6375,7 @@ function openModal_newHandover() {
   const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
   document.getElementById('modal-body').innerHTML = `
     <div class="form-row"><label class="form-label">Ngày bàn giao</label><input class="form-ctrl" type="date" id="ho-date"></div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="ho-proj">${apprProjectOptions()}</select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px">
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px">
         <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:8px">Bên A (Bên giao hàng) — bạn</div>
@@ -6413,7 +6414,7 @@ function openModal_newHandover() {
       <label class="form-label">Danh mục sản phẩm / thiết bị bàn giao</label>
       <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
         <table class="tbl" style="min-width:650px" id="ho-items-table">
-          <thead><tr><th>Tên sản phẩm/thiết bị</th><th>Quy cách & thông số</th><th>ĐVT</th><th>SL</th><th>Ghi chú</th><th></th></tr></thead>
+          <thead><tr><th style="width:34px">STT</th><th>Tên sản phẩm/thiết bị</th><th>Quy cách & thông số</th><th>ĐVT</th><th>SL</th><th>Ghi chú</th><th></th></tr></thead>
           <tbody id="ho-items-tbody"></tbody>
         </table>
       </div>
@@ -6423,6 +6424,7 @@ function openModal_newHandover() {
           📥 Tải danh mục từ Excel
           <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importHandoverItemsExcel(this)">
         </label>
+        <button class="btn btn-xs btn-ghost" onclick="downloadHandoverTemplate()">📄 Tải form mẫu Excel</button>
         <span style="font-size:10.5px;color:var(--text2)">Cột: Tên sản phẩm/thiết bị, Quy cách & thông số, ĐVT, SL, Ghi chú</span>
       </div>
     </div>
@@ -6449,6 +6451,7 @@ function renderHandoverItemsTable() {
   if(!tbody) return;
   tbody.innerHTML = handoverItemsTmp.map((it,i)=>`
     <tr>
+      <td style="font-size:11px;color:var(--text2);text-align:center">${i+1}</td>
       <td><input class="form-ctrl" style="min-width:140px" value="${it.name}" oninput="handoverItemsTmp[${i}].name=this.value" placeholder="Tên sản phẩm"></td>
       <td><input class="form-ctrl" style="min-width:140px" value="${it.spec}" oninput="handoverItemsTmp[${i}].spec=this.value" placeholder="Quy cách, thông số"></td>
       <td><input class="form-ctrl" style="width:90px" list="ho-dvt-options" value="${it.unit}" oninput="handoverItemsTmp[${i}].unit=this.value" placeholder="Cái"></td>
@@ -6465,6 +6468,19 @@ function removeHandoverRow(i) {
   if(handoverItemsTmp.length<=1){ toast('Cần ít nhất 1 dòng'); return; }
   handoverItemsTmp.splice(i,1);
   renderHandoverItemsTable();
+}
+
+function downloadHandoverTemplate() {
+  const aoa = [
+    ['Tên sản phẩm/thiết bị', 'Quy cách & thông số', 'ĐVT', 'SL', 'Ghi chú'],
+    ['Tủ điện điều khiển PTI-01', 'Kích thước 800x600x2000mm', 'Cái', 1, 'Đã kiểm tra trước khi bàn giao'],
+    ['', '', '', '', '']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:26},{wch:30},{wch:10},{wch:8},{wch:28}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Danh mục bàn giao');
+  XLSX.writeFile(wb, 'Form_mau_bien_ban_ban_giao.xlsx');
 }
 
 function importHandoverItemsExcel(input) {
@@ -6518,9 +6534,10 @@ function submitHandover() {
   const distributor = distributorEmail ? team.find(t=>t.email===distributorEmail) : null;
   const dateVal = document.getElementById('ho-date').value;
   const dateDisp = dateVal ? dateVal.split('-').reverse().join('/') : nowDateStr();
+  const proj = document.getElementById('ho-proj')?.value || '';
   const id = generateDocId('BBBGHH', approvalRequests.filter(r=>r.kind==='handover'));
   const req = {
-    id, kind:'handover', date: dateDisp,
+    id, kind:'handover', date: dateDisp, proj,
     partyAName: document.getElementById('ho-a-name').value.trim(),
     partyADept: document.getElementById('ho-a-dept').value.trim(),
     partyAAddr: document.getElementById('ho-a-addr').value.trim(),
@@ -6546,6 +6563,7 @@ function openModal_newLeave() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
+  overlay.classList.add('wide-modal');
   document.getElementById('modal-hd-title').textContent = '🗓️ Tạo đơn xin nghỉ phép';
   const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
   document.getElementById('modal-body').innerHTML = `
@@ -6622,6 +6640,7 @@ function openModal_newAdvance() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
+  overlay.classList.add('wide-modal');
   document.getElementById('modal-hd-title').textContent = '💰 Tạo phiếu đề nghị tạm ứng';
   const myRole = (team.find(t=>t.email===currentUser.email)?.role) || '';
   document.getElementById('modal-body').innerHTML = `
@@ -6629,6 +6648,7 @@ function openModal_newAdvance() {
       <div class="form-row"><label class="form-label">Người đề nghị</label><input class="form-ctrl" id="tu-requester" value="${currentUser.name}"></div>
       <div class="form-row"><label class="form-label">Bộ phận</label><input class="form-ctrl" id="tu-dept" value="${myRole}"></div>
     </div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="tu-proj">${apprProjectOptions()}</select></div>
     <div class="form-grid">
       <div class="form-row"><label class="form-label">Số tiền tạm ứng (VNĐ) *</label><input class="form-ctrl" type="number" min="0" id="tu-amount" placeholder="0"></div>
       <div class="form-row"><label class="form-label">Ngày cần nhận tiền</label><input class="form-ctrl" type="date" id="tu-needed-date"></div>
@@ -6642,17 +6662,62 @@ function openModal_newAdvance() {
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để chi tiền sau khi được phê duyệt)</span></label>
       <select class="form-ctrl" id="tu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
     </div>
+    <div class="form-row">
+      <label class="form-label">📸 Hình ảnh bằng chứng <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r2);cursor:pointer;transition:all .15s" id="tu-img-label"
+        onmouseover="this.style.borderColor=\`var(--accent)\`" onmouseout="this.style.borderColor=\`var(--border2)\`">
+        <input type="file" id="tu-images" multiple accept="image/*" style="display:none" onchange="previewAdvImages(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text1)">Nhấn để chọn ảnh</div>
+          <div style="font-size:10px;color:var(--text2)">JPG, PNG, WEBP — Nhiều ảnh cùng lúc</div>
+        </div>
+      </label>
+      <div id="tu-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn btn-accent" onclick="submitAdvance()">📤 Gửi phê duyệt</button>
   `;
+  advImageData = [];
 }
 
-function submitAdvance() {
+let advImageData = [];
+function previewAdvImages(input) {
+  advImageData = [];
+  const preview = document.getElementById('tu-img-preview');
+  preview.innerHTML = '';
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      advImageData.push({ name: file.name, base64: e.target.result, size: file.size });
+      renderAdvImgPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderAdvImgPreview() {
+  const preview = document.getElementById('tu-img-preview');
+  if(!preview) return;
+  preview.innerHTML = advImageData.map((img,i) => `
+    <div style="position:relative">
+      <img src="${img.base64}" style="width:72px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border)">
+      <div onclick="removeAdvImg(${i})" style="position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700">×</div>
+      <div style="font-size:9px;color:var(--text2);text-align:center;margin-top:2px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${img.name}</div>
+    </div>`).join('');
+}
+function removeAdvImg(idx) {
+  advImageData.splice(idx,1);
+  renderAdvImgPreview();
+}
+
+async function submitAdvance() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const requester = document.getElementById('tu-requester').value.trim() || currentUser.name;
   const dept = document.getElementById('tu-dept').value.trim();
+  const proj = document.getElementById('tu-proj')?.value || '';
   const amount = parseFloat(document.getElementById('tu-amount').value) || 0;
   const neededDate = document.getElementById('tu-needed-date')?.value || '';
   const reason = document.getElementById('tu-reason').value.trim();
@@ -6664,10 +6729,30 @@ function submitAdvance() {
   const distributorEmail = document.getElementById('tu-distributor')?.value || '';
   const distributor = distributorEmail ? team.find(t=>t.email===distributorEmail) : null;
   const id = generateDocId('PDNTU', approvalRequests.filter(r=>r.kind==='advance'));
+  let images = [];
+  if(advImageData.length > 0) {
+    showLoading(`Đang tải ${advImageData.length} ảnh lên Drive...`);
+    for(let i=0; i<advImageData.length; i++) {
+      const img = advImageData[i];
+      showLoading(`Đang tải ảnh (${i+1}/${advImageData.length}): ${img.name}`);
+      try {
+        const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
+          action:'upload_file', proj:'advance-'+id, folderIntent:'evidence',
+          filename: img.name, mimeType:'image/jpeg',
+          fileData: img.base64.split(',')[1]
+        })}).then(r=>r.json());
+        images.push({ name: img.name, base64: img.base64, fileId: res.fileId||null, url: res.fileId?`https://drive.google.com/uc?id=${res.fileId}`:img.base64 });
+      } catch(e) {
+        images.push({ name: img.name, base64: img.base64, url: img.base64 });
+      }
+    }
+    hideLoading();
+  }
   const req = {
-    id, kind:'advance', requester, requesterEmail: currentUser.email, dept, amount, reason, neededDate,
+    id, kind:'advance', requester, requesterEmail: currentUser.email, dept, proj, amount, reason, neededDate,
     approverEmail, approverName: approver?approver.name:'',
     distributorEmail, distributorName: distributor ? distributor.name : '',
+    images,
     status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
   };
   approvalRequests.push(req);
@@ -6682,11 +6767,12 @@ function renderAdvanceRequests() {
   if(!tbody) return;
   const list = approvalRequests.filter(r=>r.kind==='advance').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
   if(list.length===0){
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">💰</div><div class="empty-state-title">Chưa có phiếu đề nghị tạm ứng</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">💰</div><div class="empty-state-title">Chưa có phiếu đề nghị tạm ứng</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(r=>`
+  tbody.innerHTML = list.map((r,i)=>`
     <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.id}</strong></td>
       <td>${r.requester}</td>
       <td>${r.dept||'—'}</td>
@@ -6722,6 +6808,7 @@ function openModal_newSettlement() {
       <div class="form-row"><label class="form-label">Người đề nghị</label><input class="form-ctrl" id="hu-requester" value="${currentUser.name}"></div>
       <div class="form-row"><label class="form-label">Bộ phận</label><input class="form-ctrl" id="hu-dept" value="${myRole}"></div>
     </div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="hu-proj">${apprProjectOptions()}</select></div>
     <div class="form-grid">
       <div class="form-row">
         <label class="form-label">Phiếu tạm ứng liên quan</label>
@@ -6733,7 +6820,7 @@ function openModal_newSettlement() {
       <label class="form-label">Danh mục chi phí thực tế</label>
       <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
         <table class="tbl" style="min-width:650px" id="hu-items-table">
-          <thead><tr><th>Nội dung chi</th><th>Số tiền (VNĐ)</th><th>Chứng từ/Hóa đơn</th><th>Ghi chú</th><th></th></tr></thead>
+          <thead><tr><th style="width:34px">STT</th><th>Nội dung chi</th><th>Số tiền (VNĐ)</th><th>Chứng từ/Hóa đơn</th><th>Ghi chú</th><th></th></tr></thead>
           <tbody id="hu-items-tbody"></tbody>
         </table>
       </div>
@@ -6751,18 +6838,63 @@ function openModal_newSettlement() {
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để xử lý chênh lệch sau khi được phê duyệt)</span></label>
       <select class="form-ctrl" id="hu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
     </div>
+    <div class="form-row">
+      <label class="form-label">📸 Hình ảnh bằng chứng (hoá đơn, chứng từ) <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r2);cursor:pointer;transition:all .15s" id="hu-img-label"
+        onmouseover="this.style.borderColor=\`var(--accent)\`" onmouseout="this.style.borderColor=\`var(--border2)\`">
+        <input type="file" id="hu-images" multiple accept="image/*" style="display:none" onchange="previewHuImages(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text1)">Nhấn để chọn ảnh</div>
+          <div style="font-size:10px;color:var(--text2)">JPG, PNG, WEBP — Nhiều ảnh cùng lúc</div>
+        </div>
+      </label>
+      <div id="hu-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
     <button class="btn btn-accent" onclick="submitSettlement()">📤 Gửi phê duyệt</button>
   `;
   renderSettlementItemsTable();
+  huImageData = [];
+}
+
+let huImageData = [];
+function previewHuImages(input) {
+  huImageData = [];
+  const preview = document.getElementById('hu-img-preview');
+  preview.innerHTML = '';
+  const files = Array.from(input.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      huImageData.push({ name: file.name, base64: e.target.result, size: file.size });
+      renderHuImgPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderHuImgPreview() {
+  const preview = document.getElementById('hu-img-preview');
+  if(!preview) return;
+  preview.innerHTML = huImageData.map((img,i) => `
+    <div style="position:relative">
+      <img src="${img.base64}" style="width:72px;height:72px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border)">
+      <div onclick="removeHuImg(${i})" style="position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;font-weight:700">×</div>
+      <div style="font-size:9px;color:var(--text2);text-align:center;margin-top:2px;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${img.name}</div>
+    </div>`).join('');
+}
+function removeHuImg(idx) {
+  huImageData.splice(idx,1);
+  renderHuImgPreview();
 }
 function renderSettlementItemsTable() {
   const tbody = document.getElementById('hu-items-tbody');
   if(!tbody) return;
   tbody.innerHTML = settlementItemsTmp.map((it,i)=>`
     <tr>
+      <td style="font-size:11px;color:var(--text2);text-align:center">${i+1}</td>
       <td><input class="form-ctrl" style="min-width:160px" value="${it.content}" oninput="settlementItemsTmp[${i}].content=this.value" placeholder="Nội dung chi"></td>
       <td><input class="form-ctrl" type="number" min="0" style="width:120px" value="${it.amount}" oninput="settlementItemsTmp[${i}].amount=this.value;recalcSettlementTotals()"></td>
       <td><input class="form-ctrl" style="min-width:130px" value="${it.receipt}" oninput="settlementItemsTmp[${i}].receipt=this.value" placeholder="Số hóa đơn/chứng từ"></td>
@@ -6788,7 +6920,7 @@ function recalcSettlementTotals() {
   if(totalEl) totalEl.value = formatVND(totalSpent);
   if(diffEl) diffEl.value = formatVND(advanceAmount - totalSpent);
 }
-function submitSettlement() {
+async function submitSettlement() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const items = settlementItemsTmp.filter(it=>it.content.trim());
   if(items.length===0){ toast('Vui lòng nhập ít nhất 1 khoản chi phí'); return; }
@@ -6799,16 +6931,37 @@ function submitSettlement() {
   const distributor = distributorEmail ? team.find(t=>t.email===distributorEmail) : null;
   const requester = document.getElementById('hu-requester').value.trim() || currentUser.name;
   const dept = document.getElementById('hu-dept').value.trim();
+  const proj = document.getElementById('hu-proj')?.value || '';
   const advanceRefId = document.getElementById('hu-advance-ref').value || '';
   const advanceAmount = parseFloat(document.getElementById('hu-advance-amount').value) || 0;
   const totalSpent = items.reduce((s,it)=>s+(parseFloat(it.amount)||0),0);
   const diff = advanceAmount - totalSpent;
   const id = generateDocId('PHU', approvalRequests.filter(r=>r.kind==='settlement'));
+  let images = [];
+  if(huImageData.length > 0) {
+    showLoading(`Đang tải ${huImageData.length} ảnh lên Drive...`);
+    for(let i=0; i<huImageData.length; i++) {
+      const img = huImageData[i];
+      showLoading(`Đang tải ảnh (${i+1}/${huImageData.length}): ${img.name}`);
+      try {
+        const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
+          action:'upload_file', proj:'settlement-'+id, folderIntent:'evidence',
+          filename: img.name, mimeType:'image/jpeg',
+          fileData: img.base64.split(',')[1]
+        })}).then(r=>r.json());
+        images.push({ name: img.name, base64: img.base64, fileId: res.fileId||null, url: res.fileId?`https://drive.google.com/uc?id=${res.fileId}`:img.base64 });
+      } catch(e) {
+        images.push({ name: img.name, base64: img.base64, url: img.base64 });
+      }
+    }
+    hideLoading();
+  }
   const req = {
-    id, kind:'settlement', requester, requesterEmail: currentUser.email, dept,
+    id, kind:'settlement', requester, requesterEmail: currentUser.email, dept, proj,
     advanceRefId, advanceAmount, items, totalSpent, diff,
     approverEmail, approverName: approver?approver.name:'',
     distributorEmail, distributorName: distributor ? distributor.name : '',
+    images,
     status:'pending', createdAt: nowDateStr(), createdAtRaw: Date.now(), approvedAt:'', approvedBy:'', rejectReason:''
   };
   approvalRequests.push(req);
@@ -6818,16 +6971,29 @@ function submitSettlement() {
     `🧾 <b>Phiếu hoàn ứng mới</b> — ${tgEscape(id)}\nNgười đề nghị: ${tgEscape(requester)}\nĐã tạm ứng: ${tgEscape(formatVND(advanceAmount))}\nChi thực tế: ${tgEscape(formatVND(totalSpent))}\nChênh lệch: ${tgEscape(formatVND(diff))}\nVui lòng vào PTI-Project để phê duyệt.`);
 }
 
+function apprImagesHtml(images) {
+  return `<div style="margin-top:10px">
+    <div style="font-size:11px;color:var(--text2);font-weight:600;margin-bottom:6px">📸 Hình ảnh bằng chứng</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      ${images.map(img => `
+        <a href="${img.url||img.base64}" target="_blank" style="display:block">
+          <img src="${img.url||img.base64}" style="width:90px;height:90px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);transition:transform .15s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
+        </a>`).join('')}
+    </div>
+  </div>`;
+}
+
 function renderSettlementRequests() {
   const tbody = document.getElementById('appr-settlement-tbody');
   if(!tbody) return;
   const list = approvalRequests.filter(r=>r.kind==='settlement').sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
   if(list.length===0){
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🧾</div><div class="empty-state-title">Chưa có phiếu hoàn ứng</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🧾</div><div class="empty-state-title">Chưa có phiếu hoàn ứng</div></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = list.map(r=>`
+  tbody.innerHTML = list.map((r,i)=>`
     <tr style="cursor:pointer" onclick="openModal_viewApproval('${r.id}')">
+      <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.id}</strong></td>
       <td>${r.requester}</td>
       <td>${formatVND(r.advanceAmount||0)}</td>
@@ -6850,9 +7016,10 @@ function openModal_viewApproval(id) {
   const canRequesterConfirm = (r.kind==='advance' || r.kind==='settlement') && r.status==='approved' && !r.requesterConfirmed && currentUser?.email===r.requesterEmail;
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
-  if(r.kind==='material' || r.kind==='handover' || r.kind==='settlement') overlay.classList.add('wide-modal'); else overlay.classList.remove('wide-modal');
+  overlay.classList.add('wide-modal');
 
   let title = '', rows = [], itemsHtml = '', approversHtml = '';
+  const projLabel = r.proj ? (projects.find(p=>p.id===r.proj) ? `${r.proj} — ${projects.find(p=>p.id===r.proj).name}` : r.proj) : '—';
   if(r.kind==='material') {
     title = `📝 Phiếu đề nghị mua vật tư — ${r.id}`;
     rows = [
@@ -6860,6 +7027,7 @@ function openModal_viewApproval(id) {
       ['Người đề nghị', r.requester],
       ['Chức danh', r.title||'—'],
       ['Bộ phận đề nghị', r.dept||'—'],
+      ['Dự án liên quan', projLabel],
       ['Mục đích sử dụng', r.purpose||'—'],
       ['Ngày cần vật tư', r.neededDate ? formatDateVN(r.neededDate) + neededDateBadge(r) : '—'],
       ['Người mua', r.distributorName || r.distributorEmail || '—'],
@@ -6896,6 +7064,7 @@ function openModal_viewApproval(id) {
     title = `📦 Biên bản bàn giao hàng hóa — ${r.id}`;
     rows = [
       ['Ngày bàn giao', r.date||'—'],
+      ['Dự án liên quan', projLabel],
       ['Bên giao (A)', `${r.partyAName||'—'}${r.partyADept?(' — '+r.partyADept):''}`],
       ['ĐT / Địa chỉ bên A', `${r.partyAPhone||'—'} / ${r.partyAAddr||'—'}`],
       ['Bên nhận (B)', `${r.partyBName||'—'}${r.partyBDept?(' — '+r.partyBDept):''}`],
@@ -6912,17 +7081,20 @@ function openModal_viewApproval(id) {
     rows = [
       ['Người đề nghị', r.requester],
       ['Bộ phận', r.dept||'—'],
+      ['Dự án liên quan', projLabel],
       ['Số tiền tạm ứng', `<strong>${formatVND(r.amount||0)}</strong>`],
       ['Ngày cần nhận tiền', r.neededDate ? formatDateVN(r.neededDate) : '—'],
       ['Lý do / Nội dung', r.reason||'—'],
       ['Người phê duyệt', r.approverName||'—'],
       ['Người chi tiền', r.distributorName || r.distributorEmail || '—'],
     ];
+    if((r.images||[]).length) itemsHtml = apprImagesHtml(r.images);
   } else if(r.kind==='settlement') {
     title = `🧾 Phiếu hoàn ứng — ${r.id}`;
     rows = [
       ['Người đề nghị', r.requester],
       ['Bộ phận', r.dept||'—'],
+      ['Dự án liên quan', projLabel],
       ['Phiếu tạm ứng liên quan', r.advanceRefId || '—'],
       ['Số tiền đã tạm ứng', formatVND(r.advanceAmount||0)],
       ['Tổng chi thực tế', formatVND(r.totalSpent||0)],
@@ -6932,7 +7104,7 @@ function openModal_viewApproval(id) {
     ];
     itemsHtml = `<table class="tbl" style="min-width:600px"><thead><tr><th>Nội dung chi</th><th>Số tiền</th><th>Chứng từ/Hóa đơn</th><th>Ghi chú</th></tr></thead><tbody>
       ${(r.items||[]).map(it=>`<tr><td>${it.content}</td><td>${formatVND(it.amount||0)}</td><td>${it.receipt||'—'}</td><td>${it.note||'—'}</td></tr>`).join('')}
-    </tbody></table>`;
+    </tbody></table>` + ((r.images||[]).length ? apprImagesHtml(r.images) : '');
   } else {
     title = `🗓️ Đơn xin nghỉ phép — ${r.id}`;
     rows = [
@@ -7437,7 +7609,7 @@ function sendChatFiles(input) {
 
 function syncChatToDrive() {
   if(!driveLoaded) return; // tránh ghi đè Drive khi chưa tải được dữ liệu thật
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, settings };
+  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, meetings, orgChart, settings };
   fetch(DRIVE_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(()=>{});
 }
 
@@ -7523,8 +7695,778 @@ function renderAll() {
   renderDocs(); renderTeam(); renderUrgent(); renderToday(); renderDashTasks();
   renderWarehouse();
   renderApproval();
+  renderMeetings();
+  ocRenderAll();
   const sel = document.getElementById('phase-proj-sel');
   if(sel) sel.innerHTML = '<option value="">— Chọn dự án —</option>' + projects.map(p=>'<option value="'+p.id+'">'+p.id+' — '+p.name+'</option>').join('');
+}
+
+// ══════════════════ CUỘC HỌP (Google Meet + Biên bản họp) ══════════════════
+let meetingsTab = 'upcoming';
+let meetingAttendeesTmp = [];
+let meetingActionItemsTmp = [];
+
+function switchMeetingTab(tab) {
+  meetingsTab = tab;
+  document.getElementById('mt-tab-upcoming').classList.toggle('active', tab==='upcoming');
+  document.getElementById('mt-tab-past').classList.toggle('active', tab==='past');
+  renderMeetings();
+}
+
+function fmtMeetingDateTime(iso) {
+  if(!iso) return '';
+  const d = new Date(iso);
+  const days = ['CN','T2','T3','T4','T5','T6','T7'];
+  return `${days[d.getDay()]}, ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} • ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+function buildGCalUrl(m) {
+  const fmt = iso => new Date(iso).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const text = encodeURIComponent(m.title);
+  const dates = `${fmt(m.startTime)}/${fmt(m.endTime)}`;
+  const details = encodeURIComponent(
+    (m.meetLink ? `Link Google Meet: ${m.meetLink}\n\n` : '') + (m.agenda || '')
+  );
+  const location = encodeURIComponent(m.location || 'Google Meet');
+  const add = encodeURIComponent((m.attendees||[]).map(a=>a.email).join(','));
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${dates}&details=${details}&location=${location}&add=${add}`;
+}
+
+function renderMeetings() {
+  const container = document.getElementById('meetings-container');
+  if(!container) return;
+  const now = Date.now();
+  const list = [...meetings].filter(m => {
+    const isPast = new Date(m.endTime||m.startTime).getTime() < now || m.status==='cancelled';
+    return meetingsTab==='upcoming' ? !isPast : isPast;
+  }).sort((a,b) => meetingsTab==='upcoming'
+    ? new Date(a.startTime)-new Date(b.startTime)
+    : new Date(b.startTime)-new Date(a.startTime));
+
+  const bMeet = document.getElementById('b-meetings');
+  if(bMeet) {
+    const upcomingCount = meetings.filter(m=>m.status!=='cancelled' && new Date(m.endTime||m.startTime).getTime()>=now).length;
+    bMeet.textContent = upcomingCount;
+    bMeet.style.display = upcomingCount>0 ? '' : 'none';
+  }
+
+  if(list.length===0) {
+    container.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state-icon">📹</div><div class="empty-state-title">${meetingsTab==='upcoming'?'Chưa có cuộc họp nào sắp diễn ra':'Chưa có cuộc họp nào đã diễn ra'}</div>Nhấn "Tạo cuộc họp" để lên lịch họp qua Google Meet</div></div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(m => {
+    const isCancelled = m.status==='cancelled';
+    const hasMinutes = !!(m.minutes && m.minutes.completedAt);
+    const organizer = team.find(t=>t.email===m.organizerEmail);
+    const canManage = isAdmin() || (currentUser && currentUser.email===m.organizerEmail);
+    return `
+    <div class="card" style="margin-bottom:12px;${isCancelled?'opacity:0.5':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <strong style="font-size:14px">${m.title}</strong>
+            ${isCancelled ? `<span class="badge badge-red">Đã hủy</span>` : hasMinutes ? `<span class="badge badge-green">✅ Có biên bản</span>` : ''}
+          </div>
+          <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px;margin-bottom:6px">
+            🕓 ${fmtMeetingDateTime(m.startTime)}${m.endTime?` — ${new Date(m.endTime).getHours().toString().padStart(2,'0')}:${new Date(m.endTime).getMinutes().toString().padStart(2,'0')}`:''}
+          </div>
+          ${m.agenda ? `<div style="font-size:12.5px;color:var(--text1);margin-bottom:8px;white-space:pre-wrap">${m.agenda}</div>` : ''}
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
+            ${(m.attendees||[]).map(a=>`<span class="badge badge-gray" title="${a.email}">👤 ${a.name}</span>`).join('')}
+          </div>
+          <div style="font-size:11px;color:var(--text2)">Người tổ chức: ${organizer?organizer.name:m.organizerName||'—'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:170px">
+          ${m.meetLink ? `<a href="${m.meetLink}" target="_blank" class="btn btn-sm btn-accent" style="text-decoration:none;justify-content:center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="15" height="14" rx="2"/><path d="M18 9.5l4-2.5v10l-4-2.5"/></svg>
+            Vào Google Meet
+          </a>` : ''}
+          <a href="${buildGCalUrl(m)}" target="_blank" class="btn btn-sm btn-ghost" style="text-decoration:none;justify-content:center">📅 Thêm vào Calendar</a>
+          <button class="btn btn-sm btn-ghost" onclick="openModal_meetingMinutes('${m.id}')" style="justify-content:center">📝 ${hasMinutes?'Xem':'Ghi'} biên bản</button>
+          ${canManage && !isCancelled ? `<button class="btn btn-sm btn-ghost" onclick="openModal_editMeeting('${m.id}')" style="justify-content:center">✏️ Sửa</button>` : ''}
+          ${canManage && !isCancelled ? `<button class="btn btn-sm btn-ghost" style="color:var(--red);justify-content:center" onclick="cancelMeeting('${m.id}')">🗑 Hủy họp</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal_newMeeting() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  meetingAttendeesTmp = [];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = '📹 Tạo cuộc họp mới';
+  const now = new Date();
+  now.setMinutes(Math.ceil(now.getMinutes()/30)*30, 0, 0);
+  const end = new Date(now.getTime() + 60*60000);
+  const toLocalInput = d => `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}T${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-row"><label class="form-label">Tiêu đề cuộc họp *</label><input class="form-ctrl" id="mt-title" placeholder="Họp tiến độ dự án TL-2025-001..."></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Bắt đầu *</label><input class="form-ctrl" type="datetime-local" id="mt-start" value="${toLocalInput(now)}" onchange="syncMeetingEndTime()"></div>
+      <div class="form-row"><label class="form-label">Kết thúc *</label><input class="form-ctrl" type="datetime-local" id="mt-end" value="${toLocalInput(end)}"></div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">🔗 Link Google Meet</label>
+      <div style="display:flex;gap:8px">
+        <input class="form-ctrl" id="mt-meetlink" placeholder="https://meet.google.com/xxx-xxxx-xxx" style="flex:1">
+        <button type="button" class="btn btn-sm btn-ghost" style="white-space:nowrap" onclick="window.open('https://meet.google.com/new','_blank')">➕ Tạo phòng mới</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">Nhấn "Tạo phòng mới" để mở Google Meet tạo phòng họp tức thì, sau đó dán link vào ô trên.</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người tham dự * <span style="font-weight:400;color:var(--text2);font-size:11px">(lấy từ danh sách Nhân sự)</span></label>
+      <div id="mt-attendee-list" style="display:flex;flex-direction:column;gap:2px;max-height:190px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
+        ${team.map(t => `
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+            <input type="checkbox" value="${t.email}" onchange="toggleMeetingAttendee('${t.email}','${t.name.replace(/'/g,"\\'")}',this.checked)" style="width:15px;height:15px;accent-color:var(--accent)" ${t.email===currentUser.email?'checked':''}>
+            <span style="font-size:12.5px">${t.name}</span>
+            <span style="font-size:11px;color:var(--text2)">${t.email}</span>
+          </label>`).join('')}
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Nội dung / Chương trình họp</label><textarea class="form-ctrl" id="mt-agenda" rows="3" placeholder="Các nội dung sẽ trao đổi trong cuộc họp..."></textarea></div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitMeeting()">📤 Tạo & Gửi lời mời</button>
+  `;
+  if(currentUser) meetingAttendeesTmp = [{email:currentUser.email, name:currentUser.name}];
+}
+
+function syncMeetingEndTime() {
+  const start = document.getElementById('mt-start')?.value;
+  const endEl = document.getElementById('mt-end');
+  if(!start || !endEl) return;
+  const s = new Date(start);
+  if(new Date(endEl.value) <= s) {
+    const e = new Date(s.getTime()+60*60000);
+    const toLocalInput = d => `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}T${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+    endEl.value = toLocalInput(e);
+  }
+}
+
+function toggleMeetingAttendee(email, name, checked) {
+  meetingAttendeesTmp = meetingAttendeesTmp.filter(a=>a.email!==email);
+  if(checked) meetingAttendeesTmp.push({email, name});
+}
+
+function submitMeeting() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const title = document.getElementById('mt-title').value.trim();
+  const startVal = document.getElementById('mt-start').value;
+  const endVal = document.getElementById('mt-end').value;
+  const meetLink = document.getElementById('mt-meetlink').value.trim();
+  const agenda = document.getElementById('mt-agenda').value.trim();
+  if(!title){ toast('Vui lòng nhập tiêu đề cuộc họp'); return; }
+  if(!startVal || !endVal){ toast('Vui lòng chọn thời gian họp'); return; }
+  if(new Date(endVal) <= new Date(startVal)){ toast('Giờ kết thúc phải sau giờ bắt đầu'); return; }
+  if(meetingAttendeesTmp.length===0){ toast('Vui lòng chọn ít nhất 1 người tham dự'); return; }
+  const id = generateDocId('CH', meetings);
+  const meeting = {
+    id, title,
+    startTime: new Date(startVal).toISOString(),
+    endTime: new Date(endVal).toISOString(),
+    location: 'Google Meet (Online)',
+    meetLink,
+    attendees: [...meetingAttendeesTmp],
+    organizerEmail: currentUser.email, organizerName: currentUser.name,
+    agenda, status: 'confirmed',
+    createdAt: nowDateStr(), createdAtRaw: Date.now(),
+    minutes: null
+  };
+  meetings.push(meeting);
+  closeModal(); renderMeetings(); syncDataToDrive();
+  toast(`📹 Đã tạo cuộc họp "${title}" và gửi lời mời`);
+  const gcalUrl = buildGCalUrl(meeting);
+  meeting.attendees.forEach(a => {
+    if(a.email === currentUser.email) return;
+    sendTelegramPersonal(a.email,
+      `📹 <b>Lời mời họp mới</b> — ${tgEscape(title)}\n` +
+      `🕓 ${tgEscape(fmtMeetingDateTime(meeting.startTime))}\n` +
+      (meetLink ? `🔗 Google Meet: ${tgEscape(meetLink)}\n` : '') +
+      (agenda ? `📋 Nội dung: ${tgEscape(agenda)}\n` : '') +
+      `Người tổ chức: ${tgEscape(currentUser.name)}\n` +
+      `📅 Thêm vào Calendar: ${gcalUrl}`
+    );
+  });
+}
+
+function openModal_editMeeting(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  meetingAttendeesTmp = [...(m.attendees||[])];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = '✏️ Sửa cuộc họp';
+  const toLocalInput = d => `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}T${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+  const startD = new Date(m.startTime);
+  const endD = new Date(m.endTime);
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-row"><label class="form-label">Tiêu đề cuộc họp *</label><input class="form-ctrl" id="mt-title" value="${(m.title||'').replace(/"/g,'&quot;')}"></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Bắt đầu *</label><input class="form-ctrl" type="datetime-local" id="mt-start" value="${toLocalInput(startD)}" onchange="syncMeetingEndTime()"></div>
+      <div class="form-row"><label class="form-label">Kết thúc *</label><input class="form-ctrl" type="datetime-local" id="mt-end" value="${toLocalInput(endD)}"></div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">🔗 Link Google Meet</label>
+      <div style="display:flex;gap:8px">
+        <input class="form-ctrl" id="mt-meetlink" value="${(m.meetLink||'').replace(/"/g,'&quot;')}" placeholder="https://meet.google.com/xxx-xxxx-xxx" style="flex:1">
+        <button type="button" class="btn btn-sm btn-ghost" style="white-space:nowrap" onclick="window.open('https://meet.google.com/new','_blank')">➕ Tạo phòng mới</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">Nhấn "Tạo phòng mới" để mở Google Meet tạo phòng họp tức thì, sau đó dán link vào ô trên.</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người tham dự * <span style="font-weight:400;color:var(--text2);font-size:11px">(lấy từ danh sách Nhân sự)</span></label>
+      <div id="mt-attendee-list" style="display:flex;flex-direction:column;gap:2px;max-height:190px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
+        ${team.map(t => `
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+            <input type="checkbox" value="${t.email}" onchange="toggleMeetingAttendee('${t.email}','${t.name.replace(/'/g,"\\'")}',this.checked)" style="width:15px;height:15px;accent-color:var(--accent)" ${meetingAttendeesTmp.find(a=>a.email===t.email)?'checked':''}>
+            <span style="font-size:12.5px">${t.name}</span>
+            <span style="font-size:11px;color:var(--text2)">${t.email}</span>
+          </label>`).join('')}
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Nội dung / Chương trình họp</label><textarea class="form-ctrl" id="mt-agenda" rows="3" placeholder="Các nội dung sẽ trao đổi trong cuộc họp...">${m.agenda||''}</textarea></div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitMeetingEdit('${id}')">💾 Lưu thay đổi & Thông báo</button>
+  `;
+}
+
+function submitMeetingEdit(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const title = document.getElementById('mt-title').value.trim();
+  const startVal = document.getElementById('mt-start').value;
+  const endVal = document.getElementById('mt-end').value;
+  const meetLink = document.getElementById('mt-meetlink').value.trim();
+  const agenda = document.getElementById('mt-agenda').value.trim();
+  if(!title){ toast('Vui lòng nhập tiêu đề cuộc họp'); return; }
+  if(!startVal || !endVal){ toast('Vui lòng chọn thời gian họp'); return; }
+  if(new Date(endVal) <= new Date(startVal)){ toast('Giờ kết thúc phải sau giờ bắt đầu'); return; }
+  if(meetingAttendeesTmp.length===0){ toast('Vui lòng chọn ít nhất 1 người tham dự'); return; }
+
+  m.title = title;
+  m.startTime = new Date(startVal).toISOString();
+  m.endTime = new Date(endVal).toISOString();
+  m.meetLink = meetLink;
+  m.agenda = agenda;
+  m.attendees = [...meetingAttendeesTmp];
+
+  closeModal(); renderMeetings(); syncDataToDrive();
+  toast(`✏️ Đã cập nhật cuộc họp "${title}" và gửi thông báo`);
+  const gcalUrl = buildGCalUrl(m);
+  m.attendees.forEach(a => {
+    if(a.email === currentUser.email) return;
+    sendTelegramPersonal(a.email,
+      `✏️ <b>Cuộc họp đã được cập nhật</b> — ${tgEscape(title)}\n` +
+      `🕓 ${tgEscape(fmtMeetingDateTime(m.startTime))}\n` +
+      (meetLink ? `🔗 Google Meet: ${tgEscape(meetLink)}\n` : '') +
+      (agenda ? `📋 Nội dung: ${tgEscape(agenda)}\n` : '') +
+      `Người tổ chức: ${tgEscape(currentUser.name)}\n` +
+      `📅 Thêm vào Calendar: ${gcalUrl}`
+    );
+  });
+}
+
+function cancelMeeting(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  showConfirm({title:'Hủy cuộc họp',icon:'🗑',iconBg:'var(--red-dim)',
+    msg:`Xác nhận hủy cuộc họp <strong>${m.title}</strong>?`,
+    okText:'Hủy cuộc họp',okClass:'btn-danger',
+    onOk:()=>{
+      m.status = 'cancelled';
+      renderMeetings(); syncDataToDrive();
+      toast('Đã hủy cuộc họp');
+      m.attendees.forEach(a=>{
+        if(a.email===currentUser.email) return;
+        sendTelegramPersonal(a.email, `❌ <b>Cuộc họp đã bị hủy</b> — ${tgEscape(m.title)}\n🕓 ${tgEscape(fmtMeetingDateTime(m.startTime))}`);
+      });
+    }
+  });
+}
+
+// ── BIÊN BẢN HỌP (Meeting minutes / memorandum) ──
+function openModal_meetingMinutes(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  const mm = m.minutes || {};
+  meetingActionItemsTmp = (mm.actionItems || []).map(x=>({...x}));
+  if(meetingActionItemsTmp.length===0) meetingActionItemsTmp.push({task:'',assignee:'',due:''});
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = `📝 Biên bản họp — ${m.title}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-size:11.5px;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:12px">
+      🕓 ${fmtMeetingDateTime(m.startTime)} &nbsp;•&nbsp; 👥 ${(m.attendees||[]).map(a=>a.name).join(', ')}
+    </div>
+    <div class="form-row"><label class="form-label">Nội dung đã thảo luận</label><textarea class="form-ctrl" id="mm-content" rows="3" placeholder="Tóm tắt nội dung trao đổi trong cuộc họp...">${mm.content||''}</textarea></div>
+    <div class="form-row"><label class="form-label">Kết luận / Quyết định</label><textarea class="form-ctrl" id="mm-decisions" rows="2" placeholder="Các quyết định, thống nhất chung...">${mm.decisions||''}</textarea></div>
+    <div class="form-row">
+      <label class="form-label">Việc cần làm sau họp</label>
+      <div id="mm-action-items"></div>
+      <button type="button" class="btn btn-xs btn-ghost" onclick="addMeetingActionItem()" style="margin-top:6px">+ Thêm việc cần làm</button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Người tham dự thực tế</label>
+      <div style="display:flex;flex-direction:column;gap:2px;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
+        ${(m.attendees||[]).map(a => {
+          const att = (mm.attendance||[]).find(x=>x.email===a.email);
+          const present = att ? att.present : true;
+          return `<label style="display:flex;align-items:center;gap:8px;padding:5px 8px">
+            <input type="checkbox" class="mm-attend-chk" data-email="${a.email}" data-name="${a.name}" ${present?'checked':''} style="width:15px;height:15px;accent-color:var(--green)">
+            <span style="font-size:12.5px">${a.name}</span>
+          </label>`;
+        }).join('')}
+      </div>
+    </div>
+    ${mm.completedAt ? `<div style="font-size:11px;color:var(--text2)">✅ Biên bản hoàn thiện bởi ${mm.completedBy} lúc ${mm.completedAt}</div>` : ''}
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>
+    <button class="btn btn-ghost" onclick="printMeetingMinutes('${m.id}')">🖨️ In biên bản</button>
+    <button class="btn btn-accent" onclick="saveMeetingMinutes('${m.id}')">💾 Lưu biên bản</button>
+  `;
+  renderMeetingActionItems();
+}
+
+function renderMeetingActionItems() {
+  const wrap = document.getElementById('mm-action-items');
+  if(!wrap) return;
+  wrap.innerHTML = meetingActionItemsTmp.map((it,i) => `
+    <div style="display:grid;grid-template-columns:1fr 140px 130px 26px;gap:6px;margin-bottom:6px;align-items:center">
+      <input class="form-ctrl" placeholder="Nội dung công việc" value="${(it.task||'').replace(/"/g,'&quot;')}" oninput="meetingActionItemsTmp[${i}].task=this.value" style="font-size:12px">
+      <select class="form-ctrl" style="font-size:12px" onchange="meetingActionItemsTmp[${i}].assignee=this.value">
+        <option value="">— Người phụ trách —</option>
+        ${team.map(t=>`<option value="${t.email}" ${it.assignee===t.email?'selected':''}>${t.name}</option>`).join('')}
+      </select>
+      <input class="form-ctrl" type="date" value="${it.due||''}" style="font-size:12px" onchange="meetingActionItemsTmp[${i}].due=this.value">
+      <button type="button" class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMeetingActionItem(${i})">✕</button>
+    </div>`).join('');
+}
+function addMeetingActionItem() {
+  meetingActionItemsTmp.push({task:'',assignee:'',due:''});
+  renderMeetingActionItems();
+}
+function removeMeetingActionItem(i) {
+  meetingActionItemsTmp.splice(i,1);
+  if(meetingActionItemsTmp.length===0) meetingActionItemsTmp.push({task:'',assignee:'',due:''});
+  renderMeetingActionItems();
+}
+
+function saveMeetingMinutes(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  const content = document.getElementById('mm-content').value.trim();
+  const decisions = document.getElementById('mm-decisions').value.trim();
+  const actionItems = meetingActionItemsTmp.filter(it=>it.task.trim());
+  const attendance = [...document.querySelectorAll('.mm-attend-chk')].map(chk => ({
+    email: chk.dataset.email, name: chk.dataset.name, present: chk.checked
+  }));
+  m.minutes = {
+    content, decisions, actionItems, attendance,
+    completedAt: nowDateTimeStr(), completedBy: currentUser ? currentUser.name : ''
+  };
+  closeModal(); renderMeetings(); syncDataToDrive();
+  toast('📝 Đã lưu biên bản họp');
+  actionItems.forEach(it => {
+    if(!it.assignee) return;
+    sendTelegramPersonal(it.assignee,
+      `📋 <b>Việc cần làm sau họp</b> — ${tgEscape(m.title)}\nCông việc: ${tgEscape(it.task)}\n${it.due?`Hạn: ${tgEscape(formatDateVN(it.due))}\n`:''}Từ biên bản họp lúc ${tgEscape(m.minutes.completedAt)}`);
+  });
+}
+
+function printMeetingMinutes(id) {
+  const m = meetings.find(x=>x.id===id);
+  if(!m) return;
+  const mm = m.minutes || {};
+  const attendance = mm.attendance && mm.attendance.length ? mm.attendance : (m.attendees||[]).map(a=>({...a, present:true}));
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><meta charset="utf-8"><title>Biên bản họp — ${m.title}</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:32px;color:#111;max-width:760px;margin:0 auto}
+      h1{font-size:19px;text-align:center;margin-bottom:2px}
+      .sub{text-align:center;color:#555;font-size:12px;margin-bottom:20px}
+      table{width:100%;border-collapse:collapse;margin:10px 0 18px}
+      th,td{border:1px solid #999;padding:6px 8px;font-size:12px;text-align:left}
+      th{background:#f0f0f0}
+      .label{font-weight:700;font-size:13px;margin-top:16px;margin-bottom:4px}
+      .box{white-space:pre-wrap;font-size:12.5px;line-height:1.6;border:1px solid #ccc;padding:8px 10px;border-radius:4px;min-height:20px}
+      @media print{ button{display:none} }
+    </style></head><body>
+      <h1>BIÊN BẢN HỌP</h1>
+      <div class="sub">${m.title}</div>
+      <table>
+        <tr><th style="width:160px">Thời gian</th><td>${fmtMeetingDateTime(m.startTime)}</td></tr>
+        <tr><th>Hình thức</th><td>${m.location||'Google Meet'}${m.meetLink?' — '+m.meetLink:''}</td></tr>
+        <tr><th>Người tổ chức</th><td>${m.organizerName}</td></tr>
+      </table>
+      <div class="label">Người tham dự</div>
+      <table><thead><tr><th>Họ tên</th><th style="width:120px">Có mặt</th></tr></thead><tbody>
+        ${attendance.map(a=>`<tr><td>${a.name}</td><td>${a.present?'✅ Có mặt':'❌ Vắng'}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="label">Nội dung đã thảo luận</div>
+      <div class="box">${mm.content||'—'}</div>
+      <div class="label">Kết luận / Quyết định</div>
+      <div class="box">${mm.decisions||'—'}</div>
+      <div class="label">Việc cần làm sau họp</div>
+      <table><thead><tr><th>Công việc</th><th style="width:150px">Người phụ trách</th><th style="width:110px">Hạn</th></tr></thead><tbody>
+        ${(mm.actionItems||[]).length ? mm.actionItems.map(it=>`<tr><td>${it.task}</td><td>${(team.find(t=>t.email===it.assignee)||{}).name||'—'}</td><td>${it.due?formatDateVN(it.due):'—'}</td></tr>`).join('') : '<tr><td colspan="3">—</td></tr>'}
+      </tbody></table>
+      <button onclick="window.print()" style="margin-top:16px;padding:8px 16px">🖨️ In</button>
+    </body></html>
+  `);
+  win.document.close();
+}
+
+// ══════════════════ SƠ ĐỒ TỔ CHỨC — DẠNG THẺ (editable) ══════════════════
+const OC_COLORS = ['#4f8ef7','#2dd4bf','#fbbf24','#a78bfa','#f87171','#0369a1','#fb923c'];
+const OC_AVATAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>`;
+
+function ocBlankCard(over) {
+  return Object.assign({photo:'', years:'', name:'Nhân sự mới', role:'Staff', sub:'', birth:'', join:'', start:'', star:false}, over||{});
+}
+
+function ocDefaultState() {
+  return {
+    title: 'Sơ đồ tổ chức PTI',
+    badge: 'Nội bộ',
+    hc: { label:'H/C Office', plan:'0', current:'0' },
+    hcTable: {
+      cols: ['T/L','P/L','Staff','Sub Total','Operator','FSE','Total'],
+      rows: [
+        { label:'Kế hoạch', vals:['1','2','20','23','0','0','23'] },
+        { label:'Hiện tại', vals:['1','2','18','21','0','0','21'] }
+      ]
+    },
+    leaders: [
+      { tag:'Team Leader', card: ocBlankCard({name:'Trưởng nhóm', role:'Team Leader', sub:'', years:''}) },
+      { tag:'Department Leader', card: ocBlankCard({name:'Trưởng phòng', role:'Department Leader', sub:'', years:''}) }
+    ],
+    departments: [
+      { id:'d1', name:'Kỹ thuật', delta:'', colorIdx:0, leader:null, staff:[ocBlankCard()], note:'' },
+      { id:'d2', name:'Sản xuất', delta:'', colorIdx:1, leader:null, staff:[ocBlankCard()], note:'' },
+      { id:'d3', name:'QC', delta:'', colorIdx:2, leader:null, staff:[ocBlankCard()], note:'' }
+    ]
+  };
+}
+
+// Chuyển dữ liệu cũ (teamLeader/deptLeader cố định) sang mảng leaders[] có thể thêm/xóa
+function ocMigrate(oc) {
+  if(!oc) return oc;
+  if(!oc.leaders) {
+    oc.leaders = [];
+    if(oc.teamLeader) oc.leaders.push({ tag:'Team Leader', card: oc.teamLeader });
+    if(oc.deptLeader) oc.leaders.push({ tag:'Department Leader', card: oc.deptLeader });
+    delete oc.teamLeader;
+    delete oc.deptLeader;
+  }
+  if(oc.leaders.length===0) oc.leaders.push({ tag:'Leader', card: ocBlankCard() });
+  return oc;
+}
+
+function ocGetPath(obj, path) {
+  const parts = path.replace(/\[(\d+)\]/g,'.$1').split('.').filter(Boolean);
+  let cur = obj;
+  for(const p of parts){ if(cur==null) return undefined; cur = cur[p]; }
+  return cur;
+}
+function ocSetPath(obj, path, value) {
+  const parts = path.replace(/\[(\d+)\]/g,'.$1').split('.').filter(Boolean);
+  let cur = obj;
+  for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
+  cur[parts[parts.length-1]] = value;
+}
+
+let ocSaveTimer = null;
+function ocMarkUnsaved() {
+  const el = document.getElementById('oc-save-state');
+  if(el) el.textContent = '● Có thay đổi chưa lưu';
+  clearTimeout(ocSaveTimer);
+  ocSaveTimer = setTimeout(ocSave, 2500);
+}
+function ocSave() {
+  clearTimeout(ocSaveTimer);
+  syncDataToDrive();
+  const el = document.getElementById('oc-save-state');
+  if(el) el.textContent = 'Đã lưu';
+}
+function ocResetTemplate() {
+  showConfirm({title:'Làm mới sơ đồ',icon:'🗑️',iconBg:'var(--red-dim)',
+    msg:'Toàn bộ dữ liệu sơ đồ dạng thẻ hiện tại sẽ bị xóa và thay bằng mẫu mặc định. Tiếp tục?',
+    okText:'Làm mới',okClass:'btn-danger',
+    onOk:()=>{ orgChart = ocDefaultState(); ocRenderAll(); ocMarkUnsaved(); }
+  });
+}
+
+// ── PHOTO UPLOAD ──
+let ocPendingPhotoPath = null;
+function ocTriggerPhotoUpload(path) {
+  ocPendingPhotoPath = path;
+  document.getElementById('oc-photo-input').click();
+}
+document.getElementById('oc-photo-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if(!file || !ocPendingPhotoPath) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = new Image();
+    img.onload = function() {
+      const size = 128;
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size/img.width, size/img.height);
+      const w = img.width*scale, h = img.height*scale;
+      ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
+      ocSetPath(orgChart, ocPendingPhotoPath, canvas.toDataURL('image/jpeg', 0.82));
+      ocRenderAll(); ocMarkUnsaved();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+function ocAvatarHtml(card, path, size) {
+  const photo = card.photo ? `<img src="${card.photo}">` : OC_AVATAR_SVG;
+  const years = size==='lg' ? '' : `<div class="oc-years" contenteditable data-path="${path}.years" onblur="ocFieldBlur(this)"></div>`;
+  return `<div class="${size==='lg'?'oc-avatar':'oc-staff-avatar'}" onclick="ocTriggerPhotoUpload('${path}.photo')">${photo}
+    ${years}
+  </div>`;
+}
+function ocLeaderCardHtml(card, path, tag, tagPath, li, canRemove) {
+  return `<div class="oc-leader-card">
+    <div class="oc-star-toggle ${card.star?'on':''}" onclick="ocToggleStar('${path}')">★</div>
+    ${canRemove ? `<button class="oc-mini-btn danger oc-leader-remove" title="Xóa" onclick="ocRemoveLeader(${li})">✕</button>` : ''}
+    ${ocAvatarHtml(card, path, 'lg')}
+    <div class="oc-info">
+      <div class="oc-name" contenteditable data-path="${path}.name"></div>
+      <div class="oc-role" contenteditable data-path="${path}.role"></div>
+      <div class="oc-sub" contenteditable data-path="${path}.sub"></div>
+      <div class="oc-dates">
+        <span title="Năm sinh" contenteditable data-path="${path}.birth"></span>
+        <span title="Ngày vào công ty" contenteditable data-path="${path}.join"></span>
+        <span title="Bắt đầu công việc hiện tại" contenteditable data-path="${path}.start"></span>
+      </div>
+    </div>
+  </div>`;
+}
+function ocStaffCardHtml(card, path, color, isLeaderSlot, removeFn) {
+  return `<div class="oc-staff-card ${isLeaderSlot?'leader':''}" style="--oc-color:${color}">
+    <div class="oc-card-actions">
+      ${removeFn ? `<button class="oc-mini-btn danger" title="Xóa" onclick="${removeFn}">✕</button>` : ''}
+    </div>
+    ${ocAvatarHtml(card, path, 'sm')}
+    <div class="oc-staff-info">
+      <div class="oc-name" contenteditable data-path="${path}.name"></div>
+      <div class="oc-role" contenteditable data-path="${path}.role"></div>
+      <div class="oc-sub" contenteditable data-path="${path}.sub"></div>
+      <div class="oc-dates">
+        <span title="Năm sinh" contenteditable data-path="${path}.birth"></span>
+        <span title="Ngày vào công ty" contenteditable data-path="${path}.join"></span>
+        <span title="Bắt đầu công việc" contenteditable data-path="${path}.start"></span>
+      </div>
+    </div>
+    <div class="oc-star-mini ${card.star?'on':''}" title="Sub Part Leader" onclick="ocToggleStar('${path}')">★</div>
+  </div>`;
+}
+function ocToggleStar(path) {
+  const card = ocGetPath(orgChart, path);
+  card.star = !card.star;
+  ocRenderAll(); ocMarkUnsaved();
+}
+
+function ocDeptColHtml(dept, di) {
+  const color = OC_COLORS[dept.colorIdx % OC_COLORS.length];
+  let leaderHtml;
+  if(dept.leader) {
+    leaderHtml = `<div style="margin-bottom:8px">${ocStaffCardHtml(dept.leader, `departments[${di}].leader`, color, true, `ocRemoveDeptLeader(${di})`)}</div>`;
+  } else {
+    leaderHtml = `<button class="oc-add-staff-btn" style="margin-bottom:8px" onclick="ocAddDeptLeader(${di})">+ Thêm trưởng nhóm</button>`;
+  }
+  const staffHtml = dept.staff.map((s,si)=>ocStaffCardHtml(s, `departments[${di}].staff[${si}]`, color, false, `ocRemoveStaff(${di},${si})`)).join('');
+  const noteHtml = (dept.note!==null && dept.note!==undefined)
+    ? `<div class="oc-note-box ${dept.note?'':'empty'}" data-ph="Ghi chú hỗ trợ..." contenteditable data-path="departments[${di}].note" onblur="ocFieldBlur(this)"><span class="oc-note-remove" onclick="ocRemoveNote(${di})" contenteditable="false">✕</span></div>`
+    : `<button class="oc-add-staff-btn" style="border-color:var(--green);color:var(--green)" onclick="ocAddNote(${di})">+ Ghi chú hỗ trợ</button>`;
+  return `<div class="oc-dept-col">
+    <div class="oc-dept-hd" style="background:${color}">
+      <div class="oc-dept-hd-actions">
+        <button class="oc-icon-btn" title="Đổi màu" onclick="ocCycleColor(${di})">🎨</button>
+        <button class="oc-icon-btn" title="Xóa phòng ban" onclick="ocRemoveDept(${di})">✕</button>
+      </div>
+      <div class="oc-name" contenteditable data-path="departments[${di}].name"></div>
+      <div class="oc-meta">
+        <span>${dept.staff.length + (dept.leader?1:0)} người</span>
+        <span class="oc-delta" contenteditable data-path="departments[${di}].delta" onblur="ocFieldBlur(this)"></span>
+      </div>
+    </div>
+    <div class="oc-dept-body">
+      ${leaderHtml}
+      ${staffHtml}
+      <button class="oc-add-staff-btn" onclick="ocAddStaff(${di})">+ Thêm nhân sự</button>
+      ${noteHtml}
+    </div>
+  </div>`;
+}
+
+function ocRenderHcTable() {
+  const t = document.getElementById('oc-hctable');
+  if(!t) return;
+  const cols = orgChart.hcTable.cols;
+  let html = `<tr><th></th>${cols.map((c,ci)=>`
+    <th style="position:relative">
+      <span contenteditable data-path="hcTable.cols[${ci}]" onblur="ocFieldBlur(this)">${c}</span>
+      ${cols.length>1 ? `<button class="oc-hc-remove" title="Xóa cột" onclick="ocRemoveHcCol(${ci})">✕</button>` : ''}
+    </th>`).join('')}
+    <th style="width:30px;background:transparent;border:none"><button class="oc-mini-btn" title="Thêm cột" onclick="ocAddHcCol()">＋</button></th>
+  </tr>`;
+  orgChart.hcTable.rows.forEach((row,ri)=>{
+    html += `<tr>
+      <td class="oc-rowlabel" style="position:relative">
+        <span contenteditable data-path="hcTable.rows[${ri}].label" onblur="ocFieldBlur(this)">${row.label}</span>
+        ${orgChart.hcTable.rows.length>1 ? `<button class="oc-hc-remove" title="Xóa hàng" onclick="ocRemoveHcRow(${ri})">✕</button>` : ''}
+      </td>`;
+    html += row.vals.map((v,vi)=>`<td contenteditable data-path="hcTable.rows[${ri}].vals[${vi}]" onblur="ocFieldBlur(this)">${v}</td>`).join('');
+    html += `<td style="background:transparent;border:none"></td></tr>`;
+  });
+  html += `<tr><td style="background:transparent;border:none;text-align:left"><button class="oc-mini-btn" title="Thêm hàng" onclick="ocAddHcRow()">＋ Hàng</button></td>${cols.map(()=>'<td style="background:transparent;border:none"></td>').join('')}<td style="background:transparent;border:none"></td></tr>`;
+  t.innerHTML = html;
+}
+function ocAddHcCol() {
+  orgChart.hcTable.cols.push('Cột mới');
+  orgChart.hcTable.rows.forEach(row => row.vals.push('0'));
+  ocRenderHcTable(); ocMarkUnsaved();
+}
+function ocRemoveHcCol(ci) {
+  if(orgChart.hcTable.cols.length<=1) return;
+  orgChart.hcTable.cols.splice(ci,1);
+  orgChart.hcTable.rows.forEach(row => row.vals.splice(ci,1));
+  ocRenderHcTable(); ocMarkUnsaved();
+}
+function ocAddHcRow() {
+  orgChart.hcTable.rows.push({ label:'Hàng mới', vals: orgChart.hcTable.cols.map(()=>'0') });
+  ocRenderHcTable(); ocMarkUnsaved();
+}
+function ocRemoveHcRow(ri) {
+  if(orgChart.hcTable.rows.length<=1) return;
+  orgChart.hcTable.rows.splice(ri,1);
+  ocRenderHcTable(); ocMarkUnsaved();
+}
+
+function ocSetText(el, val) { if(el) el.textContent = val==null?'':val; }
+
+function ocRenderAll() {
+  if(!orgChart) orgChart = ocDefaultState();
+  const doc = document.getElementById('oc-doc');
+  if(!doc) return;
+
+  ocSetText(doc.querySelector('.oc-title'), orgChart.title);
+  ocSetText(doc.querySelector('.oc-badge'), orgChart.badge);
+  ocSetText(doc.querySelector('.oc-hcplan b'), orgChart.hc.label);
+  doc.querySelectorAll('.oc-hcplan span[data-path]').forEach(el=>{
+    ocSetText(el, ocGetPath(orgChart, el.dataset.path));
+  });
+
+  ocRenderHcTable();
+
+  document.getElementById('oc-leader-strip').innerHTML =
+    orgChart.leaders.map((l,li)=>ocLeaderCardHtml(l.card, `leaders[${li}].card`, l.tag, `leaders[${li}].tag`, li, orgChart.leaders.length>1)).join('');
+
+  document.getElementById('oc-dept-row').innerHTML =
+    orgChart.departments.map((d,di)=>ocDeptColHtml(d,di)).join('') +
+    `<div class="oc-add-dept-col"><button class="oc-add-dept-btn" onclick="ocAddDepartment()"><span style="font-size:20px">＋</span>Thêm<br>phòng ban</button></div>`;
+
+  doc.querySelectorAll('[contenteditable][data-path]').forEach(el=>{
+    if(el.closest('#oc-hctable') || el.classList.contains('oc-note-box')) return;
+    if(document.activeElement !== el) el.textContent = ocGetPath(orgChart, el.dataset.path) ?? '';
+  });
+  doc.querySelectorAll('.oc-note-box[data-path]').forEach(el=>{
+    const v = ocGetPath(orgChart, el.dataset.path);
+    if(document.activeElement !== el) {
+      el.classList.toggle('empty', !v);
+      const removeBtn = el.querySelector('.oc-note-remove');
+      el.textContent = v || '';
+      if(removeBtn) el.appendChild(removeBtn);
+    }
+  });
+
+  const ts = document.getElementById('oc-ts-label');
+  if(ts) ts.textContent = '';
+  const saveEl = document.getElementById('oc-save-state');
+  if(saveEl && !saveEl.textContent) saveEl.textContent = 'Đã lưu';
+}
+
+function ocFieldBlur(el) {
+  const path = el.dataset.path;
+  if(!path || !orgChart) return;
+  ocSetPath(orgChart, path, el.textContent.trim());
+  ocMarkUnsaved();
+  if(path.match(/departments\[\d+\]\.(leader|staff)\[?\d*\]?\.name/)) {
+    // no structural change needed, just leave as-is
+  }
+}
+document.addEventListener('input', function(e) {
+  const el = e.target;
+  if(orgChart && el.hasAttribute && el.hasAttribute('contenteditable') && el.dataset.path && el.closest('#oc-doc')) {
+    ocSetPath(orgChart, el.dataset.path, el.textContent);
+    ocMarkUnsaved();
+  }
+});
+
+function ocAddLeader() {
+  orgChart.leaders.push({ tag:'Lãnh đạo', card: ocBlankCard({role:'Manager'}) });
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocRemoveLeader(li) {
+  if(orgChart.leaders.length<=1) return;
+  showConfirm({title:'Xóa thẻ lãnh đạo',icon:'🗑️',iconBg:'var(--red-dim)',msg:'Xóa thẻ lãnh đạo này?',okText:'Xóa',okClass:'btn-danger',
+    onOk:()=>{ orgChart.leaders.splice(li,1); ocRenderAll(); ocMarkUnsaved(); }});
+}
+
+function ocAddDepartment() {
+  orgChart.departments.push({ id:'d'+Date.now(), name:'Phòng ban mới', delta:'', colorIdx: orgChart.departments.length, leader:null, staff:[ocBlankCard()], note:'' });
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocRemoveDept(di) {
+  showConfirm({title:'Xóa phòng ban',icon:'🗑️',iconBg:'var(--red-dim)',msg:'Xóa phòng ban này khỏi sơ đồ?',okText:'Xóa',okClass:'btn-danger',
+    onOk:()=>{ orgChart.departments.splice(di,1); ocRenderAll(); ocMarkUnsaved(); }});
+}
+function ocCycleColor(di) {
+  orgChart.departments[di].colorIdx = (orgChart.departments[di].colorIdx+1) % OC_COLORS.length;
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocAddStaff(di) {
+  orgChart.departments[di].staff.push(ocBlankCard());
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocRemoveStaff(di, si) {
+  orgChart.departments[di].staff.splice(si,1);
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocAddDeptLeader(di) {
+  orgChart.departments[di].leader = ocBlankCard({role:'As. Manager'});
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocRemoveDeptLeader(di) {
+  orgChart.departments[di].leader = null;
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocAddNote(di) {
+  orgChart.departments[di].note = '';
+  ocRenderAll(); ocMarkUnsaved();
+}
+function ocRemoveNote(di) {
+  orgChart.departments[di].note = null;
+  ocRenderAll(); ocMarkUnsaved();
 }
 
 window.onload = () => { fetchDataFromDrive(); };
