@@ -12005,24 +12005,87 @@ function approveQuote(id) {
   });
 }
 
+let quoteAcceptFilesTmp = [];
 function markQuoteCustomerAccepted(id) {
   const q = quotes.find(x=>x.id===id);
   if(!q) return;
   if((q.status||'draft')!=='approved'){ toast('Báo giá phải được duyệt trước khi xác nhận khách hàng chấp nhận'); return; }
   if(!isAdmin() && q.requesterEmail!==currentUser?.email){ showNoPermToast(); return; }
   if(q.projectCreated){ toast(`Báo giá này đã tạo dự án ${q.projectId}`); return; }
-  showConfirm({
-    title:'Báo giá được khách hàng chấp nhận', icon:'🤝', iconBg:'var(--green-dim)',
-    msg:`Xác nhận khách hàng <strong>${tgEscape(q.name)}</strong> đã chấp nhận báo giá ${tgEscape(q.id)}? Hệ thống sẽ tự động tạo dự án và BOM nháp.`,
-    okText:'Tạo dự án', okClass:'btn-green',
-    onOk:()=>{
-      const p=createProjectFromAcceptedQuote(q);
-      if(!p) return;
-      closeModal(); renderQuotes(); renderProjects(); syncDataToDrive();
-      toast(`✅ Đã tạo dự án ${p.id} và BOM nháp từ báo giá ${q.id}`);
-      goToPhaseDetail(p.id);
+  quoteAcceptFilesTmp = [];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  document.getElementById('modal-hd-title').textContent = `🤝 Báo giá được khách hàng chấp nhận — ${id}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--green-dim);border:1px solid rgba(52,211,153,0.25);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px">
+      Xác nhận khách hàng <strong>${tgEscape(q.name)}</strong> đã chấp nhận báo giá <strong>${tgEscape(q.id)}</strong>? Hệ thống sẽ tự động tạo dự án và BOM nháp.
+    </div>
+    <div class="form-row">
+      <label class="form-label">📎 Tải lên PO / văn bản phê duyệt mua hàng của khách <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r2);cursor:pointer">
+        <input type="file" id="qt-accept-files" multiple style="display:none" onchange="previewQuoteAcceptFiles(this)">
+        <span style="font-size:12px">📤 Nhấn để chọn tệp (PO, phê duyệt mua hàng...)</span>
+      </label>
+      <div id="qt-accept-files-preview" style="margin-top:8px;display:flex;flex-direction:column;gap:4px"></div>
+    </div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-green" onclick="doMarkQuoteCustomerAccepted('${id}')">🤝 Tạo dự án</button>
+  `;
+}
+function previewQuoteAcceptFiles(input) {
+  quoteAcceptFilesTmp = Array.from(input.files || []);
+  const wrap = document.getElementById('qt-accept-files-preview');
+  if(!wrap) return;
+  wrap.innerHTML = quoteAcceptFilesTmp.map(f=>`<div style="font-size:11px;color:var(--text1)">📄 ${f.name} <span style="color:var(--text2)">(${(f.size/1024/1024).toFixed(2)} MB)</span></div>`).join('');
+}
+function doMarkQuoteCustomerAccepted(id) {
+  const q = quotes.find(x=>x.id===id);
+  if(!q) return;
+  const files = quoteAcceptFilesTmp || [];
+  function finish(poFiles) {
+    const p = createProjectFromAcceptedQuote(q);
+    if(!p) return;
+    if(poFiles && poFiles.length) {
+      q.customerPoFiles = (q.customerPoFiles||[]).concat(poFiles);
     }
-  });
+    closeModal(); renderQuotes(); renderProjects(); syncDataToDrive();
+    toast(`✅ Đã tạo dự án ${p.id} và BOM nháp từ báo giá ${q.id}`);
+    goToPhaseDetail(p.id);
+  }
+  if(!files.length) { finish([]); return; }
+  const uploaded = [];
+  showLoading(`Đang tải lên ${files.length} tệp PO/phê duyệt...`);
+  function next(i) {
+    if(i >= files.length) { hideLoading(); finish(uploaded); return; }
+    const file = files[i];
+    showLoading(`Đang tải lên (${i+1}/${files.length}): ${file.name}`);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const payload = {
+        action: "upload_file",
+        proj: q.proj || q.id,
+        filename: file.name,
+        mimeType: file.type || "application/octet-stream",
+        fileData: e.target.result.split(',')[1],
+        folderIntent: `quote_po_${q.id}`
+      };
+      fetch(DRIVE_API_URL, { method: "POST", body: JSON.stringify(payload) })
+        .then(r => r.json())
+        .then(res => {
+          uploaded.push({
+            name: file.name, type: file.name.split('.').pop().toUpperCase(),
+            size: (file.size/1024/1024).toFixed(2)+' MB', date: new Date().toISOString().slice(0,10),
+            fileId: res.fileId || null, driveLink: res.driveLink || null
+          });
+          next(i+1);
+        })
+        .catch(err => { hideLoading(); alert("Lỗi tải lên: " + err); });
+    };
+    reader.readAsDataURL(file);
+  }
+  next(0);
 }
 
 function promptRejectQuote(id) {
@@ -12107,6 +12170,10 @@ function openModal_viewQuote(id) {
     </div>
     ${status==='rejected' && q.rejectReason ? `<div style="font-size:12.5px;margin-bottom:12px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r);padding:8px 12px"><span style="color:var(--text2)">Lý do từ chối:</span> ${q.rejectReason}</div>` : ''}
     ${q.note ? `<div style="font-size:12.5px;margin-bottom:12px"><span style="color:var(--text2)">Ghi chú:</span> ${q.note}</div>` : ''}
+    ${(q.customerPoFiles && q.customerPoFiles.length) ? `<div style="font-size:12.5px;margin-bottom:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px">
+      <div style="color:var(--text2);margin-bottom:4px">📎 PO / phê duyệt mua hàng của khách:</div>
+      ${q.customerPoFiles.map(f=>`<div style="margin-top:2px">${f.driveLink ? `<a href="${f.driveLink}" target="_blank" style="color:var(--accent)">📄 ${f.name}</a>` : `📄 ${f.name}`} <span style="color:var(--text2)">(${f.size||''})</span></div>`).join('')}
+    </div>` : ''}
     <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)">
       <table class="tbl" style="min-width:900px">
         <thead><tr><th>Tên chi tiết</th><th>Vật liệu</th><th>Kích thước</th><th>SL</th><th>Gia công</th><th>Giờ</th><th>KL/1</th><th>Chi phí phôi</th><th>Chi phí gia công</th><th>Giá vốn dòng</th></tr></thead>
