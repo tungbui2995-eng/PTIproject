@@ -357,7 +357,7 @@ body {
 .phase-docs-modal .tbl th, .phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
 .phase-docs-modal .tbl-wrap { overflow-x: auto; }
 .wide-modal .modal { width: 92vw; max-width: 1080px; }
-.quote-modal .modal { width: 96vw; max-width: 1360px; }
+.quote-modal .modal { width: 98vw; max-width: 1800px; max-height: 96vh; }
 
 .form-row { margin-bottom: 14px; }
 .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
@@ -11151,6 +11151,7 @@ function formatVNDFull(n) { return Math.round(n||0).toLocaleString('vi-VN') + ' 
 
 function qsMaterialName(id) { return (quoteSettings.materials||[]).find(m=>m.id===id)?.name || ''; }
 function qsMachiningName(id) { return (quoteSettings.machiningTypes||[]).find(m=>m.id===id)?.name || ''; }
+function qsShippingMethodById(id) { return (quoteSettings.shippingMethods||[]).find(s=>s.id===id); }
 
 // ── Trạng thái duyệt báo giá ──
 let quotesTab = 'all';
@@ -11203,6 +11204,7 @@ let qsMaterialsTmp = [];
 let qsMachiningTmp = [];
 let qsSurfaceTmp = [];
 let qsMachinesTmp = [];
+let qsShippingTmp = [];
 
 function openModal_quoteSettings() {
   if(!isAdmin()){ showNoPermToast(); return; }
@@ -11210,6 +11212,7 @@ function openModal_quoteSettings() {
   qsMachinesTmp = JSON.parse(JSON.stringify(quoteSettings.machines||[]));
   qsMachiningTmp = JSON.parse(JSON.stringify(quoteSettings.machiningTypes||[])).map(m=>({ ...m, depreciationPerHour: m.depreciationPerHour||0, laborPerHour: m.laborPerHour||0, machineId: m.machineId||'' }));
   qsSurfaceTmp = JSON.parse(JSON.stringify(quoteSettings.surfaceTreatments||[]));
+  qsShippingTmp = JSON.parse(JSON.stringify(quoteSettings.shippingMethods||[]));
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('wide-modal');
@@ -11261,7 +11264,18 @@ function openModal_quoteSettings() {
       <button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addQsSurfaceRow()">+ Thêm loại xử lý bề mặt</button>
       <div style="font-size:11px;color:var(--text2);margin-top:4px">VD: Sơn tĩnh điện, Mạ kẽm, Mạ crôm, Anod hóa, Phun cát, Đánh bóng, Nhuộm đen...</div>
     </div>
-    <div class="form-row">
+    <div class="form-row" style="margin-top:16px">
+      <label class="form-label">🚚 Chi phí vận chuyển — Phương thức vận chuyển</label>
+      <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
+        <table class="tbl" style="min-width:460px">
+          <thead><tr><th>Tên phương thức vận chuyển</th><th style="width:180px">Đơn giá (đ/km)</th><th></th></tr></thead>
+          <tbody id="qs-shipping-tbody"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addQsShippingRow()">+ Thêm phương thức vận chuyển</button>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">VD: Xe tải công ty, Thuê ngoài, Chành xe, Giao hàng tiết kiệm... Chi phí vận chuyển của mỗi báo giá = Quãng đường (km, nhập khi tạo báo giá) × Đơn giá của phương thức được chọn.</div>
+    </div>
+    <div class="form-row" style="margin-top:16px">
       <label class="form-label">📈 % Lợi nhuận mặc định</label>
       <input class="form-ctrl" type="number" id="qs-margin" value="${quoteSettings.defaultMargin||0}" style="max-width:140px">
     </div>
@@ -11275,6 +11289,7 @@ function openModal_quoteSettings() {
   renderQsMachinesTable();
   renderQsMachiningTable();
   renderQsSurfaceTable();
+  renderQsShippingTable();
 }
 function renderQsMaterialsTable() {
   const tbody = document.getElementById('qs-materials-tbody');
@@ -11354,12 +11369,28 @@ function addQsSurfaceRow() {
   qsSurfaceTmp.push({ id: 'sf-'+Date.now()+Math.random().toString(36).slice(2,6), name:'', price:0, unit:'đ/kg' });
   renderQsSurfaceTable();
 }
+function renderQsShippingTable() {
+  const tbody = document.getElementById('qs-shipping-tbody');
+  if(!tbody) return;
+  if(qsShippingTmp.length===0){ tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--text2);font-size:12px;padding:10px">Chưa có phương thức vận chuyển nào — bấm "+ Thêm phương thức vận chuyển"</td></tr>`; return; }
+  tbody.innerHTML = qsShippingTmp.map((s,i)=>`
+    <tr>
+      <td><input class="form-ctrl" value="${s.name}" oninput="qsShippingTmp[${i}].name=this.value" placeholder="VD: Xe tải công ty"></td>
+      <td><input class="form-ctrl" type="number" value="${s.pricePerKm||0}" oninput="qsShippingTmp[${i}].pricePerKm=parseFloat(this.value)||0" placeholder="0"></td>
+      <td><button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="qsShippingTmp.splice(${i},1);renderQsShippingTable()">✕</button></td>
+    </tr>`).join('');
+}
+function addQsShippingRow() {
+  qsShippingTmp.push({ id: 'sh-'+Date.now()+Math.random().toString(36).slice(2,6), name:'', pricePerKm:0 });
+  renderQsShippingTable();
+}
 function saveQuoteSettings() {
   quoteSettings.materials = qsMaterialsTmp.filter(m=>m.name.trim());
   quoteSettings.machines = qsMachinesTmp.filter(m=>m.name.trim());
   quoteSettings.machiningTypes = qsMachiningTmp.filter(m=>m.name.trim());
   quoteSettings.surfaceTreatments = qsSurfaceTmp.filter(s=>s.name.trim());
   quoteSettings.electricityBasePrice = parseFloat(document.getElementById('qs-elec-price').value) || 0;
+  quoteSettings.shippingMethods = qsShippingTmp.filter(s=>s.name.trim());
   quoteSettings.defaultMargin = parseFloat(document.getElementById('qs-margin').value) || 0;
   closeModal(); syncDataToDrive();
   toast('💾 Đã lưu cài đặt cơ sở dữ liệu báo giá');
@@ -11439,10 +11470,19 @@ function renderQuoteModalBody(existing) {
       </div>
     </div>
     <div class="form-row"><label class="form-label">Ghi chú</label><textarea class="form-ctrl" id="qt-note" rows="2">${e.note||''}</textarea></div>
-    <div class="form-row">
-      <label class="form-label">📈 % Lợi nhuận</label>
-      <input class="form-ctrl" type="number" id="qt-margin" value="${e.marginPercent!=null?e.marginPercent:(quoteSettings.defaultMargin||0)}" style="max-width:140px" oninput="renderQuoteTotals()">
+    <div class="form-grid" style="grid-template-columns:repeat(5,1fr);max-width:800px">
+      <div class="form-row"><label class="form-label">🚚 Phương thức vận chuyển</label>
+        <select class="form-ctrl" id="qt-shipping-method" onchange="renderQuoteTotals()">
+          <option value="">— Không vận chuyển —</option>
+          ${(quoteSettings.shippingMethods||[]).map(s=>`<option value="${s.id}" ${e.shippingMethodId===s.id?'selected':''}>${s.name} (${formatVNDFull(s.pricePerKm||0)}/km)</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-row"><label class="form-label">Quãng đường (km)</label><input class="form-ctrl" type="number" id="qt-distance" value="${e.distanceKm!=null?e.distanceKm:''}" placeholder="0" oninput="renderQuoteTotals()"></div>
+      <div class="form-row"><label class="form-label">🎨 % Thiết kế</label><input class="form-ctrl" type="number" id="qt-design" value="${e.designPercent!=null?e.designPercent:''}" placeholder="0" oninput="renderQuoteTotals()"></div>
+      <div class="form-row"><label class="form-label">🗂️ % Quản lý</label><input class="form-ctrl" type="number" id="qt-management" value="${e.managementPercent!=null?e.managementPercent:''}" placeholder="0" oninput="renderQuoteTotals()"></div>
+      <div class="form-row"><label class="form-label">📈 % Lợi nhuận</label><input class="form-ctrl" type="number" id="qt-margin" value="${e.marginPercent!=null?e.marginPercent:(quoteSettings.defaultMargin||0)}" oninput="renderQuoteTotals()"></div>
     </div>
+    <div style="font-size:11px;color:var(--text2);margin-top:-4px;margin-bottom:6px">CP vận chuyển = Quãng đường × Đơn giá của phương thức đã chọn (theo Cài đặt CSDL báo giá). % Thiết kế và % Quản lý tính trên Tổng giá vốn.</div>
     <div id="qt-totals-box" style="margin-top:6px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r)"></div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -11581,16 +11621,37 @@ function removeQuoteItemRow(i) {
   quoteItemsTmp.splice(i,1);
   renderQuoteItemsTable();
 }
+// Tổng chi phí đầy đủ = Giá vốn + CP vận chuyển (quãng đường × đơn giá/km) + CP thiết kế (% giá vốn) + CP quản lý (% giá vốn)
+// Giá bán đề xuất = Tổng chi phí đầy đủ × (1 + % Lợi nhuận)
+function quoteCalcTotals(subtotal, distanceKm, shippingPricePerKm, designPercent, managementPercent, marginPercent) {
+  const shippingCost = (parseFloat(distanceKm)||0) * (parseFloat(shippingPricePerKm)||0);
+  const designCost = subtotal * ((parseFloat(designPercent)||0)/100);
+  const managementCost = subtotal * ((parseFloat(managementPercent)||0)/100);
+  const fullCost = subtotal + shippingCost + designCost + managementCost;
+  const sellPrice = fullCost * (1 + (parseFloat(marginPercent)||0)/100);
+  return { shippingCost, designCost, managementCost, fullCost, sellPrice };
+}
 function renderQuoteTotals() {
   const box = document.getElementById('qt-totals-box');
   if(!box) return;
   const subtotal = quoteItemsTmp.reduce((s,it)=>s+quoteItemCost(it).totalCost, 0);
+  const distanceKm = document.getElementById('qt-distance')?.value;
+  const shippingMethodId = document.getElementById('qt-shipping-method')?.value || '';
+  const shippingMethod = qsShippingMethodById(shippingMethodId);
+  const shippingPricePerKm = shippingMethod ? (shippingMethod.pricePerKm||0) : 0;
+  const design = document.getElementById('qt-design')?.value;
+  const management = document.getElementById('qt-management')?.value;
   const margin = parseFloat(document.getElementById('qt-margin')?.value) || 0;
-  const sellPrice = subtotal * (1 + margin/100);
+  const t = quoteCalcTotals(subtotal, distanceKm, shippingPricePerKm, design, management, margin);
+  const canView = canViewCurrentQuoteMoney();
   box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Tổng giá vốn</span><strong>${moneyMaskedIf(canViewCurrentQuoteMoney(), formatVNDFull(subtotal))}</strong></div>
-    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Lợi nhuận (${margin}%)</span><strong>${moneyMaskedIf(canViewCurrentQuoteMoney(), formatVNDFull(sellPrice-subtotal))}</strong></div>
-    <div style="display:flex;justify-content:space-between;font-size:15px;padding-top:8px;border-top:1px solid var(--border)"><span style="font-weight:700">Giá bán đề xuất</span><strong style="color:var(--accent)">${formatVNDFull(sellPrice)}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Tổng giá vốn</span><strong>${moneyMaskedIf(canView, formatVNDFull(subtotal))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP vận chuyển${shippingMethod?` (${shippingMethod.name})`:''}</span><strong>${moneyMaskedIf(canView, formatVNDFull(t.shippingCost))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP thiết kế (${design||0}%)</span><strong>${moneyMaskedIf(canView, formatVNDFull(t.designCost))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP quản lý (${management||0}%)</span><strong>${moneyMaskedIf(canView, formatVNDFull(t.managementCost))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;padding-top:6px;border-top:1px dashed var(--border)"><span style="color:var(--text2)">Tổng chi phí</span><strong>${moneyMaskedIf(canView, formatVNDFull(t.fullCost))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Lợi nhuận (${margin}%)</span><strong>${moneyMaskedIf(canView, formatVNDFull(t.sellPrice-t.fullCost))}</strong></div>
+    <div style="display:flex;justify-content:space-between;font-size:15px;padding-top:8px;border-top:1px solid var(--border)"><span style="font-weight:700">Giá bán đề xuất</span><strong style="color:var(--accent)">${formatVNDFull(t.sellPrice)}</strong></div>
   `;
 }
 
@@ -11603,21 +11664,29 @@ function submitQuote() {
   if(items.length===0){ toast('Vui lòng nhập ít nhất 1 hạng mục hợp lệ'); return; }
   const proj = document.getElementById('qt-proj')?.value || '';
   const note = document.getElementById('qt-note').value.trim();
+  const distanceKm = parseFloat(document.getElementById('qt-distance').value) || 0;
+  const shippingMethodId = document.getElementById('qt-shipping-method').value || '';
+  const shippingMethodObj = qsShippingMethodById(shippingMethodId);
+  const shippingMethodName = shippingMethodObj ? shippingMethodObj.name : '';
+  const shippingPricePerKm = shippingMethodObj ? (shippingMethodObj.pricePerKm||0) : 0;
+  const designPercent = parseFloat(document.getElementById('qt-design').value) || 0;
+  const managementPercent = parseFloat(document.getElementById('qt-management').value) || 0;
   const marginPercent = parseFloat(document.getElementById('qt-margin').value) || 0;
   const subtotalCost = items.reduce((s,it)=>s+quoteItemCost(it).totalCost, 0);
-  const sellPrice = subtotalCost * (1 + marginPercent/100);
+  const t = quoteCalcTotals(subtotalCost, distanceKm, shippingPricePerKm, designPercent, managementPercent, marginPercent);
+  const { shippingCost, designCost, managementCost, fullCost, sellPrice } = t;
 
   if(quoteEditingId) {
     const q = quotes.find(x=>x.id===quoteEditingId);
     if(q) {
-      Object.assign(q, { name, proj, note, marginPercent, items, subtotalCost, sellPrice, approvers: [...quoteApproversTmp], updatedAt: nowDateStr() });
+      Object.assign(q, { name, proj, note, distanceKm, shippingMethodId, shippingMethodName, shippingPricePerKm, shippingCost, designPercent, designCost, managementPercent, managementCost, marginPercent, items, subtotalCost, fullCost, sellPrice, approvers: [...quoteApproversTmp], updatedAt: nowDateStr() });
     }
     closeModal(); renderQuotes(); syncDataToDrive();
     toast(`💾 Đã cập nhật báo giá ${quoteEditingId}`);
   } else {
     const id = generateDocId('BG', quotes);
     const q = {
-      id, name, proj, note, marginPercent, items, subtotalCost, sellPrice,
+      id, name, proj, note, distanceKm, shippingMethodId, shippingMethodName, shippingPricePerKm, shippingCost, designPercent, designCost, managementPercent, managementCost, marginPercent, items, subtotalCost, fullCost, sellPrice,
       approvers: [...quoteApproversTmp],
       requester: currentUser.name, requesterEmail: currentUser.email,
       createdAt: nowDateStr(), createdAtRaw: Date.now(),
@@ -11972,9 +12041,12 @@ function openModal_viewQuote(id) {
       <div><span style="color:var(--text2)">Dự án liên quan:</span> ${q.proj || '—'}</div>
       <div><span style="color:var(--text2)">Người tạo:</span> ${q.requester||'—'}</div>
       <div><span style="color:var(--text2)">Ngày tạo:</span> ${q.createdAt||'—'}</div>
-      <div><span style="color:var(--text2)">% Lợi nhuận:</span> ${moneyMaskedFor(q, q.marginPercent+"%")}</div>
+      <div><span style="color:var(--text2)">% Lợi nhuận:</span> ${moneyMaskedFor(q, (q.marginPercent||0)+"%")}</div>
       <div><span style="color:var(--text2)">Trạng thái:</span> ${quoteStatusBadge(status)}</div>
       <div><span style="color:var(--text2)">Người phê duyệt:</span> ${quoteApproverNames(q)}</div>
+      <div><span style="color:var(--text2)">🚚 Quãng đường:</span> ${q.distanceKm||0} km${q.shippingMethodName?` — ${q.shippingMethodName}`:''}</div>
+      <div><span style="color:var(--text2)">🎨 % Thiết kế:</span> ${moneyMaskedFor(q, (q.designPercent||0)+"%")}</div>
+      <div><span style="color:var(--text2)">🗂️ % Quản lý:</span> ${moneyMaskedFor(q, (q.managementPercent||0)+"%")}</div>
       ${status==='approved' ? `<div><span style="color:var(--text2)">Duyệt bởi:</span> ${q.approvedBy||'—'} lúc ${q.approvedAt||''}</div>` : ''}
     </div>
     ${status==='rejected' && q.rejectReason ? `<div style="font-size:12.5px;margin-bottom:12px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r);padding:8px 12px"><span style="color:var(--text2)">Lý do từ chối:</span> ${q.rejectReason}</div>` : ''}
@@ -11987,7 +12059,11 @@ function openModal_viewQuote(id) {
     </div>
     <div style="margin-top:14px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r)">
       <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Tổng giá vốn</span><strong>${moneyMaskedFor(q, formatVNDFull(q.subtotalCost))}</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Lợi nhuận (${q.marginPercent}%)</span><strong>${moneyMaskedFor(q, formatVNDFull(q.sellPrice-q.subtotalCost))}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP vận chuyển</span><strong>${moneyMaskedFor(q, formatVNDFull(q.shippingCost||0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP thiết kế (${q.designPercent||0}%)</span><strong>${moneyMaskedFor(q, formatVNDFull(q.designCost||0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">CP quản lý (${q.managementPercent||0}%)</span><strong>${moneyMaskedFor(q, formatVNDFull(q.managementCost||0))}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;padding-top:6px;border-top:1px dashed var(--border)"><span style="color:var(--text2)">Tổng chi phí</span><strong>${moneyMaskedFor(q, formatVNDFull(q.fullCost!=null?q.fullCost:q.subtotalCost))}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text2)">Lợi nhuận (${q.marginPercent||0}%)</span><strong>${moneyMaskedFor(q, formatVNDFull(q.sellPrice-(q.fullCost!=null?q.fullCost:q.subtotalCost)))}</strong></div>
       <div style="display:flex;justify-content:space-between;font-size:15px;padding-top:8px;border-top:1px solid var(--border)"><span style="font-weight:700">Giá bán đề xuất</span><strong style="color:var(--accent)">${formatVNDFull(q.sellPrice)}</strong></div>
     </div>
   `;
@@ -12031,6 +12107,9 @@ function printQuote(id) {
       <tbody>${itemsRowsHtml}</tbody>
     </table>
     <div style="text-align:right;margin-top:14px;font-size:13px">
+      ${q.shippingCost ? `<div>CP vận chuyển${q.shippingMethodName?` (${q.shippingMethodName}, `:' ('}${q.distanceKm||0} km): <strong style="margin-left:8px">${formatVNDFull(q.shippingCost)}</strong></div>` : ''}
+      ${q.designCost ? `<div>CP thiết kế (${q.designPercent||0}%): <strong style="margin-left:8px">${formatVNDFull(q.designCost)}</strong></div>` : ''}
+      ${q.managementCost ? `<div>CP quản lý (${q.managementPercent||0}%): <strong style="margin-left:8px">${formatVNDFull(q.managementCost)}</strong></div>` : ''}
       <div>Tổng cộng: <strong style="font-size:16px;margin-left:8px">${formatVNDFull(q.sellPrice)}</strong></div>
     </div>
     ${q.note ? `<div class="ln" style="margin-top:14px">Ghi chú: ${q.note}</div>` : ''}
@@ -12052,12 +12131,16 @@ function exportQuotesListExcel() {
   const statusLabels = { draft:'Nháp', sent:'Chờ duyệt', approved:'Đã duyệt', rejected:'Từ chối' };
   const rows = [...quotes].sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0)).map((q,i)=>({
     'STT': i+1, 'Mã BG': q.id, 'Tên báo giá / Khách hàng': q.name, 'Số mục': (q.items||[]).length,
-    'Giá vốn': Math.round(q.subtotalCost), '% Lợi nhuận': q.marginPercent, 'Giá bán': Math.round(q.sellPrice),
+    'Giá vốn': Math.round(q.subtotalCost), 'Phương thức vận chuyển': q.shippingMethodName||'', 'Quãng đường (km)': q.distanceKm||0, 'CP vận chuyển': Math.round(q.shippingCost||0),
+    '% Thiết kế': q.designPercent||0, 'CP thiết kế': Math.round(q.designCost||0),
+    '% Quản lý': q.managementPercent||0, 'CP quản lý': Math.round(q.managementCost||0),
+    'Tổng chi phí': Math.round(q.fullCost!=null?q.fullCost:q.subtotalCost),
+    '% Lợi nhuận': q.marginPercent||0, 'Giá bán': Math.round(q.sellPrice),
     'Trạng thái': statusLabels[q.status||'draft']||'Nháp',
     'Người tạo': q.requester||'', 'Ngày tạo': q.createdAt||''
   }));
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:6},{wch:16},{wch:30},{wch:8},{wch:16},{wch:10},{wch:16},{wch:12},{wch:18},{wch:12}];
+  ws['!cols'] = [{wch:6},{wch:16},{wch:30},{wch:8},{wch:16},{wch:18},{wch:12},{wch:14},{wch:10},{wch:14},{wch:10},{wch:14},{wch:16},{wch:10},{wch:16},{wch:12},{wch:18},{wch:12}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Bao gia');
   const d = new Date();
@@ -12084,7 +12167,11 @@ function exportQuoteDetailExcel(id) {
   });
   rows.push({});
   rows.push({ 'STT':'', 'Tên chi tiết':'TỔNG GIÁ VỐN', 'Giá vốn dòng': Math.round(q.subtotalCost) });
-  rows.push({ 'STT':'', 'Tên chi tiết':`GIÁ BÁN (Lợi nhuận ${q.marginPercent}%)`, 'Giá vốn dòng': Math.round(q.sellPrice) });
+  if(q.shippingCost) rows.push({ 'STT':'', 'Tên chi tiết':`CP VẬN CHUYỂN${q.shippingMethodName?` (${q.shippingMethodName}, `:' ('}${q.distanceKm||0} km)`, 'Giá vốn dòng': Math.round(q.shippingCost) });
+  if(q.designCost) rows.push({ 'STT':'', 'Tên chi tiết':`CP THIẾT KẾ (${q.designPercent||0}%)`, 'Giá vốn dòng': Math.round(q.designCost) });
+  if(q.managementCost) rows.push({ 'STT':'', 'Tên chi tiết':`CP QUẢN LÝ (${q.managementPercent||0}%)`, 'Giá vốn dòng': Math.round(q.managementCost) });
+  rows.push({ 'STT':'', 'Tên chi tiết':'TỔNG CHI PHÍ', 'Giá vốn dòng': Math.round(q.fullCost!=null?q.fullCost:q.subtotalCost) });
+  rows.push({ 'STT':'', 'Tên chi tiết':`GIÁ BÁN (Lợi nhuận ${q.marginPercent||0}%)`, 'Giá vốn dòng': Math.round(q.sellPrice) });
   const ws = XLSX.utils.json_to_sheet(rows);
   ws['!cols'] = [{wch:6},{wch:22},{wch:16},{wch:18},{wch:6},{wch:16},{wch:8},{wch:10},{wch:16},{wch:16},{wch:16}];
   const wb = XLSX.utils.book_new();
