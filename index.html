@@ -1544,14 +1544,14 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
           <table class="tbl">
             <thead><tr><th>Nội dung</th><th>Số lần/tháng</th><th>Chi tiết</th><th>Mức phạt/lần</th><th>Hình thức kỷ luật</th></tr></thead>
             <tbody>
-              <tr><td rowspan="5" style="vertical-align:top">Đi muộn (x phút)</td><td>&gt;3 lần</td><td>x = 6</td><td>Chưa phạt</td><td rowspan="3" style="vertical-align:top">Nhắc nhở</td></tr>
-              <tr><td></td><td>6 &lt; x &lt; 30</td><td>50.000đ</td></tr>
-              <tr><td></td><td>x ≥ 30</td><td>100.000đ</td></tr>
+              <tr><td rowspan="8" style="vertical-align:top">Đi muộn (x phút)</td><td rowspan="3" style="vertical-align:top">&gt;3 lần</td><td>x = 6</td><td>Chưa phạt</td><td rowspan="3" style="vertical-align:top">Nhắc nhở</td></tr>
+              <tr><td>6 &lt; x &lt; 30</td><td>50.000đ</td></tr>
+              <tr><td>x ≥ 30</td><td>100.000đ</td></tr>
               <tr><td rowspan="3" style="vertical-align:top">≥4 lần</td><td>5 &lt; x ≤ 15</td><td>50.000đ</td><td rowspan="3" style="vertical-align:top">Khiển trách</td></tr>
               <tr><td>16 &lt; x &lt; 30</td><td>100.000đ</td></tr>
               <tr><td>x &gt; 30</td><td>200.000đ</td></tr>
-              <tr><td></td><td></td><td>x ≥ 60</td><td>Không tính 1/3 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
-              <tr><td></td><td></td><td>x ≥ 90</td><td>Không tính 1/2 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
+              <tr><td></td><td>x ≥ 60</td><td>Không tính 1/3 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
+              <tr><td></td><td>x ≥ 90</td><td>Không tính 1/2 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
               <tr><td rowspan="3" style="vertical-align:top">Không có mặt tại VP trong giờ làm, không lý do chính đáng (&gt;30 phút)</td><td>Lần 1</td><td></td><td>50.000đ</td><td>Nhắc nhở</td></tr>
               <tr><td>Lần 2</td><td></td><td>100.000đ</td><td>Khiển trách</td></tr>
               <tr><td>≥3 lần</td><td></td><td>Không tính công ngày đó</td><td>Cảnh cáo</td></tr>
@@ -2188,15 +2188,11 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
                 </div>
                 <div class="form-row">
                   <label class="form-label">Người nhận duyệt (Quản lý kho) *</label>
-                  <select class="form-ctrl" id="cart-manager">
-                    <option value="">— Chọn quản lý kho —</option>
-                  </select>
+                  <div id="cart-manager-wrap"></div>
                 </div>
                 <div class="form-row">
                   <label class="form-label">Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(chỉ nhận thông tin để theo dõi, không phải người mua)</span></label>
-                  <select class="form-ctrl" id="cart-distributor">
-                    <option value="">— Chọn người nhận (Hành chính - Kế toán) —</option>
-                  </select>
+                  <div id="cart-distributor-wrap"></div>
                 </div>
                 <div class="form-row">
                   <label class="form-label">Ghi chú chung</label>
@@ -3086,7 +3082,7 @@ function goToApprovalView() {
 }
 function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', notation: 'compact', maximumFractionDigits: 1 }).format(n); }
 // Che số tiền với người không có quyền Toàn quyền (Admin) — chỉ Admin mới xem được các số liệu chi phí/tiền chung (báo cáo, giá trị dự án, giá mua kho...).
-function moneyMasked(formattedValue) { return isAdmin() ? formattedValue : `<span title="Chỉ Admin xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
+function moneyMasked(formattedValue) { return isAdmin() ? formattedValue : `<span title="Chỉ Admin xem được" style="color:var(--text2)">🔒</span>`; }
 // Với tiền gắn liền 1 phiếu/chứng từ cụ thể (đăng ký xe, tăng ca, báo giá, công văn...): chỉ Admin, người tạo,
 // người duyệt, người được phân phối/người mua của CHÍNH phiếu đó mới được xem — người khác thấy 🔒 ẩn.
 function canViewRecordMoney(r) {
@@ -3102,8 +3098,8 @@ function canViewRecordMoney(r) {
   if(r.warehouseManagerEmail && r.warehouseManagerEmail===email) return true;
   return false;
 }
-function moneyMaskedFor(r, formattedValue) { return canViewRecordMoney(r) ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
-function moneyMaskedIf(canView, formattedValue) { return canView ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
+function moneyMaskedFor(r, formattedValue) { return canViewRecordMoney(r) ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒</span>`; }
+function moneyMaskedIf(canView, formattedValue) { return canView ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒</span>`; }
 function getFileTypeCls(ext) {
   const e = (ext||'').toLowerCase();
   if(['dwg','dxf','nx','stp','step','igs'].includes(e)) return 'file-type-dwg';
@@ -6939,11 +6935,11 @@ function renderOrders() {
   const b2 = document.getElementById('b-warehouse-order');
   if(b2) { b2.textContent=pending||''; b2.style.display=pending?'':'none'; }
   const projSel = document.getElementById('cart-proj');
-  const mgrSel  = document.getElementById('cart-manager');
-  const distSel = document.getElementById('cart-distributor');
+  const mgrWrap  = document.getElementById('cart-manager-wrap');
+  const distWrap = document.getElementById('cart-distributor-wrap');
   if(projSel) projSel.innerHTML = '<option value="">— Không liên quan dự án —</option>' + projects.map(p=>`<option value="${p.id}">${p.id} — ${p.name}</option>`).join('');
-  if(mgrSel)  mgrSel.innerHTML  = '<option value="">— Chọn quản lý kho —</option>' + team.map(t=>`<option value="${t.email}">${t.name}</option>`).join('');
-  if(distSel) distSel.innerHTML = '<option value="">— Chọn người nhận (Hành chính - Kế toán) —</option>' + team.map(t=>`<option value="${t.email}">${t.name}</option>`).join('');
+  if(mgrWrap)  mgrWrap.innerHTML  = apprApproverCombo('cart-manager', '', 'Chọn quản lý kho');
+  if(distWrap) distWrap.innerHTML = apprApproverCombo('cart-distributor', '', 'Chọn người nhận (Hành chính - Kế toán)');
   renderOrderHistory();
   renderCart();
   searchOrderStock('');
@@ -7750,6 +7746,30 @@ function apprApproverOptions(selected, placeholder) {
   return `<option value="">— ${placeholder || 'Chọn người phê duyệt'} —</option>` +
     team.map(t=>`<option value="${t.email}" ${t.email===selected?'selected':''}>${t.name}${t.role?(' — '+t.role):''}</option>`).join('');
 }
+// ── Ô chọn người (phê duyệt / mua / phân phối): gõ ký tự để lọc, kết hợp dropdown gợi ý (input + datalist) ──
+// Value thật (email) nằm ở input ẩn cùng id gốc; input hiển thị (id+'-input') chỉ để gõ/tìm theo tên.
+function apprTeamLabel(t) { return `${t.name||''}${t.role?(' — '+t.role):''}`; }
+function apprApproverCombo(id, selected, placeholder, onchangeExpr) {
+  const ph = placeholder || 'Chọn người phê duyệt';
+  const sel = team.find(t=>t.email===selected);
+  const displayVal = sel ? apprTeamLabel(sel) : '';
+  const dlId = id+'-dl';
+  const oc = (onchangeExpr||'').replace(/"/g,'&quot;');
+  return `<input type="text" class="form-ctrl" id="${id}-input" list="${dlId}" autocomplete="off"
+      placeholder="🔍 Gõ tên — ${ph}" value="${displayVal.replace(/"/g,'&quot;')}"
+      oninput="apprSyncCombo('${id}')" onchange="apprSyncCombo('${id}');${oc}">
+    <input type="hidden" id="${id}" value="${selected||''}">
+    <datalist id="${dlId}">${team.map(t=>`<option value="${apprTeamLabel(t).replace(/"/g,'&quot;')}">`).join('')}</datalist>`;
+}
+function apprSyncCombo(id) {
+  const input = document.getElementById(id+'-input');
+  const hidden = document.getElementById(id);
+  if(!input || !hidden) return;
+  const val = input.value.trim();
+  if(!val) { hidden.value=''; return; }
+  const t = team.find(x=>apprTeamLabel(x)===val);
+  hidden.value = t ? t.email : '';
+}
 function apprProjectOptions(selected) {
   return `<option value="">— Không liên quan dự án —</option>` +
     projects.map(p=>`<option value="${p.id}" ${p.id===selected?'selected':''}>${p.id} — ${p.name}</option>`).join('');
@@ -8488,11 +8508,11 @@ function openModal_newMaterialRequest() {
     </div>
     <div class="form-row">
       <label class="form-label">Người mua (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để tiến hành mua hàng sau khi TẤT CẢ đã phê duyệt xong)</span></label>
-      <select class="form-ctrl" id="mr-distributor" onchange="materialDistributorTmp=this.value">${apprApproverOptions(materialDistributorTmp, 'Chọn người mua (Distributor)')}</select>
+      ${apprApproverCombo('mr-distributor', materialDistributorTmp, 'Chọn người mua (Distributor)', "materialDistributorTmp=document.getElementById('mr-distributor').value")}
     </div>
     <div class="form-row">
       <label class="form-label">Người phân phối — Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(chỉ nhận thông tin để theo dõi, không phải người mua)</span></label>
-      <select class="form-ctrl" id="mr-distributor2" onchange="materialDistributor2Tmp=this.value">${apprApproverOptions(materialDistributor2Tmp, 'Chọn người nhận (Hành chính - Kế toán)')}</select>
+      ${apprApproverCombo('mr-distributor2', materialDistributor2Tmp, 'Chọn người nhận (Hành chính - Kế toán)', "materialDistributor2Tmp=document.getElementById('mr-distributor2').value")}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -8569,9 +8589,7 @@ function renderMaterialApproversRows() {
   wrap.innerHTML = materialApproversTmp.map((a,i)=>`
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
       <span style="width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--bg4);color:var(--text1);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center" title="Thứ tự phê duyệt">${i+1}</span>
-      <select class="form-ctrl" style="flex:1" onchange="materialApproversTmp[${i}].email=this.value">
-        ${apprApproverOptions(a.email)}
-      </select>
+      <span style="flex:1;position:relative">${apprApproverCombo('mr-appr-'+i, a.email, 'Chọn người phê duyệt', `materialApproversTmp[${i}].email=document.getElementById('mr-appr-${i}').value`)}</span>
       <button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMaterialApproverRow(${i})">✕</button>
     </div>`).join('');
 }
@@ -8829,11 +8847,11 @@ function openModal_newHandover() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt / xác nhận *</label>
-      <select class="form-ctrl" id="ho-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('ho-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi biên bản được xác nhận)</span></label>
-      <select class="form-ctrl" id="ho-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
+      ${apprApproverCombo('ho-distributor','','Chọn người nhận')}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9011,15 +9029,15 @@ function openModal_newAssetHandover() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt / xác nhận *</label>
-      <select class="form-ctrl" id="ah-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('ah-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận thông báo <span style="font-weight:400;color:var(--text2);font-size:11px">(nếu người nhận tài sản có tài khoản trong hệ thống)</span></label>
-      <select class="form-ctrl" id="ah-distributor">${apprApproverOptions('', 'Chọn người nhận thông báo')}</select>
+      ${apprApproverCombo('ah-distributor','','Chọn người nhận thông báo')}
     </div>
     <div class="form-row">
       <label class="form-label">Người phân phối — Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để theo dõi, quản lý tài sản)</span></label>
-      <select class="form-ctrl" id="ah-distributor2">${apprApproverOptions('', 'Chọn người nhận (Hành chính - Kế toán)')}</select>
+      ${apprApproverCombo('ah-distributor2','','Chọn người nhận (Hành chính - Kế toán)')}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9141,11 +9159,11 @@ function openModal_newVehicle() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      <select class="form-ctrl" id="vh-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('vh-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người được phân phối (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi phiếu được phê duyệt)</span></label>
-      <select class="form-ctrl" id="vh-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
+      ${apprApproverCombo('vh-distributor','','Chọn người nhận')}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9285,11 +9303,11 @@ function openModal_newOvertime() {
     </div>
     <div class="form-row">
       <label class="form-label">Quản lý/Trưởng BP phê duyệt *</label>
-      <select class="form-ctrl" id="ot-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('ot-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người được phân phối (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi phiếu được phê duyệt)</span></label>
-      <select class="form-ctrl" id="ot-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
+      ${apprApproverCombo('ot-distributor','','Chọn người nhận')}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9520,11 +9538,11 @@ function openModal_newLeave() {
     <div class="form-row"><label class="form-label">Lý do</label><textarea class="form-ctrl" id="lv-reason" rows="2" placeholder="Việc gia đình, ốm, ..."></textarea></div>
     <div class="form-row">
       <label class="form-label">Trưởng phòng ban/BP phê duyệt *</label>
-      <select class="form-ctrl" id="lv-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('lv-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi đơn được phê duyệt)</span></label>
-      <select class="form-ctrl" id="lv-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
+      ${apprApproverCombo('lv-distributor','','Chọn người nhận')}
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9682,11 +9700,11 @@ function openModal_newAdvance() {
     <div class="form-row"><label class="form-label">Lý do / Nội dung tạm ứng *</label><textarea class="form-ctrl" id="tu-reason" rows="3" placeholder="Mua vật tư, công tác phí, chi phí phát sinh..."></textarea></div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      <select class="form-ctrl" id="tu-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('tu-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để chi tiền sau khi được phê duyệt)</span></label>
-      <select class="form-ctrl" id="tu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
+      ${apprApproverCombo('tu-distributor','','Chọn người chi tiền')}
     </div>
     <div class="form-row">
       <label class="form-label">📸 Hình ảnh bằng chứng <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
@@ -9858,11 +9876,11 @@ function openModal_newSettlement() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      <select class="form-ctrl" id="hu-approver">${apprApproverOptions()}</select>
+      ${apprApproverCombo('hu-approver','','Chọn người phê duyệt')}
     </div>
     <div class="form-row">
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để xử lý chênh lệch sau khi được phê duyệt)</span></label>
-      <select class="form-ctrl" id="hu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
+      ${apprApproverCombo('hu-distributor','','Chọn người chi tiền')}
     </div>
     <div class="form-row">
       <label class="form-label">📸 Hình ảnh bằng chứng (hoá đơn, chứng từ) <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
@@ -11192,11 +11210,21 @@ function canEditQuote(q) {
 function canApproveQuote(q) {
   if(!q || !currentUser) return false;
   if(isAdmin()) return true;
-  return (q.approvers||[]).includes(currentUser.email);
+  const list = q.approvers||[];
+  if(!list.length) return false;
+  const idx = q.approvalIdx||0;
+  return list[idx]===currentUser.email;
 }
 function quoteApproverNames(q) {
-  const list = (q.approvers||[]).map(email => team.find(t=>t.email===email)?.name || email);
-  return list.length ? list.join(', ') : 'Bất kỳ Admin nào';
+  const list = q.approvers||[];
+  if(!list.length) return 'Bất kỳ Admin nào';
+  const idx = q.approvalIdx||0;
+  return list.map((email,i) => {
+    const nm = team.find(t=>t.email===email)?.name || email;
+    if(q.status==='approved' || i<idx) return `✅ ${nm}`;
+    if(q.status==='sent' && i===idx) return `⏳ ${nm}`;
+    return nm;
+  }).join(list.length>1 ? ' → ' : ', ');
 }
 
 // ── Cài đặt cơ sở dữ liệu báo giá ──
@@ -11407,9 +11435,24 @@ function canViewCurrentQuoteMoney() {
   return canViewRecordMoney(q||{});
 }
 let quoteApproversTmp = [];
-function toggleQuoteApprover(email, checked) {
-  quoteApproversTmp = quoteApproversTmp.filter(a=>a!==email);
-  if(checked) quoteApproversTmp.push(email);
+function renderQuoteApproverSection() {
+  const wrap = document.getElementById('qt-approvers-list');
+  if(!wrap) return;
+  wrap.innerHTML = quoteApproversTmp.map((a,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+      <span style="width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--bg4);color:var(--text1);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center" title="Thứ tự phê duyệt">${i+1}</span>
+      <span style="flex:1;position:relative">${apprApproverCombo('qt-appr-'+i, a.email, 'Chọn người phê duyệt', `quoteApproversTmp[${i}].email=document.getElementById('qt-appr-${i}').value`)}</span>
+      <button type="button" class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeQuoteApproverRow(${i})">✕</button>
+    </div>`).join('');
+}
+function addQuoteApproverRow() {
+  quoteApproversTmp.push({ email:'' });
+  renderQuoteApproverSection();
+}
+function removeQuoteApproverRow(i) {
+  if(quoteApproversTmp.length<=1){ toast('Cần ít nhất 1 người phê duyệt'); return; }
+  quoteApproversTmp.splice(i,1);
+  renderQuoteApproverSection();
 }
 
 function blankQuoteItem() {
@@ -11423,7 +11466,7 @@ function openModal_newQuote() {
   }
   quoteEditingId = null;
   quoteItemsTmp = [blankQuoteItem()];
-  quoteApproversTmp = [];
+  quoteApproversTmp = [{ email:'' }];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('quote-modal');
@@ -11439,16 +11482,9 @@ function renderQuoteModalBody(existing) {
       <div class="form-row"><label class="form-label">Tên dự án</label><input class="form-ctrl" id="qt-proj" value="${(e.proj||'').replace(/"/g,'&quot;')}" placeholder="VD: TL-2025-001 hoặc tên dự án"></div>
     </div>
     <div class="form-row">
-      <label class="form-label">👤 Người phê duyệt <span style="font-weight:400;color:var(--text2);font-size:11px">(để trống = bất kỳ Admin nào cũng có thể duyệt)</span></label>
-      <div id="qt-approver-list" style="display:flex;flex-direction:column;gap:2px;max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
-        ${team.map(t => `
-          <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
-            <input type="checkbox" value="${t.email}" onchange="toggleQuoteApprover('${t.email}',this.checked)" style="width:15px;height:15px;accent-color:var(--accent)" ${quoteApproversTmp.includes(t.email)?'checked':''}>
-            <span style="font-size:12.5px">${t.name}</span>
-            <span style="font-size:11px;color:var(--text2)">${t.email}</span>
-          </label>`).join('')}
-      </div>
-      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">Người được chọn sẽ nhận thông báo Telegram cá nhân khi báo giá được gửi duyệt (cần đã liên kết Telegram cá nhân trong Quản lý tài khoản).</div>
+      <label class="form-label">👤 Người phê duyệt <span style="font-weight:400;color:var(--text2);font-size:11px">(để trống = bất kỳ Admin nào cũng có thể duyệt · có thể thêm nhiều người — sẽ duyệt LẦN LƯỢT theo thứ tự, người sau chỉ nhận thông báo khi người trước đã duyệt)</span></label>
+      <div id="qt-approvers-list" style="margin-top:6px"></div>
+      <button type="button" class="btn btn-xs btn-ghost" style="margin-top:4px" onclick="addQuoteApproverRow()">+ Thêm người phê duyệt</button>
     </div>
     <div class="form-row">
       <label class="form-label">Danh sách chi tiết / hạng mục báo giá</label>
@@ -11490,6 +11526,7 @@ function renderQuoteModalBody(existing) {
     <button class="btn btn-accent" onclick="submitQuote()">💾 ${quoteEditingId?'Lưu thay đổi':'Tạo báo giá'}</button>
   `;
   renderQuoteItemsTable();
+  renderQuoteApproverSection();
 }
 
 function quoteItemVolumeMm3(it) {
@@ -11679,7 +11716,7 @@ function submitQuote() {
   if(quoteEditingId) {
     const q = quotes.find(x=>x.id===quoteEditingId);
     if(q) {
-      Object.assign(q, { name, proj, note, distanceKm, shippingMethodId, shippingMethodName, shippingPricePerKm, shippingCost, designPercent, designCost, managementPercent, managementCost, marginPercent, items, subtotalCost, fullCost, sellPrice, approvers: [...quoteApproversTmp], updatedAt: nowDateStr() });
+      Object.assign(q, { name, proj, note, distanceKm, shippingMethodId, shippingMethodName, shippingPricePerKm, shippingCost, designPercent, designCost, managementPercent, managementCost, marginPercent, items, subtotalCost, fullCost, sellPrice, approvers: quoteApproversTmp.map(a=>a.email).filter(Boolean), approvalIdx: 0, approvals: [], updatedAt: nowDateStr() });
     }
     closeModal(); renderQuotes(); syncDataToDrive();
     toast(`💾 Đã cập nhật báo giá ${quoteEditingId}`);
@@ -11687,7 +11724,7 @@ function submitQuote() {
     const id = generateDocId('BG', quotes);
     const q = {
       id, name, proj, note, distanceKm, shippingMethodId, shippingMethodName, shippingPricePerKm, shippingCost, designPercent, designCost, managementPercent, managementCost, marginPercent, items, subtotalCost, fullCost, sellPrice,
-      approvers: [...quoteApproversTmp],
+      approvers: quoteApproversTmp.map(a=>a.email).filter(Boolean), approvalIdx: 0, approvals: [],
       requester: currentUser.name, requesterEmail: currentUser.email,
       createdAt: nowDateStr(), createdAtRaw: Date.now(),
       status: 'draft'
@@ -11704,7 +11741,8 @@ function openModal_editQuote(id) {
   if(!canEditQuote(q)){ toast('⛔ Không thể sửa báo giá đã gửi duyệt/đã duyệt'); return; }
   quoteEditingId = id;
   quoteItemsTmp = JSON.parse(JSON.stringify(q.items||[blankQuoteItem()]));
-  quoteApproversTmp = [...(q.approvers||[])];
+  quoteApproversTmp = (q.approvers||[]).map(email=>({ email }));
+  if(quoteApproversTmp.length===0) quoteApproversTmp = [{ email:'' }];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('quote-modal');
@@ -11746,7 +11784,7 @@ function renderQuotes() {
     <tr style="cursor:pointer" onclick="openModal_viewQuote('${q.id}')">
       <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${q.id}</strong></td>
-      <td>${q.name}</td>
+      <td class="tbl-material-name">${q.name}</td>
       <td>${(q.items||[]).length}</td>
       <td>${moneyMaskedFor(q, formatVNDFull(q.subtotalCost))}</td>
       <td style="font-weight:600;color:var(--accent)">${moneyMaskedFor(q, formatVNDFull(q.sellPrice))}</td>
@@ -11840,7 +11878,7 @@ function renderProjectProfitReport() {
     <tr style="cursor:pointer" onclick="goToPhaseDetail('${r.p.id}')">
       <td style="font-size:11px;color:var(--text2)">${i+1}</td>
       <td><strong>${r.p.id}</strong></td>
-      <td>${r.p.name||'—'}</td>
+      <td class="tbl-material-name">${r.p.name||'—'}</td>
       <td>${r.p.client||'—'}</td>
       <td style="font-weight:600">${formatVNDFull(r.sellPrice)}</td>
       <td>${formatVNDFull(r.quoteCost)}</td>
@@ -11892,11 +11930,14 @@ function deleteQuote(id) {
 }
 
 function notifyQuoteApprovers(q) {
-  const targets = (q.approvers && q.approvers.length) ? q.approvers.slice() : team.filter(t=>isAdminMember(t)).map(t=>t.email);
+  // Duyệt theo thứ tự: chỉ thông báo cho người đang chờ duyệt (hoặc tất cả Admin nếu không chọn ai)
+  const list = q.approvers||[];
+  const targets = list.length ? [list[q.approvalIdx||0]] : team.filter(t=>isAdminMember(t)).map(t=>t.email);
+  const stepInfo = list.length>1 ? `\nBước duyệt: ${(q.approvalIdx||0)+1}/${list.length}` : '';
   const text = `💲 <b>Báo giá cần duyệt</b> — ${tgEscape(q.id)}\n` +
     `Tên: ${tgEscape(q.name)}\n` +
     `Người gửi: ${tgEscape(q.requester)}\n` +
-    `Giá bán đề xuất: ${tgEscape(formatVNDFull(q.sellPrice))}\n` +
+    `Giá bán đề xuất: ${tgEscape(formatVNDFull(q.sellPrice))}${stepInfo}\n` +
     `Vào mục "Báo giá" trên hệ thống để xem chi tiết và duyệt.`;
   targets.forEach(email => sendTelegramPersonal(email, text));
 }
@@ -11915,13 +11956,16 @@ function submitQuoteForApproval(id) {
   if(!q) return;
   if(!(isAdmin() || q.requesterEmail===currentUser?.email)){ showNoPermToast(); return; }
   if((q.status||'draft')!=='draft'){ toast('Báo giá này đã được gửi duyệt'); return; }
+  const seqNote = (q.approvers&&q.approvers.length>1) ? ` theo thứ tự ${q.approvers.length} người` : '';
   showConfirm({
     title:'Gửi duyệt báo giá', icon:'📤', iconBg:'var(--amber-dim)',
-    msg:`Gửi báo giá ${id} để chờ ${(q.approvers&&q.approvers.length)?'người phê duyệt đã chọn':'Admin'} duyệt? Sau khi gửi, bạn sẽ không thể sửa nội dung cho đến khi có kết quả duyệt.`,
+    msg:`Gửi báo giá ${id} để chờ ${(q.approvers&&q.approvers.length)?'người phê duyệt đã chọn'+seqNote:'Admin'} duyệt? Sau khi gửi, bạn sẽ không thể sửa nội dung cho đến khi có kết quả duyệt.`,
     okText:'Gửi duyệt',
     onOk: () => {
       q.status = 'sent';
       q.sentAt = nowDateStr();
+      q.approvalIdx = 0;
+      q.approvals = [];
       closeModal(); renderQuotes(); syncDataToDrive();
       toast(`📤 Đã gửi báo giá ${id} chờ duyệt`);
       notifyQuoteApprovers(q);
@@ -11934,18 +11978,29 @@ function approveQuote(id) {
   if(!q) return;
   if(!canApproveQuote(q)){ showNoPermToast(); return; }
   if((q.status||'draft')!=='sent'){ toast('Báo giá này không ở trạng thái chờ duyệt'); return; }
+  const list = q.approvers||[];
+  const isLastStep = !list.length || (q.approvalIdx||0) >= list.length-1;
   showConfirm({
     title:'Duyệt báo giá', icon:'✅', iconBg:'var(--green-dim)',
-    msg:`Duyệt báo giá ${id} — ${q.name}?`,
+    msg:`Duyệt báo giá ${id} — ${q.name}?${(!isLastStep)?' (Sẽ chuyển sang người duyệt tiếp theo trong thứ tự)':''}`,
     okText:'Duyệt', okClass:'btn-accent',
     onOk: () => {
-      q.status = 'approved';
-      q.approvedBy = currentUser.name;
-      q.approvedAt = nowDateStr();
-      q.rejectReason = '';
-      closeModal(); renderQuotes(); syncDataToDrive();
-      toast(`✅ Đã duyệt báo giá ${id}`);
-      notifyQuoteResult(q, 'approved');
+      if(!q.approvals) q.approvals = [];
+      q.approvals.push({ email: currentUser.email, name: currentUser.name, approvedAt: nowDateStr() });
+      if(isLastStep) {
+        q.status = 'approved';
+        q.approvedBy = currentUser.name;
+        q.approvedAt = nowDateStr();
+        q.rejectReason = '';
+        closeModal(); renderQuotes(); syncDataToDrive();
+        toast(`✅ Đã duyệt báo giá ${id}`);
+        notifyQuoteResult(q, 'approved');
+      } else {
+        q.approvalIdx = (q.approvalIdx||0) + 1;
+        closeModal(); renderQuotes(); syncDataToDrive();
+        toast(`✅ Đã duyệt bước ${q.approvalIdx}/${list.length} — chuyển tới người duyệt tiếp theo`);
+        notifyQuoteApprovers(q);
+      }
     }
   });
 }
@@ -12001,8 +12056,7 @@ function doRejectQuote(id) {
   q.status = 'rejected';
   q.rejectReason = reason;
   q.approvedBy = ''; q.approvedAt = '';
-  closeModal(); renderQuotes(); syncDataToDrive();
-  toast(`❌ Đã từ chối báo giá ${id}`);
+  closeModal(); renderQuotes(); syncDataToDrive();  toast(`❌ Đã từ chối báo giá ${id}`);
   notifyQuoteResult(q, 'rejected');
 }
 
@@ -12012,6 +12066,8 @@ function reopenQuoteDraft(id) {
   if(!(isAdmin() || q.requesterEmail===currentUser?.email)){ showNoPermToast(); return; }
   q.status = 'draft';
   q.rejectReason = '';
+  q.approvalIdx = 0;
+  q.approvals = [];
   renderQuotes(); syncDataToDrive();
   toast(`✏️ Đã chuyển báo giá ${id} về Nháp — có thể chỉnh sửa và gửi duyệt lại`);
 }
