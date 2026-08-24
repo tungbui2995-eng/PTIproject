@@ -333,7 +333,7 @@ body {
 .phase-gantt-row { display: flex; align-items: center; padding: 1.5px 0; cursor: pointer; border-bottom: 1px dashed var(--border); }
 .phase-gantt-row:last-child { border-bottom: none; }
 .phase-gantt-row:hover { background: var(--bg3); }
-.phase-gantt-label { width: 220px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; font-size: 10px; line-height: 1.2; padding-right: 6px; overflow: hidden; }
+.phase-gantt-label { width: 300px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; font-size: 10px; line-height: 1.2; padding-right: 6px; overflow: hidden; }
 .phase-gantt-label span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .phase-gantt-idx { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; color: var(--text2); background: var(--bg4); padding: 0px 3px; border-radius: 3px; flex-shrink: 0; }
 .phase-gantt-track { position: relative; flex: 1; min-width: 420px; height: 11px; background: var(--bg4); border-radius: 3px; }
@@ -1065,6 +1065,9 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
       <div class="nav-item nav-sub" onclick="nav('feature-google',this)" id="nav-feature-google">
         Tìm kiếm Google
       </div>
+      <div class="nav-item nav-sub" onclick="nav('feature-vehicle',this)" id="nav-feature-vehicle">
+        Vị trí xe
+      </div>
     </div>
 
   <div class="sidebar-footer">
@@ -1273,6 +1276,47 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
           <button class="btn btn-primary" type="submit">Tìm kiếm</button>
         </form>
       </div>
+  </div>
+</div>
+
+<div class="view" id="view-feature-vehicle">
+  <div class="page-head">
+    <div>
+      <div class="page-title">🚚 Kiểm tra vị trí xe</div>
+      <div class="page-subtitle">Công cụ tiện ích cá nhân — Tra cứu vị trí xe qua hệ thống Taris GPS</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-hd">
+      <div class="card-title">🔐 Tài khoản Taris của tôi</div>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:11.5px;color:var(--text2);margin-bottom:12px">Lưu tài khoản Taris GPS (giamsat.taris.com.vn) của riêng bạn để lần sau đăng nhập nhanh hơn. Tài khoản chỉ hiển thị với chính bạn (và Admin).</div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;max-width:520px">
+        <div class="form-row"><label class="form-label">Tên đăng nhập Taris</label><input class="form-ctrl" id="veh-taris-username" placeholder="Tên đăng nhập"></div>
+        <div class="form-row"><label class="form-label">Mật khẩu Taris</label>
+          <div style="position:relative">
+            <input class="form-ctrl" type="password" id="veh-taris-password" placeholder="Mật khẩu" autocomplete="new-password" style="padding-right:34px;width:100%">
+            <button type="button" onclick="toggleVehTarisPass(this)" title="Hiện/ẩn mật khẩu" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;font-size:14px;line-height:1">👁</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+        <button class="btn btn-primary" onclick="saveVehicleAccount()">💾 Lưu tài khoản</button>
+        <span id="veh-taris-status" style="font-size:11px;color:var(--text2)"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-title">📍 Hệ thống Taris GPS</div>
+      <button class="btn btn-primary btn-sm" onclick="openTarisGPS()">Mở Taris GPS ↗</button>
+    </div>
+    <div style="padding:16px">
+      <div style="font-size:11.5px;color:var(--text2)">Hệ thống giám sát vị trí xe của bên thứ ba (Taris). Bấm nút "Mở Taris GPS ↗" để mở ở tab mới rồi đăng nhập bằng tài khoản đã lưu ở trên.</div>
+    </div>
   </div>
 </div>
 <div class="view active" id="view-dashboard">
@@ -3015,6 +3059,7 @@ const PAGE_TITLES = {
   'feature-calc': 'Máy tính',
   'feature-note': 'Ghi chú cá nhân',
   'feature-google': 'Tìm kiếm Google',
+  'feature-vehicle': 'Vị trí xe',
   dashboard: 'Dashboard',
   projects: 'Dự án',
   phases: 'Giai đoạn & Công việc',
@@ -3073,6 +3118,7 @@ function nav(viewId, el) {
     if(vwWrap && !vwWrap.innerHTML.trim()) vwUpdateShapeInputs();
   }
   if(viewId === 'feature-note') { loadFeatureNote(); }
+  if(viewId === 'feature-vehicle') { renderVehicleTracking(); }
 
   if((viewId==='urgent' || viewId==='today') && !isAdmin()) {
     toast('⛔ Mục Ưu tiên chỉ dành cho Admin');
@@ -3362,6 +3408,43 @@ function featureGoogleSearch(e) {
   const q = (document.getElementById('feature-google-search')?.value || '').trim();
   if(!q) return;
   window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
+}
+
+const TARIS_GPS_URL = 'https://giamsat.taris.com.vn/latestGps';
+function toggleVehTarisPass(btn) {
+  const input = document.getElementById('veh-taris-password');
+  if(!input) return;
+  if(input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+function openTarisGPS() {
+  window.open(TARIS_GPS_URL, '_blank', 'noopener');
+}
+function renderVehicleTracking() {
+  const u = document.getElementById('veh-taris-username');
+  const p = document.getElementById('veh-taris-password');
+  const status = document.getElementById('veh-taris-status');
+  if(!currentUser) return;
+  const member = team.find(t=>t.email===currentUser.email);
+  if(u) u.value = member?.tarisUsername || '';
+  if(p) p.value = member?.tarisPassword || '';
+  if(status) status.textContent = (member?.tarisUsername) ? `Đã lưu tài khoản: ${member.tarisUsername}` : 'Chưa lưu tài khoản Taris nào';
+}
+function saveVehicleAccount() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const member = team.find(t=>t.email===currentUser.email);
+  if(!member){ toast('Không tìm thấy tài khoản của bạn'); return; }
+  member.tarisUsername = (document.getElementById('veh-taris-username').value || '').trim();
+  member.tarisPassword = document.getElementById('veh-taris-password').value || '';
+  syncDataToDrive();
+  toast('💾 Đã lưu tài khoản Taris');
+  const status = document.getElementById('veh-taris-status');
+  if(status) status.textContent = member.tarisUsername ? `Đã lưu tài khoản: ${member.tarisUsername}` : 'Chưa lưu tài khoản Taris nào';
 }
 
 function renderDashboard() {
