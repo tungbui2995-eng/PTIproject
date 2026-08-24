@@ -328,6 +328,25 @@ body {
 .phase-step-label { font-size: 10px; color: var(--text2); text-align: center; max-width: 68px; line-height: 1.4; }
 .phase-step.active-ph .phase-step-label { color: var(--text0); font-weight: 500; }
 
+.phase-gantt-wrap { margin-bottom: 24px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); padding: 8px 10px; overflow-x: auto; }
+.phase-gantt-axis { display: flex; align-items: flex-end; }
+.phase-gantt-row { display: flex; align-items: center; padding: 1.5px 0; cursor: pointer; border-bottom: 1px dashed var(--border); }
+.phase-gantt-row:last-child { border-bottom: none; }
+.phase-gantt-row:hover { background: var(--bg3); }
+.phase-gantt-label { width: 220px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; font-size: 10px; line-height: 1.2; padding-right: 6px; overflow: hidden; }
+.phase-gantt-label span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.phase-gantt-idx { font-family: 'JetBrains Mono', monospace; font-size: 8.5px; color: var(--text2); background: var(--bg4); padding: 0px 3px; border-radius: 3px; flex-shrink: 0; }
+.phase-gantt-track { position: relative; flex: 1; min-width: 420px; height: 11px; background: var(--bg4); border-radius: 3px; }
+.phase-gantt-bar { position: absolute; top: 1.5px; height: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.phase-gantt-bar-label { font-size: 7px; font-weight: 700; color: #fff; white-space: nowrap; }
+.phase-gantt-deadline { position: absolute; top: -0.5px; width: 5px; height: 5px; background: var(--amber); transform: translateX(-50%) rotate(45deg); border-radius: 1px; }
+.phase-gantt-today { position: absolute; top: -10px; bottom: -2.5px; width: 1px; background: var(--red); opacity: .55; }
+.phase-gantt-tick { position: absolute; bottom: 1px; font-size: 8px; color: var(--text2); transform: translateX(-50%); white-space: nowrap; }
+.phase-gantt-legend { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--border); font-size: 9.5px; color: var(--text2); align-items: center; }
+.phase-gantt-swatch { display: inline-block; width: 10px; height: 6px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
+.phase-gantt-diamond { display: inline-block; width: 5px; height: 5px; background: var(--amber); transform: rotate(45deg); margin-right: 4px; vertical-align: middle; }
+.phase-gantt-todayline { display: inline-block; width: 1px; height: 9px; background: var(--red); margin-right: 4px; vertical-align: middle; }
+
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.65);
   display: flex; align-items: center; justify-content: center;
@@ -1544,14 +1563,14 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
           <table class="tbl">
             <thead><tr><th>Nội dung</th><th>Số lần/tháng</th><th>Chi tiết</th><th>Mức phạt/lần</th><th>Hình thức kỷ luật</th></tr></thead>
             <tbody>
-              <tr><td rowspan="8" style="vertical-align:top">Đi muộn (x phút)</td><td rowspan="3" style="vertical-align:top">&gt;3 lần</td><td>x = 6</td><td>Chưa phạt</td><td rowspan="3" style="vertical-align:top">Nhắc nhở</td></tr>
-              <tr><td>6 &lt; x &lt; 30</td><td>50.000đ</td></tr>
-              <tr><td>x ≥ 30</td><td>100.000đ</td></tr>
+              <tr><td rowspan="5" style="vertical-align:top">Đi muộn (x phút)</td><td>&gt;3 lần</td><td>x = 6</td><td>Chưa phạt</td><td rowspan="3" style="vertical-align:top">Nhắc nhở</td></tr>
+              <tr><td></td><td>6 &lt; x &lt; 30</td><td>50.000đ</td></tr>
+              <tr><td></td><td>x ≥ 30</td><td>100.000đ</td></tr>
               <tr><td rowspan="3" style="vertical-align:top">≥4 lần</td><td>5 &lt; x ≤ 15</td><td>50.000đ</td><td rowspan="3" style="vertical-align:top">Khiển trách</td></tr>
               <tr><td>16 &lt; x &lt; 30</td><td>100.000đ</td></tr>
               <tr><td>x &gt; 30</td><td>200.000đ</td></tr>
-              <tr><td></td><td>x ≥ 60</td><td>Không tính 1/3 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
-              <tr><td></td><td>x ≥ 90</td><td>Không tính 1/2 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
+              <tr><td></td><td></td><td>x ≥ 60</td><td>Không tính 1/3 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
+              <tr><td></td><td></td><td>x ≥ 90</td><td>Không tính 1/2 ngày công</td><td>Lần 1 nhắc nhở, từ lần 2 khiển trách</td></tr>
               <tr><td rowspan="3" style="vertical-align:top">Không có mặt tại VP trong giờ làm, không lý do chính đáng (&gt;30 phút)</td><td>Lần 1</td><td></td><td>50.000đ</td><td>Nhắc nhở</td></tr>
               <tr><td>Lần 2</td><td></td><td>100.000đ</td><td>Khiển trách</td></tr>
               <tr><td>≥3 lần</td><td></td><td>Không tính công ngày đó</td><td>Cảnh cáo</td></tr>
@@ -2188,11 +2207,15 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
                 </div>
                 <div class="form-row">
                   <label class="form-label">Người nhận duyệt (Quản lý kho) *</label>
-                  <div id="cart-manager-wrap"></div>
+                  <select class="form-ctrl" id="cart-manager">
+                    <option value="">— Chọn quản lý kho —</option>
+                  </select>
                 </div>
                 <div class="form-row">
                   <label class="form-label">Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(chỉ nhận thông tin để theo dõi, không phải người mua)</span></label>
-                  <div id="cart-distributor-wrap"></div>
+                  <select class="form-ctrl" id="cart-distributor">
+                    <option value="">— Chọn người nhận (Hành chính - Kế toán) —</option>
+                  </select>
                 </div>
                 <div class="form-row">
                   <label class="form-label">Ghi chú chung</label>
@@ -3082,7 +3105,7 @@ function goToApprovalView() {
 }
 function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', notation: 'compact', maximumFractionDigits: 1 }).format(n); }
 // Che số tiền với người không có quyền Toàn quyền (Admin) — chỉ Admin mới xem được các số liệu chi phí/tiền chung (báo cáo, giá trị dự án, giá mua kho...).
-function moneyMasked(formattedValue) { return isAdmin() ? formattedValue : `<span title="Chỉ Admin xem được" style="color:var(--text2)">🔒</span>`; }
+function moneyMasked(formattedValue) { return isAdmin() ? formattedValue : `<span title="Chỉ Admin xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
 // Với tiền gắn liền 1 phiếu/chứng từ cụ thể (đăng ký xe, tăng ca, báo giá, công văn...): chỉ Admin, người tạo,
 // người duyệt, người được phân phối/người mua của CHÍNH phiếu đó mới được xem — người khác thấy 🔒 ẩn.
 function canViewRecordMoney(r) {
@@ -3098,8 +3121,8 @@ function canViewRecordMoney(r) {
   if(r.warehouseManagerEmail && r.warehouseManagerEmail===email) return true;
   return false;
 }
-function moneyMaskedFor(r, formattedValue) { return canViewRecordMoney(r) ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒</span>`; }
-function moneyMaskedIf(canView, formattedValue) { return canView ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒</span>`; }
+function moneyMaskedFor(r, formattedValue) { return canViewRecordMoney(r) ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
+function moneyMaskedIf(canView, formattedValue) { return canView ? formattedValue : `<span title="Chỉ người tạo/duyệt/phân phối hoặc Admin mới xem được" style="color:var(--text2)">🔒 ẩn</span>`; }
 function getFileTypeCls(ext) {
   const e = (ext||'').toLowerCase();
   if(['dwg','dxf','nx','stp','step','igs'].includes(e)) return 'file-type-dwg';
@@ -3111,6 +3134,10 @@ function formatDateVN(dateStr) {
   if(!dateStr) return '';
   const [y,m,d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
+}
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getDate().toString().padStart(2,'0')}`;
 }
 function isOverdue(dateStr) {
   if(!dateStr) return false;
@@ -3636,6 +3663,83 @@ function goToPhaseDetail(id){
 }
 
 // ── LOAD PHASES ──
+function buildPhaseGanttHtml(p, ph) {
+  if(!p.phaseStartDates) p.phaseStartDates = Array(ph.length).fill('');
+  if(!p.phaseEndDates) p.phaseEndDates = Array(ph.length).fill('');
+  const today = todayISO();
+  const rawDates = [];
+  ph.forEach((_,i)=>{
+    if(p.phaseStartDates[i]) rawDates.push(p.phaseStartDates[i]);
+    if(p.phaseEndDates[i]) rawDates.push(p.phaseEndDates[i]);
+    if(p.phaseDeadlines[i]) rawDates.push(p.phaseDeadlines[i]);
+  });
+  if(p.deadline && p.deadline!=='—') rawDates.push(p.deadline);
+  rawDates.push(today);
+  const dates = rawDates.map(d=>new Date(d+'T00:00:00')).filter(d=>!isNaN(d.getTime()));
+  let minD = new Date(Math.min(...dates.map(d=>d.getTime())));
+  let maxD = new Date(Math.max(...dates.map(d=>d.getTime())));
+  minD.setDate(minD.getDate()-2);
+  maxD.setDate(maxD.getDate()+2);
+  if(maxD.getTime()<=minD.getTime()) maxD = new Date(minD.getTime()+14*86400000);
+  const totalMs = maxD.getTime()-minD.getTime();
+  const pctPos = (dateStr) => {
+    if(!dateStr) return null;
+    const d = new Date(dateStr+'T00:00:00');
+    if(isNaN(d.getTime())) return null;
+    return Math.max(0, Math.min(100, ((d.getTime()-minD.getTime())/totalMs)*100));
+  };
+  const todayPos = pctPos(today);
+  const tickCount = 6;
+  const ticks = [];
+  for(let i=0;i<=tickCount;i++){
+    const t = new Date(minD.getTime()+totalMs*(i/tickCount));
+    ticks.push({ pos:(i/tickCount)*100, label:`${t.getDate().toString().padStart(2,'0')}/${(t.getMonth()+1).toString().padStart(2,'0')}` });
+  }
+  const rows = ph.map((phItem,i) => {
+    const pct = p.phases[i]||0;
+    const start = p.phaseStartDates[i];
+    const end = p.phaseEndDates[i];
+    const deadline = p.phaseDeadlines[i];
+    const isDone = pct===100;
+    const isActive = pct>0 && pct<100;
+    let barHtml = '';
+    if(start) {
+      const barStartPos = pctPos(start);
+      const barEndDate = (isDone && end) ? end : (isActive ? today : start);
+      const barEndPos = pctPos(barEndDate);
+      const widthPct = Math.max(1.2, (barEndPos!=null&&barStartPos!=null) ? barEndPos-barStartPos : 1.2);
+      const grad = isDone ? 'linear-gradient(90deg,var(--green),var(--teal))' : 'linear-gradient(90deg,var(--accent),var(--teal))';
+      const rangeLabel = isDone ? `${formatDateVN(start)} → ${formatDateVN(end||start)}` : `${formatDateVN(start)} → Đang thực hiện`;
+      barHtml = `<div class="phase-gantt-bar" style="left:${barStartPos}%;width:${widthPct}%;background:${grad}" title="${rangeLabel} — ${pct}%">
+        <span class="phase-gantt-bar-label">${pct}%</span>
+      </div>`;
+    }
+    const deadlinePos = deadline ? pctPos(deadline) : null;
+    const deadlineMarker = deadlinePos!=null ? `<div class="phase-gantt-deadline" style="left:${deadlinePos}%" title="Deadline: ${formatDateVN(deadline)}"></div>` : '';
+    const todayMarker = todayPos!=null ? `<div class="phase-gantt-today" style="left:${todayPos}%"></div>` : '';
+    return `<div class="phase-gantt-row" onclick="setPhasePct('${p.id}',${i})" title="Nhấn để nhập % hoàn thiện">
+      <div class="phase-gantt-label"><span class="phase-gantt-idx">P${i+1}</span><span title="${phItem.icon} ${phItem.name}">${phItem.icon} ${phItem.name}</span></div>
+      <div class="phase-gantt-track">${barHtml}${deadlineMarker}${todayMarker}</div>
+    </div>`;
+  }).join('');
+  return `
+    <div class="phase-gantt-wrap">
+      <div class="phase-gantt-axis">
+        <div class="phase-gantt-label"></div>
+        <div class="phase-gantt-track" style="height:12px;background:transparent">
+          ${ticks.map(t=>`<span class="phase-gantt-tick" style="left:${t.pos}%">${t.label}</span>`).join('')}
+        </div>
+      </div>
+      ${rows}
+      <div class="phase-gantt-legend">
+        <span><span class="phase-gantt-swatch" style="background:linear-gradient(90deg,var(--accent),var(--teal))"></span>Đang thực hiện</span>
+        <span><span class="phase-gantt-swatch" style="background:linear-gradient(90deg,var(--green),var(--teal))"></span>Hoàn thành</span>
+        <span><span class="phase-gantt-diamond"></span>Deadline giai đoạn</span>
+        <span><span class="phase-gantt-todayline"></span>Hôm nay</span>
+        <span style="margin-left:auto;color:var(--text2)">Nhấn vào một dòng để nhập % hoàn thiện</span>
+      </div>
+    </div>`;
+}
 function loadPhases(pId) {
   const cont = document.getElementById('phases-content');
   if(!pId) {
@@ -3648,6 +3752,10 @@ function loadPhases(pId) {
   if(!p.phaseDeadlines) p.phaseDeadlines = Array(ph.length).fill('');
   if(!p.phaseDocs) p.phaseDocs = Array(ph.length).fill(null).map(()=>[]);
   if(!p.phasePIC) p.phasePIC = Array(ph.length).fill('');
+  if(!p.phaseStartDates) p.phaseStartDates = Array(ph.length).fill('');
+  if(!p.phaseEndDates) p.phaseEndDates = Array(ph.length).fill('');
+  while(p.phaseStartDates.length < ph.length) p.phaseStartDates.push('');
+  while(p.phaseEndDates.length < ph.length) p.phaseEndDates.push('');
   if(!p.generalComments) p.generalComments = [];
   if(!p.phaseComments) p.phaseComments = [];
   while(p.phases.length < ph.length) p.phases.push(0);
@@ -3669,16 +3777,7 @@ function loadPhases(pId) {
         <div class="prog-wrap"><div class="prog-fill" style="width:${avg}%;background:var(--accent)"></div></div>
       </div>
     </div>
-    <div class="phase-timeline">
-      ${ph.map((phItem,i) => {
-        const pct = p.phases[i]||0;
-        const cls = pct===100?'done':'active-ph';
-        return `<div class="phase-step" onclick="setPhasePct('${pId}',${i})" title="Nhấn để nhập % hoàn thiện">
-          <div class="phase-dot ${cls}">${pct}%</div>
-          <div class="phase-step-label">${phItem.icon} ${phItem.name}</div>
-        </div>`;
-      }).join('')}
-    </div>
+    ${buildPhaseGanttHtml(p, ph)}
     <div class="card">
       <div class="card-header">
         <span class="card-title">Chi tiết từng giai đoạn</span>
@@ -4415,6 +4514,9 @@ function checkAndNotifyNextPhase(projectId, completedIdx) {
 function setPhasePct(pId, idx, value) {
     const p = projects.find(x => x.id === pId);
     if (!p) return;
+    const ph = getPH(p);
+    if (!p.phaseStartDates) p.phaseStartDates = Array(ph.length).fill('');
+    if (!p.phaseEndDates) p.phaseEndDates = Array(ph.length).fill('');
     const oldPct = Math.max(0, Math.min(100, parseInt(p.phases[idx] || 0) || 0));
     let raw = value;
     if (raw === undefined || raw === null || raw === '') {
@@ -4424,6 +4526,15 @@ function setPhasePct(pId, idx, value) {
     const newPct = Math.max(0, Math.min(100, parseInt(raw) || 0));
     const wasComplete = oldPct >= 100;
     p.phases[idx] = newPct;
+    // Ngày bắt đầu = lần đầu tiên % > 0. Ngày kết thúc = khi đạt 100%.
+    if (newPct === 0) {
+        p.phaseStartDates[idx] = '';
+        p.phaseEndDates[idx] = '';
+    } else {
+        if (!p.phaseStartDates[idx]) p.phaseStartDates[idx] = todayISO();
+        if (newPct === 100) p.phaseEndDates[idx] = todayISO();
+        else p.phaseEndDates[idx] = '';
+    }
     if (newPct === 100 && !wasComplete) {
         toast(`🎉 Hoàn thành giai đoạn ${idx+1}: ${getPH(p)[idx].name}`);
         checkAndNotifyNextPhase(pId, idx);
@@ -6935,11 +7046,11 @@ function renderOrders() {
   const b2 = document.getElementById('b-warehouse-order');
   if(b2) { b2.textContent=pending||''; b2.style.display=pending?'':'none'; }
   const projSel = document.getElementById('cart-proj');
-  const mgrWrap  = document.getElementById('cart-manager-wrap');
-  const distWrap = document.getElementById('cart-distributor-wrap');
+  const mgrSel  = document.getElementById('cart-manager');
+  const distSel = document.getElementById('cart-distributor');
   if(projSel) projSel.innerHTML = '<option value="">— Không liên quan dự án —</option>' + projects.map(p=>`<option value="${p.id}">${p.id} — ${p.name}</option>`).join('');
-  if(mgrWrap)  mgrWrap.innerHTML  = apprApproverCombo('cart-manager', '', 'Chọn quản lý kho');
-  if(distWrap) distWrap.innerHTML = apprApproverCombo('cart-distributor', '', 'Chọn người nhận (Hành chính - Kế toán)');
+  if(mgrSel)  mgrSel.innerHTML  = '<option value="">— Chọn quản lý kho —</option>' + team.map(t=>`<option value="${t.email}">${t.name}</option>`).join('');
+  if(distSel) distSel.innerHTML = '<option value="">— Chọn người nhận (Hành chính - Kế toán) —</option>' + team.map(t=>`<option value="${t.email}">${t.name}</option>`).join('');
   renderOrderHistory();
   renderCart();
   searchOrderStock('');
@@ -7746,30 +7857,6 @@ function apprApproverOptions(selected, placeholder) {
   return `<option value="">— ${placeholder || 'Chọn người phê duyệt'} —</option>` +
     team.map(t=>`<option value="${t.email}" ${t.email===selected?'selected':''}>${t.name}${t.role?(' — '+t.role):''}</option>`).join('');
 }
-// ── Ô chọn người (phê duyệt / mua / phân phối): gõ ký tự để lọc, kết hợp dropdown gợi ý (input + datalist) ──
-// Value thật (email) nằm ở input ẩn cùng id gốc; input hiển thị (id+'-input') chỉ để gõ/tìm theo tên.
-function apprTeamLabel(t) { return `${t.name||''}${t.role?(' — '+t.role):''}`; }
-function apprApproverCombo(id, selected, placeholder, onchangeExpr) {
-  const ph = placeholder || 'Chọn người phê duyệt';
-  const sel = team.find(t=>t.email===selected);
-  const displayVal = sel ? apprTeamLabel(sel) : '';
-  const dlId = id+'-dl';
-  const oc = (onchangeExpr||'').replace(/"/g,'&quot;');
-  return `<input type="text" class="form-ctrl" id="${id}-input" list="${dlId}" autocomplete="off"
-      placeholder="🔍 Gõ tên — ${ph}" value="${displayVal.replace(/"/g,'&quot;')}"
-      oninput="apprSyncCombo('${id}')" onchange="apprSyncCombo('${id}');${oc}">
-    <input type="hidden" id="${id}" value="${selected||''}">
-    <datalist id="${dlId}">${team.map(t=>`<option value="${apprTeamLabel(t).replace(/"/g,'&quot;')}">`).join('')}</datalist>`;
-}
-function apprSyncCombo(id) {
-  const input = document.getElementById(id+'-input');
-  const hidden = document.getElementById(id);
-  if(!input || !hidden) return;
-  const val = input.value.trim();
-  if(!val) { hidden.value=''; return; }
-  const t = team.find(x=>apprTeamLabel(x)===val);
-  hidden.value = t ? t.email : '';
-}
 function apprProjectOptions(selected) {
   return `<option value="">— Không liên quan dự án —</option>` +
     projects.map(p=>`<option value="${p.id}" ${p.id===selected?'selected':''}>${p.id} — ${p.name}</option>`).join('');
@@ -8443,6 +8530,7 @@ function openModal_newMaterialRequest() {
   materialDistributorTmp = '';
   materialDistributor2Tmp = '';
   materialNeededDateTmp = '';
+  materialFilesTmp = [];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('wide-modal');
@@ -8503,16 +8591,29 @@ function openModal_newMaterialRequest() {
       <button class="btn btn-xs btn-ghost" style="margin-top:4px" onclick="addMaterialApproverRow()">+ Thêm người phê duyệt</button>
     </div>
     <div class="form-row">
+      <label class="form-label">📎 Tệp đính kèm <span style="font-weight:400;color:var(--text2);font-size:11px">(báo giá nhà cung cấp, bản vẽ, hình ảnh... — không bắt buộc)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r2);cursor:pointer;transition:all .15s" id="mr-file-label"
+        onmouseover="this.style.borderColor=\`var(--accent)\`" onmouseout="this.style.borderColor=\`var(--border2)\`">
+        <input type="file" id="mr-files" multiple style="display:none" onchange="previewMaterialFiles(this)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--text1)">Nhấn để chọn tệp</div>
+          <div style="font-size:10px;color:var(--text2)">PDF, Excel, ảnh, bất kỳ định dạng — Nhiều tệp cùng lúc</div>
+        </div>
+      </label>
+      <div id="mr-file-preview" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+    </div>
+    <div class="form-row">
       <label class="form-label">Ngày cần vật tư <span style="font-weight:400;color:var(--text2);font-size:11px">(dashboard sẽ cảnh báo khi sắp đến hạn / quá hạn)</span></label>
       <input type="date" class="form-ctrl" id="mr-needed-date" value="${materialNeededDateTmp}" onchange="materialNeededDateTmp=this.value">
     </div>
     <div class="form-row">
       <label class="form-label">Người mua (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để tiến hành mua hàng sau khi TẤT CẢ đã phê duyệt xong)</span></label>
-      ${apprApproverCombo('mr-distributor', materialDistributorTmp, 'Chọn người mua (Distributor)', "materialDistributorTmp=document.getElementById('mr-distributor').value")}
+      <select class="form-ctrl" id="mr-distributor" onchange="materialDistributorTmp=this.value">${apprApproverOptions(materialDistributorTmp, 'Chọn người mua (Distributor)')}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người phân phối — Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(chỉ nhận thông tin để theo dõi, không phải người mua)</span></label>
-      ${apprApproverCombo('mr-distributor2', materialDistributor2Tmp, 'Chọn người nhận (Hành chính - Kế toán)', "materialDistributor2Tmp=document.getElementById('mr-distributor2').value")}
+      <select class="form-ctrl" id="mr-distributor2" onchange="materialDistributor2Tmp=this.value">${apprApproverOptions(materialDistributor2Tmp, 'Chọn người nhận (Hành chính - Kế toán)')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -8589,7 +8690,9 @@ function renderMaterialApproversRows() {
   wrap.innerHTML = materialApproversTmp.map((a,i)=>`
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
       <span style="width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--bg4);color:var(--text1);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center" title="Thứ tự phê duyệt">${i+1}</span>
-      <span style="flex:1;position:relative">${apprApproverCombo('mr-appr-'+i, a.email, 'Chọn người phê duyệt', `materialApproversTmp[${i}].email=document.getElementById('mr-appr-${i}').value`)}</span>
+      <select class="form-ctrl" style="flex:1" onchange="materialApproversTmp[${i}].email=this.value">
+        ${apprApproverOptions(a.email)}
+      </select>
       <button class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMaterialApproverRow(${i})">✕</button>
     </div>`).join('');
 }
@@ -8601,6 +8704,48 @@ function removeMaterialApproverRow(i) {
   if(materialApproversTmp.length<=1){ toast('Cần ít nhất 1 người phê duyệt'); return; }
   materialApproversTmp.splice(i,1);
   renderMaterialApproversRows();
+}
+
+let materialFilesTmp = [];
+function fileSizeLabel(bytes) {
+  if(bytes >= 1024*1024) return (bytes/1024/1024).toFixed(2)+' MB';
+  return Math.max(1,Math.round(bytes/1024))+' KB';
+}
+function fileTypeIcon(filename) {
+  const ext = (filename.split('.').pop()||'').toLowerCase();
+  if(['jpg','jpeg','png','webp','gif'].includes(ext)) return '🖼️';
+  if(ext==='pdf') return '📕';
+  if(['xls','xlsx','csv'].includes(ext)) return '📊';
+  if(['doc','docx'].includes(ext)) return '📄';
+  return '📎';
+}
+function previewMaterialFiles(input) {
+  const files = Array.from(input.files);
+  if(!files.length) return;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      materialFilesTmp.push({ name: file.name, base64: e.target.result, size: file.size, mimeType: file.type||'application/octet-stream' });
+      renderMaterialFilePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+function renderMaterialFilePreview() {
+  const box = document.getElementById('mr-file-preview');
+  if(!box) return;
+  box.innerHTML = materialFilesTmp.map((f,i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r)">
+      <span style="font-size:16px">${fileTypeIcon(f.name)}</span>
+      <span style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span style="font-size:10.5px;color:var(--text2)">${fileSizeLabel(f.size)}</span>
+      <button type="button" class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeMaterialFile(${i})">✕</button>
+    </div>`).join('');
+}
+function removeMaterialFile(i) {
+  materialFilesTmp.splice(i,1);
+  renderMaterialFilePreview();
 }
 
 function materialStockNameOptionsHtml() {
@@ -8729,7 +8874,7 @@ function importMaterialItemsExcel(input) {
   reader.readAsArrayBuffer(file);
 }
 
-function submitMaterialRequest() {
+async function submitMaterialRequest() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const to = document.getElementById('mr-to').value.trim();
   const dept = document.getElementById('mr-dept').value.trim();
@@ -8753,9 +8898,28 @@ function submitMaterialRequest() {
   const distributor2 = distributor2Email ? team.find(t=>t.email===distributor2Email) : null;
   const neededDate = document.getElementById('mr-needed-date')?.value || '';
   const id = generateDocId('PDNMVT', approvalRequests.filter(r=>r.kind==='material'));
+  let files = [];
+  if(materialFilesTmp.length > 0) {
+    showLoading(`Đang tải ${materialFilesTmp.length} tệp lên Drive...`);
+    for(let i=0; i<materialFilesTmp.length; i++) {
+      const f = materialFilesTmp[i];
+      showLoading(`Đang tải tệp (${i+1}/${materialFilesTmp.length}): ${f.name}`);
+      try {
+        const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
+          action:'upload_file', proj:'material-'+id, folderIntent:'evidence',
+          filename: f.name, mimeType: f.mimeType,
+          fileData: f.base64.split(',')[1]
+        })}).then(r=>r.json());
+        files.push({ name: f.name, size: f.size, mimeType: f.mimeType, fileId: res.fileId||null, driveLink: res.driveLink||null, url: res.fileId?`https://drive.google.com/uc?id=${res.fileId}`:f.base64 });
+      } catch(e) {
+        files.push({ name: f.name, size: f.size, mimeType: f.mimeType, url: f.base64 });
+      }
+    }
+    hideLoading();
+  }
   const req = {
     id, kind:'material', to, dept, proj, requester, requesterEmail: currentUser.email, title, purpose,
-    items, approvers,
+    items, approvers, files,
     distributorEmail, distributorName: distributor ? distributor.name : '',
     distributor2Email, distributor2Name: distributor2 ? distributor2.name : '',
     neededDate,
@@ -8847,11 +9011,11 @@ function openModal_newHandover() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt / xác nhận *</label>
-      ${apprApproverCombo('ho-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="ho-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi biên bản được xác nhận)</span></label>
-      ${apprApproverCombo('ho-distributor','','Chọn người nhận')}
+      <select class="form-ctrl" id="ho-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9029,15 +9193,15 @@ function openModal_newAssetHandover() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt / xác nhận *</label>
-      ${apprApproverCombo('ah-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="ah-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận thông báo <span style="font-weight:400;color:var(--text2);font-size:11px">(nếu người nhận tài sản có tài khoản trong hệ thống)</span></label>
-      ${apprApproverCombo('ah-distributor','','Chọn người nhận thông báo')}
+      <select class="form-ctrl" id="ah-distributor">${apprApproverOptions('', 'Chọn người nhận thông báo')}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người phân phối — Hành chính/Kế toán <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để theo dõi, quản lý tài sản)</span></label>
-      ${apprApproverCombo('ah-distributor2','','Chọn người nhận (Hành chính - Kế toán)')}
+      <select class="form-ctrl" id="ah-distributor2">${apprApproverOptions('', 'Chọn người nhận (Hành chính - Kế toán)')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9159,11 +9323,11 @@ function openModal_newVehicle() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      ${apprApproverCombo('vh-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="vh-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người được phân phối (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi phiếu được phê duyệt)</span></label>
-      ${apprApproverCombo('vh-distributor','','Chọn người nhận')}
+      <select class="form-ctrl" id="vh-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9303,11 +9467,11 @@ function openModal_newOvertime() {
     </div>
     <div class="form-row">
       <label class="form-label">Quản lý/Trưởng BP phê duyệt *</label>
-      ${apprApproverCombo('ot-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="ot-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người được phân phối (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi phiếu được phê duyệt)</span></label>
-      ${apprApproverCombo('ot-distributor','','Chọn người nhận')}
+      <select class="form-ctrl" id="ot-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9538,11 +9702,11 @@ function openModal_newLeave() {
     <div class="form-row"><label class="form-label">Lý do</label><textarea class="form-ctrl" id="lv-reason" rows="2" placeholder="Việc gia đình, ốm, ..."></textarea></div>
     <div class="form-row">
       <label class="form-label">Trưởng phòng ban/BP phê duyệt *</label>
-      ${apprApproverCombo('lv-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="lv-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người nhận (Distributor) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo sau khi đơn được phê duyệt)</span></label>
-      ${apprApproverCombo('lv-distributor','','Chọn người nhận')}
+      <select class="form-ctrl" id="lv-distributor">${apprApproverOptions('', 'Chọn người nhận')}</select>
     </div>
   `;
   document.getElementById('modal-ft').innerHTML = `
@@ -9700,11 +9864,11 @@ function openModal_newAdvance() {
     <div class="form-row"><label class="form-label">Lý do / Nội dung tạm ứng *</label><textarea class="form-ctrl" id="tu-reason" rows="3" placeholder="Mua vật tư, công tác phí, chi phí phát sinh..."></textarea></div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      ${apprApproverCombo('tu-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="tu-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để chi tiền sau khi được phê duyệt)</span></label>
-      ${apprApproverCombo('tu-distributor','','Chọn người chi tiền')}
+      <select class="form-ctrl" id="tu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
     </div>
     <div class="form-row">
       <label class="form-label">📸 Hình ảnh bằng chứng <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
@@ -9876,11 +10040,11 @@ function openModal_newSettlement() {
     </div>
     <div class="form-row">
       <label class="form-label">Người phê duyệt *</label>
-      ${apprApproverCombo('hu-approver','','Chọn người phê duyệt')}
+      <select class="form-ctrl" id="hu-approver">${apprApproverOptions()}</select>
     </div>
     <div class="form-row">
       <label class="form-label">Người chi tiền (Kế toán/Thủ quỹ) <span style="font-weight:400;color:var(--text2);font-size:11px">(sẽ nhận thông báo để xử lý chênh lệch sau khi được phê duyệt)</span></label>
-      ${apprApproverCombo('hu-distributor','','Chọn người chi tiền')}
+      <select class="form-ctrl" id="hu-distributor">${apprApproverOptions('', 'Chọn người chi tiền')}</select>
     </div>
     <div class="form-row">
       <label class="form-label">📸 Hình ảnh bằng chứng (hoá đơn, chứng từ) <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
@@ -10022,6 +10186,20 @@ function apprImagesHtml(images) {
       ${images.map(img => `
         <a href="${img.url||img.base64}" target="_blank" style="display:block">
           <img src="${img.url||img.base64}" style="width:90px;height:90px;object-fit:cover;border-radius:var(--r);border:1px solid var(--border);transition:transform .15s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
+        </a>`).join('')}
+    </div>
+  </div>`;
+}
+function apprFilesHtml(files) {
+  if(!files || !files.length) return '';
+  return `<div style="margin-top:10px">
+    <div style="font-size:11px;color:var(--text2);font-weight:600;margin-bottom:6px">📎 Tệp đính kèm (${files.length})</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${files.map(f => `
+        <a href="${f.driveLink||f.url||f.base64}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--text1)">
+          <span style="font-size:16px">${fileTypeIcon(f.name||'')}</span>
+          <span style="font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name||'Tệp đính kèm'}</span>
+          <span style="font-size:10.5px;color:var(--text2)">${f.size?fileSizeLabel(f.size):''}</span>
         </a>`).join('')}
     </div>
   </div>`;
@@ -10196,7 +10374,7 @@ function openModal_viewApproval(id) {
       </div>
       <table class="tbl" style="min-width:760px"><thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th><th>Nhập kho</th></tr></thead><tbody>
       ${(r.items||[]).map((it,i)=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.stock||'—'}</td><td>${it.note||'—'}</td><td>${purchaseStatusSelectHtml(r.id,i,it.purchaseStatus)}</td><td>${it.stockAdded ? '<span class="badge badge-green" title="Đã cộng vào tồn kho">✅ Đã nhập</span>' : '<span style="color:var(--text2);font-size:11px">—</span>'}</td></tr>`).join('')}
-    </tbody></table>`;
+    </tbody></table>` + apprFilesHtml(r.files);
     const alist = getMaterialApprovers(r);
     approversHtml = `
       <div style="margin-top:14px">
@@ -11441,7 +11619,9 @@ function renderQuoteApproverSection() {
   wrap.innerHTML = quoteApproversTmp.map((a,i)=>`
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
       <span style="width:22px;height:22px;flex-shrink:0;border-radius:50%;background:var(--bg4);color:var(--text1);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center" title="Thứ tự phê duyệt">${i+1}</span>
-      <span style="flex:1;position:relative">${apprApproverCombo('qt-appr-'+i, a.email, 'Chọn người phê duyệt', `quoteApproversTmp[${i}].email=document.getElementById('qt-appr-${i}').value`)}</span>
+      <select class="form-ctrl" style="flex:1" onchange="quoteApproversTmp[${i}].email=this.value">
+        ${apprApproverOptions(a.email)}
+      </select>
       <button type="button" class="btn btn-xs btn-ghost" style="color:var(--red)" onclick="removeQuoteApproverRow(${i})">✕</button>
     </div>`).join('');
 }
@@ -11450,7 +11630,6 @@ function addQuoteApproverRow() {
   renderQuoteApproverSection();
 }
 function removeQuoteApproverRow(i) {
-  if(quoteApproversTmp.length<=1){ toast('Cần ít nhất 1 người phê duyệt'); return; }
   quoteApproversTmp.splice(i,1);
   renderQuoteApproverSection();
 }
@@ -11466,7 +11645,7 @@ function openModal_newQuote() {
   }
   quoteEditingId = null;
   quoteItemsTmp = [blankQuoteItem()];
-  quoteApproversTmp = [{ email:'' }];
+  quoteApproversTmp = [];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('quote-modal');
@@ -11742,7 +11921,6 @@ function openModal_editQuote(id) {
   quoteEditingId = id;
   quoteItemsTmp = JSON.parse(JSON.stringify(q.items||[blankQuoteItem()]));
   quoteApproversTmp = (q.approvers||[]).map(email=>({ email }));
-  if(quoteApproversTmp.length===0) quoteApproversTmp = [{ email:'' }];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('quote-modal');
@@ -12005,87 +12183,24 @@ function approveQuote(id) {
   });
 }
 
-let quoteAcceptFilesTmp = [];
 function markQuoteCustomerAccepted(id) {
   const q = quotes.find(x=>x.id===id);
   if(!q) return;
   if((q.status||'draft')!=='approved'){ toast('Báo giá phải được duyệt trước khi xác nhận khách hàng chấp nhận'); return; }
   if(!isAdmin() && q.requesterEmail!==currentUser?.email){ showNoPermToast(); return; }
   if(q.projectCreated){ toast(`Báo giá này đã tạo dự án ${q.projectId}`); return; }
-  quoteAcceptFilesTmp = [];
-  const overlay = document.getElementById('overlay');
-  overlay.classList.add('open');
-  document.getElementById('modal-hd-title').textContent = `🤝 Báo giá được khách hàng chấp nhận — ${id}`;
-  document.getElementById('modal-body').innerHTML = `
-    <div style="background:var(--green-dim);border:1px solid rgba(52,211,153,0.25);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px">
-      Xác nhận khách hàng <strong>${tgEscape(q.name)}</strong> đã chấp nhận báo giá <strong>${tgEscape(q.id)}</strong>? Hệ thống sẽ tự động tạo dự án và BOM nháp.
-    </div>
-    <div class="form-row">
-      <label class="form-label">📎 Tải lên PO / văn bản phê duyệt mua hàng của khách <span style="font-weight:400;color:var(--text2);font-size:11px">(không bắt buộc)</span></label>
-      <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg3);border:2px dashed var(--border2);border-radius:var(--r2);cursor:pointer">
-        <input type="file" id="qt-accept-files" multiple style="display:none" onchange="previewQuoteAcceptFiles(this)">
-        <span style="font-size:12px">📤 Nhấn để chọn tệp (PO, phê duyệt mua hàng...)</span>
-      </label>
-      <div id="qt-accept-files-preview" style="margin-top:8px;display:flex;flex-direction:column;gap:4px"></div>
-    </div>
-  `;
-  document.getElementById('modal-ft').innerHTML = `
-    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
-    <button class="btn btn-green" onclick="doMarkQuoteCustomerAccepted('${id}')">🤝 Tạo dự án</button>
-  `;
-}
-function previewQuoteAcceptFiles(input) {
-  quoteAcceptFilesTmp = Array.from(input.files || []);
-  const wrap = document.getElementById('qt-accept-files-preview');
-  if(!wrap) return;
-  wrap.innerHTML = quoteAcceptFilesTmp.map(f=>`<div style="font-size:11px;color:var(--text1)">📄 ${f.name} <span style="color:var(--text2)">(${(f.size/1024/1024).toFixed(2)} MB)</span></div>`).join('');
-}
-function doMarkQuoteCustomerAccepted(id) {
-  const q = quotes.find(x=>x.id===id);
-  if(!q) return;
-  const files = quoteAcceptFilesTmp || [];
-  function finish(poFiles) {
-    const p = createProjectFromAcceptedQuote(q);
-    if(!p) return;
-    if(poFiles && poFiles.length) {
-      q.customerPoFiles = (q.customerPoFiles||[]).concat(poFiles);
+  showConfirm({
+    title:'Báo giá được khách hàng chấp nhận', icon:'🤝', iconBg:'var(--green-dim)',
+    msg:`Xác nhận khách hàng <strong>${tgEscape(q.name)}</strong> đã chấp nhận báo giá ${tgEscape(q.id)}? Hệ thống sẽ tự động tạo dự án và BOM nháp.`,
+    okText:'Tạo dự án', okClass:'btn-green',
+    onOk:()=>{
+      const p=createProjectFromAcceptedQuote(q);
+      if(!p) return;
+      closeModal(); renderQuotes(); renderProjects(); syncDataToDrive();
+      toast(`✅ Đã tạo dự án ${p.id} và BOM nháp từ báo giá ${q.id}`);
+      goToPhaseDetail(p.id);
     }
-    closeModal(); renderQuotes(); renderProjects(); syncDataToDrive();
-    toast(`✅ Đã tạo dự án ${p.id} và BOM nháp từ báo giá ${q.id}`);
-    goToPhaseDetail(p.id);
-  }
-  if(!files.length) { finish([]); return; }
-  const uploaded = [];
-  showLoading(`Đang tải lên ${files.length} tệp PO/phê duyệt...`);
-  function next(i) {
-    if(i >= files.length) { hideLoading(); finish(uploaded); return; }
-    const file = files[i];
-    showLoading(`Đang tải lên (${i+1}/${files.length}): ${file.name}`);
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const payload = {
-        action: "upload_file",
-        proj: q.proj || q.id,
-        filename: file.name,
-        mimeType: file.type || "application/octet-stream",
-        fileData: e.target.result.split(',')[1],
-        folderIntent: `quote_po_${q.id}`
-      };
-      fetch(DRIVE_API_URL, { method: "POST", body: JSON.stringify(payload) })
-        .then(r => r.json())
-        .then(res => {
-          uploaded.push({
-            name: file.name, type: file.name.split('.').pop().toUpperCase(),
-            size: (file.size/1024/1024).toFixed(2)+' MB', date: new Date().toISOString().slice(0,10),
-            fileId: res.fileId || null, driveLink: res.driveLink || null
-          });
-          next(i+1);
-        })
-        .catch(err => { hideLoading(); alert("Lỗi tải lên: " + err); });
-    };
-    reader.readAsDataURL(file);
-  }
-  next(0);
+  });
 }
 
 function promptRejectQuote(id) {
@@ -12170,10 +12285,6 @@ function openModal_viewQuote(id) {
     </div>
     ${status==='rejected' && q.rejectReason ? `<div style="font-size:12.5px;margin-bottom:12px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.25);border-radius:var(--r);padding:8px 12px"><span style="color:var(--text2)">Lý do từ chối:</span> ${q.rejectReason}</div>` : ''}
     ${q.note ? `<div style="font-size:12.5px;margin-bottom:12px"><span style="color:var(--text2)">Ghi chú:</span> ${q.note}</div>` : ''}
-    ${(q.customerPoFiles && q.customerPoFiles.length) ? `<div style="font-size:12.5px;margin-bottom:12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px">
-      <div style="color:var(--text2);margin-bottom:4px">📎 PO / phê duyệt mua hàng của khách:</div>
-      ${q.customerPoFiles.map(f=>`<div style="margin-top:2px">${f.driveLink ? `<a href="${f.driveLink}" target="_blank" style="color:var(--accent)">📄 ${f.name}</a>` : `📄 ${f.name}`} <span style="color:var(--text2)">(${f.size||''})</span></div>`).join('')}
-    </div>` : ''}
     <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)">
       <table class="tbl" style="min-width:900px">
         <thead><tr><th>Tên chi tiết</th><th>Vật liệu</th><th>Kích thước</th><th>SL</th><th>Gia công</th><th>Giờ</th><th>KL/1</th><th>Chi phí phôi</th><th>Chi phí gia công</th><th>Giá vốn dòng</th></tr></thead>
