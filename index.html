@@ -1062,11 +1062,11 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
       <div class="nav-item nav-sub" onclick="nav('feature-note',this)" id="nav-feature-note">
         Ghi chú cá nhân
       </div>
-      <div class="nav-item nav-sub" onclick="nav('feature-google',this)" id="nav-feature-google">
-        Tìm kiếm Google
-      </div>
       <div class="nav-item nav-sub" onclick="nav('feature-vehicle',this)" id="nav-feature-vehicle">
         Vị trí xe
+      </div>
+      <div class="nav-item nav-sub" onclick="nav('feature-3d',this)" id="nav-feature-3d">
+        Tìm kiếm 3D
       </div>
     </div>
 
@@ -1258,24 +1258,21 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
   </div>
 </div>
 
-<div class="view" id="view-feature-google">
+<div class="view" id="view-feature-3d">
   <div class="page-head">
     <div>
-      <div class="page-title">🔎 Tìm kiếm Google</div>
-      <div class="page-subtitle">Công cụ tiện ích cá nhân</div>
+      <div class="page-title">🧩 Tìm kiếm 3D</div>
+      <div class="page-subtitle">Công cụ tiện ích cá nhân — Các nguồn tìm kiếm mô hình CAD 2D/3D & mua linh kiện</div>
     </div>
   </div>
 
   <div class="card">
-      <div class="card-hd">
-        <div class="card-title">🔎 Tìm kiếm Google</div>
-      </div>
-      <div style="padding:16px">
-        <form onsubmit="featureGoogleSearch(event)" style="display:flex;gap:8px">
-          <input id="feature-google-search" class="form-ctrl" placeholder="Nhập nội dung cần tìm trên Google..." autocomplete="off">
-          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
-        </form>
-      </div>
+    <div class="card-hd">
+      <div class="card-title">📦 Danh sách nguồn tìm kiếm 3D</div>
+    </div>
+    <div style="padding:8px 16px 16px">
+      <div id="feature-3d-list"></div>
+    </div>
   </div>
 </div>
 
@@ -3058,8 +3055,8 @@ let settings = { telegramBotToken: '', telegramChatId: '', telegramEnabled: fals
 const PAGE_TITLES = {
   'feature-calc': 'Máy tính',
   'feature-note': 'Ghi chú cá nhân',
-  'feature-google': 'Tìm kiếm Google',
   'feature-vehicle': 'Vị trí xe',
+  'feature-3d': 'Tìm kiếm 3D',
   dashboard: 'Dashboard',
   projects: 'Dự án',
   phases: 'Giai đoạn & Công việc',
@@ -3119,6 +3116,7 @@ function nav(viewId, el) {
   }
   if(viewId === 'feature-note') { loadFeatureNote(); }
   if(viewId === 'feature-vehicle') { renderVehicleTracking(); }
+  if(viewId === 'feature-3d') { renderFeature3dList(); }
 
   if((viewId==='urgent' || viewId==='today') && !isAdmin()) {
     toast('⛔ Mục Ưu tiên chỉ dành cho Admin');
@@ -3403,14 +3401,34 @@ function saveFeatureNote(showToast=true) {
   if(st) st.textContent = 'Đã lưu ' + new Date().toLocaleTimeString('vi-VN');
   if(showToast && typeof toast === 'function') toast('📝 Đã lưu ghi chú cá nhân');
 }
-function featureGoogleSearch(e) {
-  e.preventDefault();
-  const q = (document.getElementById('feature-google-search')?.value || '').trim();
-  if(!q) return;
-  window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
-}
-
 const TARIS_GPS_URL = 'https://giamsat.taris.com.vn/latestGps';
+const FEATURE_3D_LINKS = [
+  { name: 'GrabCAD Library', desc: 'Thư viện mô hình CAD miễn phí, cộng đồng đóng góp.', url: 'https://grabcad.com/library' },
+  { name: 'MISUMI Việt Nam', desc: 'Tra cứu & đặt hàng linh kiện cơ khí, tự động hóa (MISUMI).', url: 'https://vn.misumi-ec.com/?srsltid=AfmBOoo06U1cx3SrZWqj2cTs65AXkILQjxfa-ZWq7q-NJrBM1R2Yxfm8' },
+  { name: '3Dportal (PARTcommunity)', desc: 'Tìm kiếm mô hình CAD 2D/3D từ nhiều nhà sản xuất.', url: 'https://3dportal.partcommunity.com/3d-cad-models/' },
+  { name: 'Airtac 3D (PARTcommunity)', desc: 'Mô hình CAD 2D/3D linh kiện khí nén Airtac.', url: 'https://airtac2.partcommunity.com/3d-cad-models/sso/airtac?info=airtac&cwid=0542' },
+  { name: 'PTC PARTcommunity', desc: 'Mô hình CAD 2D/3D từ danh mục PTC PARTcommunity.', url: 'https://ptc.partcommunity.com/3d-cad-models/?cwid=5085' },
+  { name: 'BDM Talks', desc: 'Cửa hàng BDM Talks (Shopify).', url: 'https://bdmtalks.myshopify.com/?country=HK' }
+];
+function feature3dOpenNewTab() {
+  window.open(FEATURE_3D_LINKS[0].url, '_blank', 'noopener');
+}
+function feature3dOpen(url) {
+  window.open(url, '_blank', 'noopener');
+}
+function renderFeature3dList() {
+  const wrap = document.getElementById('feature-3d-list');
+  if(!wrap) return;
+  wrap.innerHTML = FEATURE_3D_LINKS.map(l => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 8px;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text0)">${l.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${l.desc}</div>
+      </div>
+      <button class="btn btn-primary btn-sm" style="flex-shrink:0" onclick="feature3dOpen('${l.url.replace(/'/g,"\\'")}')">Mở ↗</button>
+    </div>
+  `).join('');
+}
 function toggleVehTarisPass(btn) {
   const input = document.getElementById('veh-taris-password');
   if(!input) return;
