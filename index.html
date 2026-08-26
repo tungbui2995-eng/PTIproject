@@ -2994,8 +2994,62 @@ function quoteToBomItems(q) {
     code:it.stockCode||`BOM-${String(i+1).padStart(3,'0')}`,
     itemType:it.itemType||'machined', stockCode:it.stockCode||'', name:it.name||'', material:qsMaterialName(it.materialId)||'', materialId:it.materialId||'',
     shape:it.shape||'box', dims:quoteItemDimsLabel(it), L:it.L||'', W:it.W||'', H:it.H||'', D:it.D||'', t:it.t||'',
-    qty:it.qty||1, unit:'Cái', machining:qsMachiningName(it.machiningTypeId)||'', machiningTypeId:it.machiningTypeId||'', hours:it.hours||'', note:it.note||''
+    qty:it.qty||1, unit:'Cái', machining:qsMachiningName(it.machiningTypeId)||'', machiningTypeId:it.machiningTypeId||'', hours:it.hours||'', note:it.note||'',
+    procureStatus:'pending'
   }));
+}
+
+// ── Liên kết vật tư kho cho dòng BOM "Mua vật tư" ──
+function bomStockDatalistId(i){ return `bom-stock-list-${i}`; }
+function bomStockNameOptions(i){
+  const rows = warehouseStock||[];
+  return `<datalist id="${bomStockDatalistId(i)}">${rows.map(s=>{
+    const label = `${String(s.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')} — ${String(s.code||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')} · Tồn: ${s.qty||0} ${String(s.unit||'')}`;
+    return `<option value="${String(s.name||'').replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}" label="${label}"></option>`;
+  }).join('')}</datalist>`;
+}
+function findBomStandardStock(it){
+  const name=String(it?.name||'').trim().toLowerCase(), code=String(it?.stockCode||'').trim().toLowerCase();
+  return (warehouseStock||[]).filter(s=>{
+    const sn=String(s.name||'').trim().toLowerCase(), sc=String(s.code||'').trim().toLowerCase();
+    return (code && sc===code) || (name && (sn===name || sn.includes(name) || name.includes(sn)));
+  }).sort((a,b)=>(b.qty||0)-(a.qty||0));
+}
+function bomStandardStockBadge(it){
+  const ms=findBomStandardStock(it), req=parseFloat(it.qty)||1, total=ms.reduce((n,x)=>n+(x.qty||0),0);
+  if(!it.stockCode && !it.materialId) return '<span class="badge badge-gray" style="font-size:9.5px">Chưa chọn vật tư</span>';
+  if(!ms.length) return '<span class="badge badge-red" style="font-size:9.5px">⚠️ Không có trong kho</span>';
+  if(total>=req) return `<span class="badge badge-green" style="font-size:9.5px">✅ Kho: ${total} ${ms[0].unit||''}</span>`;
+  return `<span class="badge badge-amber" style="font-size:9.5px">⚠️ Kho ${total}/${req}</span>`;
+}
+function selectProjectBomStockItem(pId,i,value){
+  const p=projects.find(x=>x.id===pId); const b=getProjectBom(p); const it=b?.items?.[i]; if(!it||b.status==='approved') return;
+  const v=String(value||'').trim().toLowerCase();
+  const found=(warehouseStock||[]).find(s=>{
+    const n=String(s.name||'').trim().toLowerCase(), c=String(s.code||'').trim().toLowerCase();
+    return v && (v===n || v===c || v===`${n} — ${c}`);
+  });
+  if(found){ it.name=found.name||''; it.stockCode=found.code||''; it.materialId=found.id||''; if(!it.unit||it.unit==='Cái') it.unit=found.unit||it.unit||'Cái'; }
+  else { it.name=value||''; it.stockCode=''; it.materialId=''; }
+  openProjectBom(pId);
+}
+function procureStatusOptions(itemType){
+  return itemType==='standard'
+    ? [['pending','⏳ Chưa mua'],['ordering','🛒 Đang đặt mua'],['purchased','✅ Đã mua']]
+    : [['pending','⏳ Chưa gia công'],['inprogress','🔧 Đang gia công'],['machined','✅ Đã gia công']];
+}
+function procureStatusSelectHtml(pId,i,itemType,status,editable){
+  const opts=procureStatusOptions(itemType);
+  return `<select class="form-ctrl" style="min-width:135px" ${editable?'':'disabled'} onchange="updateProjectBomItemAndRerender('${pId}',${i},'procureStatus',this.value)">${opts.map(([v,l])=>`<option value="${v}" ${(status||'pending')===v?'selected':''}>${l}</option>`).join('')}</select>`;
+}
+function procureStatusText(itemType,status){
+  const opts=procureStatusOptions(itemType);
+  const found=opts.find(o=>o[0]===(status||'pending'));
+  return found?found[1].replace(/^\S+\s/,''):'';
+}
+function updateProjectBomItemAndRerender(pId,i,field,value){
+  updateProjectBomItem(pId,i,field,value);
+  openProjectBom(pId);
 }
 function createProjectFromAcceptedQuote(q) {
   if(!q) return null;
@@ -3669,20 +3723,42 @@ function openProjectBom(pId){
   const editable=b.status!=='approved';
   const overlay=document.getElementById('overlay'); overlay.classList.add('open'); overlay.classList.add('wide-modal');
   document.getElementById('modal-hd-title').textContent=`📋 BOM — ${p.id} — ${p.name}`;
-  const rows=b.items.map((it,i)=>`<tr>
+  const rows=b.items.map((it,i)=>{
+    const itemType = it.itemType==='standard' ? 'standard' : 'machined';
+    const isStandard = itemType==='standard';
+    const typeCell = `<select class="form-ctrl" style="min-width:112px" ${editable?'':'disabled'} onchange="updateProjectBomItemAndRerender('${pId}',${i},'itemType',this.value)"><option value="machined" ${!isStandard?'selected':''}>🔧 Gia công</option><option value="standard" ${isStandard?'selected':''}>📦 Mua vật tư</option></select>`;
+    const nameCell = isStandard
+      ? `<div style="display:flex;gap:4px;align-items:center;min-width:170px"><input class="form-ctrl" list="${bomStockDatalistId(i)}" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="selectProjectBomStockItem('${pId}',${i},this.value)" placeholder="Chọn vật tư trong kho">${bomStockNameOptions(i)}</div>`
+      : `<input class="form-ctrl" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'name',this.value)">`;
+    const materialCell = isStandard
+      ? `<div style="font-size:10.5px;line-height:1.5"><div style="color:var(--text2)">${it.stockCode?('Mã: '+String(it.stockCode).replace(/</g,'&lt;')):'Chưa liên kết mã VT'}</div>${bomStandardStockBadge(it)}</div>`
+      : `<input class="form-ctrl" value="${String(it.material||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'material',this.value)">`;
+    const machiningCell = isStandard
+      ? '<span style="font-size:11px;color:var(--text2)">— Không áp dụng —</span>'
+      : `<input class="form-ctrl" value="${String(it.machining||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'machining',this.value)">`;
+    const statusCell = procureStatusSelectHtml(pId,i,itemType,it.procureStatus,editable);
+    return `<tr>
     <td class="tbl-code">${it.code||('BOM-'+String(i+1).padStart(3,'0'))}</td>
-    <td><input class="form-ctrl" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'name',this.value)"></td>
-    <td><input class="form-ctrl" value="${String(it.material||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'material',this.value)"></td>
+    <td>${typeCell}</td>
+    <td>${nameCell}</td>
+    <td>${materialCell}</td>
     <td><input class="form-ctrl" value="${String(it.dims||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'dims',this.value)"></td>
     <td><input class="form-ctrl" type="number" min="0" value="${it.qty||0}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'qty',this.value)"></td>
     <td><input class="form-ctrl" value="${String(it.unit||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'unit',this.value)"></td>
-    <td><input class="form-ctrl" value="${String(it.machining||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'machining',this.value)"></td>
+    <td>${machiningCell}</td>
+    <td>${statusCell}</td>
     <td><input class="form-ctrl" value="${String(it.note||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'note',this.value)"></td>
     <td>${editable?`<button class="btn btn-xs btn-danger" onclick="removeProjectBomItem('${pId}',${i})">✕</button>`:''}</td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
+  const doneCount = b.items.filter(it=>{const s=it.procureStatus; return s==='purchased'||s==='machined';}).length;
   document.getElementById('modal-body').innerHTML=`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span>Trạng thái: ${bomStatusBadge(b.status)}</span><span style="font-size:11px;color:var(--text2)">${b.sourceQuoteId?`Nguồn: ${b.sourceQuoteId}`:''}</span></div>
-    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1100px"><thead><tr><th>Mã</th><th>Tên chi tiết</th><th>Vật liệu</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Gia công</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="9" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <span>Trạng thái: ${bomStatusBadge(b.status)}</span>
+      <span style="font-size:11px;color:var(--text2)">${b.sourceQuoteId?`Nguồn: ${b.sourceQuoteId}`:''}</span>
+      ${b.items.length?`<span class="badge badge-blue" style="font-size:10.5px">📦 Tiến độ chi tiết: ${doneCount}/${b.items.length} đã gia công/đã mua</span>`:''}
+    </div>
+    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1350px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Gia công</th><th>Trạng thái</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
     ${editable?`<button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addProjectBomItem('${pId}')">+ Thêm dòng</button>`:''}
   `;
   document.getElementById('modal-ft').innerHTML=`
@@ -3691,16 +3767,27 @@ function openProjectBom(pId){
     <button class="btn btn-accent" onclick="exportProjectBom('${pId}')">📤 Xuất BOM</button>
     <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>`;
 }
-function updateProjectBomItem(pId,i,field,value){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved'||!b.items[i])return;b.items[i][field]=field==='qty'?(parseFloat(value)||0):value;}
-function addProjectBomItem(pId){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.push({id:'bom-'+Date.now(),code:'BOM-'+String(b.items.length+1).padStart(3,'0'),name:'',material:'',dims:'',qty:1,unit:'Cái',machining:'',hours:'',note:''});openProjectBom(pId);}
+function updateProjectBomItem(pId,i,field,value){
+  const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved'||!b.items[i])return;
+  b.items[i][field]=field==='qty'?(parseFloat(value)||0):value;
+  if(field==='itemType'){
+    // Chuyển loại: đặt lại trạng thái tiến độ cho phù hợp với loại mới, giữ lại tên/ghi chú
+    b.items[i].procureStatus='pending';
+    if(value!=='standard'){ b.items[i].stockCode=''; b.items[i].materialId=''; }
+  }
+}
+function addProjectBomItem(pId){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.push({id:'bom-'+Date.now(),code:'BOM-'+String(b.items.length+1).padStart(3,'0'),itemType:'machined',stockCode:'',materialId:'',name:'',material:'',dims:'',qty:1,unit:'Cái',machining:'',hours:'',procureStatus:'pending',note:''});openProjectBom(pId);}
 function removeProjectBomItem(pId,i){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.splice(i,1);openProjectBom(pId);}
 function saveProjectBom(pId){const p=projects.find(x=>x.id===pId);if(!p)return;getProjectBom(p);syncDataToDrive();toast(`💾 Đã lưu BOM ${p.id}`);openProjectBom(pId);}
 function exportProjectBom(pId){
   const p=projects.find(x=>x.id===pId); if(!p) return; const b=getProjectBom(p);
   if(!b.items.length){toast('BOM chưa có dữ liệu');return;}
   if(typeof XLSX==='undefined'){toast('Thư viện Excel chưa tải xong');return;}
-  const rows=b.items.map((it,i)=>({'STT':i+1,'Mã BOM':it.code||`BOM-${String(i+1).padStart(3,'0')}`,'Tên chi tiết':it.name||'','Vật liệu':it.material||'','Kích thước':it.dims||'','Số lượng':it.qty||0,'ĐVT':it.unit||'','Gia công':it.machining||'','Số giờ':it.hours||'','Ghi chú':it.note||''}));
-  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:28},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:28}];
+  const rows=b.items.map((it,i)=>{
+    const itemType = it.itemType==='standard' ? 'standard' : 'machined';
+    return {'STT':i+1,'Mã BOM':it.code||`BOM-${String(i+1).padStart(3,'0')}`,'Loại':itemType==='standard'?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':itemType==='standard'?(it.stockCode||''):'','Vật liệu':it.material||'','Kích thước':it.dims||'','Số lượng':it.qty||0,'ĐVT':it.unit||'','Gia công':it.machining||'','Số giờ':it.hours||'','Trạng thái':procureStatusText(itemType,it.procureStatus),'Ghi chú':it.note||''};
+  });
+  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'BOM'); XLSX.writeFile(wb,`BOM_${p.id}.xlsx`);
   if(b.status==='draft'){b.status='ready';b.exportedAt=nowDateTimeStr();syncDataToDrive();}
   openProjectBom(pId); toast(`📤 Đã xuất BOM ${p.id} — trạng thái: Sẵn sàng`);
