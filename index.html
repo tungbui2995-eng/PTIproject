@@ -2901,10 +2901,18 @@ function getProjAvg(p) {
 // ── BOM THEO DỰ ÁN ──
 function getProjectBom(p) {
   if(!p) return null;
-  if(!p.bom) p.bom = { status:'draft', items:[], createdAt:'', exportedAt:'', approvedAt:'', approvedBy:'', sourceQuoteId:'' };
+  if(!p.bom) p.bom = { status:'draft', items:[], createdAt:'', exportedAt:'', approvedAt:'', approvedBy:'', sourceQuoteId:'', approverEmail:'', approverName:'' };
   if(!Array.isArray(p.bom.items)) p.bom.items = [];
   if(!p.bom.status) p.bom.status = 'draft';
+  if(p.bom.approverEmail===undefined) p.bom.approverEmail = '';
+  if(p.bom.approverName===undefined) p.bom.approverName = '';
   return p.bom;
+}
+function setProjectBomApprover(pId, email) {
+  const p=projects.find(x=>x.id===pId); const b=getProjectBom(p); if(!b || b.status==='approved') return;
+  b.approverEmail = email||'';
+  b.approverName = email ? (team.find(t=>t.email===email)?.name||'') : '';
+  openProjectBom(pId);
 }
 function bomStatusBadge(status) {
   if(status==='approved') return '<span class="badge badge-green">✅ Hoàn thành</span>';
@@ -2988,10 +2996,10 @@ function selectQuoteStockItem(i, value){
   refreshQuoteStockCheck(i);
   renderQuoteItemsTable();
 }
-function quoteToBomItems(q) {
+function quoteToBomItems(q, projectId) {
   return (q.items||[]).filter(it=>it.itemType!=='group').map((it,i)=>({
     id:'bom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
-    code:it.stockCode||`BOM-${String(i+1).padStart(3,'0')}`,
+    code:`${projectId||'BOM'}.${String(i+1).padStart(3,'0')}`,
     itemType:it.itemType||'machined', stockCode:it.stockCode||'', name:it.name||'', material:qsMaterialName(it.materialId)||'', materialId:it.materialId||'',
     shape:it.shape||'box', dims:quoteItemDimsLabel(it), L:it.L||'', W:it.W||'', H:it.H||'', D:it.D||'', t:it.t||'',
     qty:it.qty||1, unit:'Cái', machining:qsMachiningName(it.machiningTypeId)||'', machiningTypeId:it.machiningTypeId||'', hours:it.hours||'', note:it.note||'',
@@ -3057,14 +3065,14 @@ function createProjectFromAcceptedQuote(q) {
   const customerCode = customerCodeFromQuote(q);
   const id = nextCustomerProjectId(customerCode);
   const name = String(q.proj||q.name||'Dự án mới').trim();
-  const bomItems = quoteToBomItems(q);
+  const bomItems = quoteToBomItems(q, id);
   const p = {
     id, name, client:String(q.name||customerCode).trim(), val:q.sellPrice||0, deadline:'—', status:'Chờ triển khai',
     creator:currentUser?currentUser.name:(q.requester||''), creatorEmail:currentUser?currentUser.email:(q.requesterEmail||''),
     sourceQuoteId:q.id, customerCode, phases:[0,0,0,0,0,0,0,0],
     phaseDeadlines:Array(8).fill(''), phasePIC:Array(8).fill(''), phaseDocs:Array(8).fill(null).map(()=>[]),
     generalComments:[], phaseComments:[], siteLat:null, siteLng:null, siteRadius:200,
-    bom:{status:'draft',items:bomItems,createdAt:nowDateTimeStr(),exportedAt:'',approvedAt:'',approvedBy:'',sourceQuoteId:q.id}
+    bom:{status:'draft',items:bomItems,createdAt:nowDateTimeStr(),exportedAt:'',approvedAt:'',approvedBy:'',sourceQuoteId:q.id,approverEmail:'',approverName:''}
   };
   projects.unshift(p);
   q.projectCreated=true; q.projectId=id; q.customerAcceptedAt=nowDateTimeStr(); q.customerAcceptedBy=currentUser?.name||'';
@@ -3721,7 +3729,7 @@ function openProjectBom(pId){
   const p=projects.find(x=>x.id===pId); if(!p) return;
   const b=getProjectBom(p);
   const editable=b.status!=='approved';
-  const overlay=document.getElementById('overlay'); overlay.classList.add('open'); overlay.classList.add('wide-modal');
+  const overlay=document.getElementById('overlay'); overlay.classList.add('open'); overlay.classList.add('quote-modal');
   document.getElementById('modal-hd-title').textContent=`📋 BOM — ${p.id} — ${p.name}`;
   const rows=b.items.map((it,i)=>{
     const itemType = it.itemType==='standard' ? 'standard' : 'machined';
@@ -3738,7 +3746,7 @@ function openProjectBom(pId){
       : `<input class="form-ctrl" value="${String(it.machining||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'machining',this.value)">`;
     const statusCell = procureStatusSelectHtml(pId,i,itemType,it.procureStatus,editable);
     return `<tr>
-    <td class="tbl-code">${it.code||('BOM-'+String(i+1).padStart(3,'0'))}</td>
+    <td class="tbl-code">${it.code||(pId+'.'+String(i+1).padStart(3,'0'))}</td>
     <td>${typeCell}</td>
     <td>${nameCell}</td>
     <td>${materialCell}</td>
@@ -3752,17 +3760,28 @@ function openProjectBom(pId){
   </tr>`;
   }).join('');
   const doneCount = b.items.filter(it=>{const s=it.procureStatus; return s==='purchased'||s==='machined';}).length;
+  const approverEditable = b.status!=='approved';
   document.getElementById('modal-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
       <span>Trạng thái: ${bomStatusBadge(b.status)}</span>
       <span style="font-size:11px;color:var(--text2)">${b.sourceQuoteId?`Nguồn: ${b.sourceQuoteId}`:''}</span>
       ${b.items.length?`<span class="badge badge-blue" style="font-size:10.5px">📦 Tiến độ chi tiết: ${doneCount}/${b.items.length} đã gia công/đã mua</span>`:''}
     </div>
+    <div class="form-row" style="max-width:360px;margin-bottom:14px">
+      <label class="form-label">👤 Người phê duyệt BOM</label>
+      <select class="form-ctrl" ${approverEditable?'':'disabled'} onchange="setProjectBomApprover('${pId}',this.value)">${apprApproverOptions(b.approverEmail,'Chọn người phê duyệt BOM')}</select>
+      ${b.status==='approved'
+        ? `<div style="font-size:11px;color:var(--green);margin-top:4px">✅ Đã duyệt bởi ${tgEscape(b.approvedBy||b.approverName||'')} lúc ${b.approvedAt||''}</div>`
+        : (b.approverName
+            ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">Chờ <strong>${tgEscape(b.approverName)}</strong> duyệt</div>`
+            : `<div style="font-size:11px;color:var(--amber);margin-top:4px">⚠️ Chưa chọn người phê duyệt</div>`)}
+    </div>
     <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1350px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Gia công</th><th>Trạng thái</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
     ${editable?`<button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addProjectBomItem('${pId}')">+ Thêm dòng</button>`:''}
   `;
+  const canApproveThis = b.status==='ready' && b.approverEmail && (currentUser?.email===b.approverEmail || isAdmin());
   document.getElementById('modal-ft').innerHTML=`
-    ${isAdmin() && b.status==='ready'?`<button class="btn btn-green" style="margin-right:auto" onclick="approveProjectBom('${pId}')">✅ Duyệt BOM</button>`:''}
+    ${canApproveThis?`<button class="btn btn-green" style="margin-right:auto" onclick="approveProjectBom('${pId}')">✅ Duyệt BOM</button>`:''}
     ${editable?`<button class="btn btn-xs btn-ghost" onclick="saveProjectBom('${pId}')">💾 Lưu BOM</button>`:''}
     <button class="btn btn-accent" onclick="exportProjectBom('${pId}')">📤 Xuất BOM</button>
     <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>`;
@@ -3776,7 +3795,7 @@ function updateProjectBomItem(pId,i,field,value){
     if(value!=='standard'){ b.items[i].stockCode=''; b.items[i].materialId=''; }
   }
 }
-function addProjectBomItem(pId){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.push({id:'bom-'+Date.now(),code:'BOM-'+String(b.items.length+1).padStart(3,'0'),itemType:'machined',stockCode:'',materialId:'',name:'',material:'',dims:'',qty:1,unit:'Cái',machining:'',hours:'',procureStatus:'pending',note:''});openProjectBom(pId);}
+function addProjectBomItem(pId){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.push({id:'bom-'+Date.now(),code:`${pId}.${String(b.items.length+1).padStart(3,'0')}`,itemType:'machined',stockCode:'',materialId:'',name:'',material:'',dims:'',qty:1,unit:'Cái',machining:'',hours:'',procureStatus:'pending',note:''});openProjectBom(pId);}
 function removeProjectBomItem(pId,i){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.splice(i,1);openProjectBom(pId);}
 function saveProjectBom(pId){const p=projects.find(x=>x.id===pId);if(!p)return;getProjectBom(p);syncDataToDrive();toast(`💾 Đã lưu BOM ${p.id}`);openProjectBom(pId);}
 function exportProjectBom(pId){
@@ -3785,7 +3804,7 @@ function exportProjectBom(pId){
   if(typeof XLSX==='undefined'){toast('Thư viện Excel chưa tải xong');return;}
   const rows=b.items.map((it,i)=>{
     const itemType = it.itemType==='standard' ? 'standard' : 'machined';
-    return {'STT':i+1,'Mã BOM':it.code||`BOM-${String(i+1).padStart(3,'0')}`,'Loại':itemType==='standard'?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':itemType==='standard'?(it.stockCode||''):'','Vật liệu':it.material||'','Kích thước':it.dims||'','Số lượng':it.qty||0,'ĐVT':it.unit||'','Gia công':it.machining||'','Số giờ':it.hours||'','Trạng thái':procureStatusText(itemType,it.procureStatus),'Ghi chú':it.note||''};
+    return {'STT':i+1,'Mã BOM':it.code||`${p.id}.${String(i+1).padStart(3,'0')}`,'Loại':itemType==='standard'?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':itemType==='standard'?(it.stockCode||''):'','Vật liệu':it.material||'','Kích thước':it.dims||'','Số lượng':it.qty||0,'ĐVT':it.unit||'','Gia công':it.machining||'','Số giờ':it.hours||'','Trạng thái':procureStatusText(itemType,it.procureStatus),'Ghi chú':it.note||''};
   });
   const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'BOM'); XLSX.writeFile(wb,`BOM_${p.id}.xlsx`);
@@ -3793,11 +3812,13 @@ function exportProjectBom(pId){
   openProjectBom(pId); toast(`📤 Đã xuất BOM ${p.id} — trạng thái: Sẵn sàng`);
 }
 function approveProjectBom(pId){
-  if(!isAdmin()){showNoPermToast();return;}
   const p=projects.find(x=>x.id===pId); if(!p)return; const b=getProjectBom(p);
   if(b.status!=='ready'){toast('BOM phải ở trạng thái Sẵn sàng mới được duyệt');return;}
+  if(!b.approverEmail){toast('⚠️ Vui lòng chọn người phê duyệt BOM trước');return;}
+  const isAssignedApprover = currentUser?.email===b.approverEmail;
+  if(!isAssignedApprover && !isAdmin()){showNoPermToast();return;}
   showConfirm({title:'Duyệt BOM',icon:'✅',iconBg:'var(--green-dim)',msg:`Duyệt BOM của dự án <strong>${tgEscape(p.id)}</strong>? Sau khi duyệt, P4 — Bóc tách BVẽ & BOM sẽ tự động 100%.`,okText:'Duyệt BOM',okClass:'btn-green',onOk:()=>{
-    b.status='approved';b.approvedAt=nowDateTimeStr();b.approvedBy=currentUser?.name||'';markBomPhaseComplete(p);
+    b.status='approved';b.approvedAt=nowDateTimeStr();b.approvedBy=currentUser?.name||b.approverName||'';markBomPhaseComplete(p);
     closeModal();loadPhases(p.id);renderProjects();syncDataToDrive();toast(`✅ BOM ${p.id} đã duyệt — P4 = 100%`);
   }});
 }
