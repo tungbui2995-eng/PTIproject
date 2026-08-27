@@ -3810,6 +3810,8 @@ function openProjectBom(pId){
     <td><input class="form-ctrl" value="${String(it.unit||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'unit',this.value)"></td>
     <td>${machiningCell}</td>
     <td>${statusCell}</td>
+    <td><input class="form-ctrl" type="date" style="min-width:130px" value="${String(it.neededDate||'')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'neededDate',this.value)"></td>
+    <td><input class="form-ctrl" type="date" style="min-width:130px" value="${String(it.committedDate||'')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'committedDate',this.value)"></td>
     <td><input class="form-ctrl" value="${String(it.note||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'note',this.value)"></td>
     <td>${rowEditable?`<button class="btn btn-xs btn-danger" onclick="removeProjectBomItem('${pId}',${i})">✕</button>`:''}</td>
   </tr>`;
@@ -3833,7 +3835,7 @@ function openProjectBom(pId){
             ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">Chờ <strong>${tgEscape(b.approverName)}</strong> duyệt</div>`
             : `<div style="font-size:11px;color:var(--amber);margin-top:4px">⚠️ Chưa chọn người phê duyệt</div>`)}
     </div>
-    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1380px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Loại gia công / Số giờ</th><th>Trạng thái</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
+    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1620px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Loại gia công / Số giờ</th><th>Trạng thái</th><th>Ngày cần</th><th>Ngày cam kết</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="13" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
     <button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addProjectBomItem('${pId}')">+ Thêm dòng${(b.sourceQuoteId||approved)?' (phát sinh)':''}</button>
   `;
   const canApproveThis = b.status==='ready' && b.approverEmail && (currentUser?.email===b.approverEmail || isAdmin());
@@ -3873,9 +3875,9 @@ function exportProjectBom(pId){
     const itemType = it.itemType==='standard' ? 'standard' : 'machined';
     const isStandard = itemType==='standard';
     const cpTinhTay = isStandard ? (it.extra?Math.round(parseFloat(it.extraCost)||0):'') : (it.extra?Math.round(quoteItemCost(it).totalCost):'');
-    return {'STT':i+1,'Mã BOM':it.code||`${p.id}.${String(i+1).padStart(3,'0')}`,'Loại':isStandard?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':isStandard?(it.stockCode||''):'','Vật liệu':isStandard?'':(qsMaterialName(it.materialId)||''),'Kích thước':isStandard?'':quoteItemDimsLabel(it),'Số lượng':it.qty||0,'ĐVT':it.unit||'','Loại gia công':isStandard?'':(qsMachiningName(it.machiningTypeId)||''),'Số giờ':isStandard?'':(it.hours||''),'Trạng thái':procureStatusText(itemType,it.procureStatus),'Phát sinh':it.extra?`Có (${it.addedBy||''} — ${it.addedAt||''})`:'','CP phát sinh (đ)':cpTinhTay,'Ghi chú':it.note||''};
+    return {'STT':i+1,'Mã BOM':it.code||`${p.id}.${String(i+1).padStart(3,'0')}`,'Loại':isStandard?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':isStandard?(it.stockCode||''):'','Vật liệu':isStandard?'':(qsMaterialName(it.materialId)||''),'Kích thước':isStandard?'':quoteItemDimsLabel(it),'Số lượng':it.qty||0,'ĐVT':it.unit||'','Loại gia công':isStandard?'':(qsMachiningName(it.machiningTypeId)||''),'Số giờ':isStandard?'':(it.hours||''),'Trạng thái':procureStatusText(itemType,it.procureStatus),'Ngày cần':it.neededDate||'','Ngày cam kết':it.committedDate||'','Phát sinh':it.extra?`Có (${it.addedBy||''} — ${it.addedAt||''})`:'','CP phát sinh (đ)':cpTinhTay,'Ghi chú':it.note||''};
   });
-  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:22},{wch:16},{wch:28}];
+  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:14},{wch:14},{wch:22},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'BOM'); XLSX.writeFile(wb,`BOM_${p.id}.xlsx`);
   if(b.status==='draft'){b.status='ready';b.exportedAt=nowDateTimeStr();syncDataToDrive();}
   openProjectBom(pId); toast(`📤 Đã xuất BOM ${p.id} — trạng thái: Sẵn sàng`);
