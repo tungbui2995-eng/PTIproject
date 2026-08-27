@@ -997,6 +997,10 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Kinh doanh <span class="nav-badge red" id="b-quotes" style="display:none">0</span>
     </div>
+    <div class="nav-item" onclick="nav('profitreport',this)" id="nav-profitreport">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Doanh thu - Lợi nhuận (Ước tính)
+    </div>
   </div>
 
 
@@ -2759,10 +2763,6 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Xuất Excel
         </button>
-        <button class="btn btn-sm btn-ghost" id="btn-export-report" style="display:none" onclick="exportProjectProfitReportExcel()" title="Xuất báo cáo lợi nhuận ra file Excel">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Xuất Excel
-        </button>
         <button class="btn btn-sm btn-accent" onclick="openModal_newQuote()">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Tạo báo giá
@@ -2774,7 +2774,6 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
         <div class="wh-tab" id="qt-tab-sent" onclick="switchQuotesTab('sent')">⏳ Chờ duyệt</div>
         <div class="wh-tab" id="qt-tab-approved" onclick="switchQuotesTab('approved')">✅ Đã duyệt</div>
         <div class="wh-tab" id="qt-tab-rejected" onclick="switchQuotesTab('rejected')">❌ Từ chối</div>
-        <div class="wh-tab" id="qt-tab-report" onclick="switchQuotesTab('report')">📊 Báo cáo lợi nhuận theo dự án</div>
       </div>
       <div class="card" id="quotes-list-wrap">
         <div class="tbl-wrap">
@@ -2789,17 +2788,31 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
           </table>
         </div>
       </div>
-      <div class="card" id="quotes-report-wrap" style="display:none">
+    </div>
+
+    <!-- DOANH THU - LỢI NHUẬN (ƯỚC TÍNH) -->
+    <div class="view" id="view-profitreport">
+      <div class="section-hd">
+        <div class="section-hd-left">
+          <h2>📊 Doanh thu - Lợi nhuận (Ước tính)</h2>
+          <p>Ước tính lợi nhuận thực tế theo từng dự án, dựa trên giá bán và các chi phí phát sinh</p>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="exportProjectProfitReportExcel()" title="Xuất báo cáo lợi nhuận ra file Excel">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Xuất Excel
+        </button>
+      </div>
+      <div class="card" id="quotes-report-wrap">
         <div style="padding:10px 14px;font-size:11.5px;color:var(--text2)">
-          <strong>Lợi nhuận thực tế = Giá bán − Chi phí trong báo giá − Chi phí vật tư phát sinh − Chi phí đi lại − Chi phí tăng ca.</strong><br>
-          Giá bán lấy từ giá trị hợp đồng của dự án. Chi phí trong báo giá lấy từ giá vốn của báo giá đã tạo ra dự án. Chi phí vật tư phát sinh tính từ các phiếu <strong>xuất kho đã xác nhận</strong> gắn với dự án (SL × Giá mua). CP đi lại phát sinh/CP tăng ca phát sinh tính từ các phiếu <strong>Đăng ký sử dụng xe / Đăng ký tăng ca đã duyệt</strong> có chọn đúng dự án liên quan.
+          <strong>Lợi nhuận thực tế = Giá bán − Chi phí trong báo giá − Chi phí vật tư phát sinh − Chi phí đi lại − Chi phí tăng ca − CP BOM phát sinh.</strong><br>
+          Giá bán lấy từ giá trị hợp đồng của dự án. Chi phí trong báo giá lấy từ giá vốn của báo giá đã tạo ra dự án. Chi phí vật tư phát sinh tính từ các phiếu <strong>xuất kho đã xác nhận</strong> gắn với dự án (SL × Giá mua). CP đi lại phát sinh/CP tăng ca phát sinh tính từ các phiếu <strong>Đăng ký sử dụng xe / Đăng ký tăng ca đã duyệt</strong> có chọn đúng dự án liên quan. CP BOM phát sinh tính từ các dòng BOM được thêm <strong>sau khi BOM đã duyệt</strong> (đánh dấu "Phát sinh"), trừ các dòng vật tư phát sinh đã "Đã mua" (đã tính ở CP vật tư phát sinh, không cộng trùng).
         </div>
         <div class="tbl-wrap">
-          <table class="tbl" style="min-width:1180px">
+          <table class="tbl" style="min-width:1320px">
             <thead>
               <tr>
                 <th>STT</th><th>Mã DA</th><th>Tên dự án</th><th>Khách hàng</th>
-                <th>Giá bán</th><th>Chi phí báo giá</th><th>CP vật tư phát sinh</th><th>CP đi lại phát sinh</th><th>CP tăng ca phát sinh</th>
+                <th>Giá bán</th><th>Chi phí báo giá</th><th>CP vật tư phát sinh</th><th>CP đi lại phát sinh</th><th>CP tăng ca phát sinh</th><th>CP BOM phát sinh</th>
                 <th>Tổng chi phí</th><th>Lợi nhuận thực tế</th><th>Tỷ suất LN</th>
               </tr>
             </thead>
@@ -3037,7 +3050,7 @@ function selectProjectBomStockItem(pId,i,value){
     const n=String(s.name||'').trim().toLowerCase(), c=String(s.code||'').trim().toLowerCase();
     return v && (v===n || v===c || v===`${n} — ${c}`);
   });
-  if(found){ it.name=found.name||''; it.stockCode=found.code||''; it.materialId=found.id||''; if(!it.unit||it.unit==='Cái') it.unit=found.unit||it.unit||'Cái'; }
+  if(found){ it.name=found.name||''; it.stockCode=found.code||''; it.materialId=found.id||''; if(!it.unit||it.unit==='Cái') it.unit=found.unit||it.unit||'Cái'; if(it.extra && !it.extraCost) it.extraCost=(parseFloat(found.purchasePrice)||0)*(parseFloat(it.qty)||1); }
   else { it.name=value||''; it.stockCode=''; it.materialId=''; }
   openProjectBom(pId);
 }
@@ -3160,6 +3173,7 @@ const PAGE_TITLES = {
   workpic: '👷 Công việc & PIC',
   attendance: '📍 Chấm công GPS',
   quotes: '💲 Kinh doanh',
+  profitreport: '📊 Doanh thu - Lợi nhuận (Ước tính)',
   hr: '🧑‍💼 Nhân sự',
   rules: '📋 Nội quy & Phúc lợi'
 };
@@ -3208,11 +3222,12 @@ function nav(viewId, el) {
     toast('⛔ Mục Ưu tiên chỉ dành cho Admin');
     return;
   }
+  if(viewId==='profitreport' && !isAdmin()) { showNoPermToast(); return; }
   if(!canView(viewId)) {
     toast('⛔ Bạn không có quyền truy cập mục này');
     return;
   }
-  ['nav-urgent','nav-today'].forEach(id=>{ const n=document.getElementById(id); if(n) n.style.display=isAdmin() ? '' : 'none'; });
+  ['nav-urgent','nav-today','nav-profitreport'].forEach(id=>{ const n=document.getElementById(id); if(n) n.style.display=isAdmin() ? '' : 'none'; });
   document.querySelectorAll('.nav-item').forEach(i=>{
     i.classList.remove('active');
     i.classList.remove('active-red');
@@ -3225,6 +3240,7 @@ function nav(viewId, el) {
   if(viewId === 'workpic') renderWorkPIC();
   if(viewId === 'attendance') renderAttendance();
   if(viewId === 'quotes') renderQuotes();
+  if(viewId === 'profitreport') renderProjectProfitReport();
   if(viewId === 'hr') renderHr();
   closeMobileSidebar();
 }
@@ -3344,6 +3360,9 @@ function applyPermissions() {
 
   const tgBtn = document.getElementById('tg-settings-btn');
   if(tgBtn) tgBtn.style.display = isAdmin() ? '' : 'none';
+
+  const profitReportEl = document.getElementById('nav-profitreport');
+  if(profitReportEl) profitReportEl.style.display = isAdmin() ? '' : 'none';
 }
 
 // ── RENDER FUNCTIONS ──
@@ -3725,47 +3744,84 @@ function switchProjTab(tab) {
   if(input) input.value = '';
   renderProjects();
 }
+function bomMaterialOptions(selId){
+  const opts=(quoteSettings.materials||[]).map(m=>`<option value="${m.id}" ${selId===m.id?'selected':''}>${m.name}</option>`).join('');
+  return `<option value="">— Chọn vật liệu —</option>${opts}`;
+}
+function bomMachiningOptions(selId){
+  const opts=(quoteSettings.machiningTypes||[]).map(m=>`<option value="${m.id}" ${selId===m.id?'selected':''}>${m.name}</option>`).join('');
+  return `<option value="">— Chọn loại gia công —</option>${opts}`;
+}
+function bomShapeDimsHtml(pId,i,it,rowEditable){
+  const esc=v=>String(v??'').replace(/"/g,'&quot;');
+  const shapeSel=`<select class="form-ctrl" style="margin-bottom:4px;min-width:150px" ${rowEditable?'':'disabled'} onchange="updateProjectBomItemAndRerender('${pId}',${i},'shape',this.value)"><option value="box" ${(!it.shape||it.shape==='box')?'selected':''}>Khối/Tấm</option><option value="round" ${it.shape==='round'?'selected':''}>Trụ tròn</option><option value="boxtube" ${it.shape==='boxtube'?'selected':''}>Ống hộp</option><option value="roundtube" ${it.shape==='roundtube'?'selected':''}>Ống tròn</option></select>`;
+  let dims='';
+  if(it.shape==='round') dims=`<div style="display:flex;gap:4px"><input class="form-ctrl" type="number" style="width:72px" value="${esc(it.D)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'D',this.value)" placeholder="Ø mm"><input class="form-ctrl" type="number" style="width:72px" value="${esc(it.L)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'L',this.value)" placeholder="Dài"></div>`;
+  else if(it.shape==='roundtube') dims=`<div style="display:flex;gap:4px"><input class="form-ctrl" type="number" style="width:60px" value="${esc(it.D)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'D',this.value)" placeholder="Ø"><input class="form-ctrl" type="number" style="width:56px" value="${esc(it.t)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'t',this.value)" placeholder="Dày"><input class="form-ctrl" type="number" style="width:60px" value="${esc(it.L)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'L',this.value)" placeholder="Dài"></div>`;
+  else if(it.shape==='boxtube') dims=`<div style="display:flex;gap:4px"><input class="form-ctrl" type="number" style="width:52px" value="${esc(it.W)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'W',this.value)" placeholder="Rộng"><input class="form-ctrl" type="number" style="width:52px" value="${esc(it.H)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'H',this.value)" placeholder="Cao"><input class="form-ctrl" type="number" style="width:52px" value="${esc(it.t)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'t',this.value)" placeholder="Dày"><input class="form-ctrl" type="number" style="width:52px" value="${esc(it.L)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'L',this.value)" placeholder="Dài"></div>`;
+  else dims=`<div style="display:flex;gap:4px"><input class="form-ctrl" type="number" style="width:60px" value="${esc(it.L)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'L',this.value)" placeholder="Dài"><input class="form-ctrl" type="number" style="width:60px" value="${esc(it.W)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'W',this.value)" placeholder="Rộng"><input class="form-ctrl" type="number" style="width:60px" value="${esc(it.H)}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'H',this.value)" placeholder="Cao"></div>`;
+  return `<div style="min-width:190px">${shapeSel}${dims}</div>`;
+}
+function updateProjectBomItemField(pId,i,field,value){
+  updateProjectBomItem(pId,i,field,value);
+  const p=projects.find(x=>x.id===pId); const b=getProjectBom(p); const it=b?.items?.[i]; if(!it) return;
+  if(it.itemType!=='standard'){
+    const cell=document.getElementById(`bom-item-cost-${pId}-${i}`);
+    if(cell) cell.textContent=formatVNDFull(quoteItemCost(it).totalCost);
+  }
+}
 function openProjectBom(pId){
   const p=projects.find(x=>x.id===pId); if(!p) return;
   const b=getProjectBom(p);
-  const editable=b.status!=='approved';
+  const approved = b.status==='approved';
+  const editable=!approved;
   const overlay=document.getElementById('overlay'); overlay.classList.add('open'); overlay.classList.add('quote-modal');
   document.getElementById('modal-hd-title').textContent=`📋 BOM — ${p.id} — ${p.name}`;
   const rows=b.items.map((it,i)=>{
     const itemType = it.itemType==='standard' ? 'standard' : 'machined';
     const isStandard = itemType==='standard';
-    const typeCell = `<select class="form-ctrl" style="min-width:112px" ${editable?'':'disabled'} onchange="updateProjectBomItemAndRerender('${pId}',${i},'itemType',this.value)"><option value="machined" ${!isStandard?'selected':''}>🔧 Gia công</option><option value="standard" ${isStandard?'selected':''}>📦 Mua vật tư</option></select>`;
+    const rowEditable = !approved || !!it.extra;
+    const typeCell = `<select class="form-ctrl" style="min-width:112px" ${rowEditable?'':'disabled'} onchange="updateProjectBomItemAndRerender('${pId}',${i},'itemType',this.value)"><option value="machined" ${!isStandard?'selected':''}>🔧 Gia công</option><option value="standard" ${isStandard?'selected':''}>📦 Mua vật tư</option></select>`;
     const nameCell = isStandard
-      ? `<div style="display:flex;gap:4px;align-items:center;min-width:170px"><input class="form-ctrl" list="${bomStockDatalistId(i)}" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="selectProjectBomStockItem('${pId}',${i},this.value)" placeholder="Chọn vật tư trong kho">${bomStockNameOptions(i)}</div>`
-      : `<input class="form-ctrl" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'name',this.value)">`;
+      ? `<div style="display:flex;gap:4px;align-items:center;min-width:170px"><input class="form-ctrl" list="${bomStockDatalistId(i)}" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="selectProjectBomStockItem('${pId}',${i},this.value)" placeholder="Chọn vật tư trong kho">${bomStockNameOptions(i)}</div>`
+      : `<input class="form-ctrl" value="${String(it.name||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'name',this.value)">`;
+    // Vật liệu: dòng "Mua vật tư" liên kết trực tiếp với vật tư kho (đã làm ở bước trước).
+    // Dòng "Gia công" giờ liên kết với đúng danh mục Vật liệu dùng trong Tạo báo giá (quoteSettings.materials) để tính tiền tự động, giống hệt cách tạo BOM trong báo giá.
     const materialCell = isStandard
       ? `<div style="font-size:10.5px;line-height:1.5"><div style="color:var(--text2)">${it.stockCode?('Mã: '+String(it.stockCode).replace(/</g,'&lt;')):'Chưa liên kết mã VT'}</div>${bomStandardStockBadge(it)}</div>`
-      : `<input class="form-ctrl" value="${String(it.material||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'material',this.value)">`;
+      : `<select class="form-ctrl" style="min-width:190px" ${rowEditable?'':'disabled'} onchange="updateProjectBomItemField('${pId}',${i},'materialId',this.value)">${bomMaterialOptions(it.materialId)}</select>`;
+    const dimsCell = isStandard
+      ? '<span style="font-size:11px;color:var(--text2)">— Không áp dụng —</span>'
+      : bomShapeDimsHtml(pId,i,it,rowEditable);
+    // Gia công: chọn Loại gia công từ danh mục dùng chung trong báo giá (quoteSettings.machiningTypes) + Số giờ, dùng đúng công thức tính giá của báo giá.
     const machiningCell = isStandard
       ? '<span style="font-size:11px;color:var(--text2)">— Không áp dụng —</span>'
-      : `<input class="form-ctrl" value="${String(it.machining||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'machining',this.value)">`;
-    const statusCell = procureStatusSelectHtml(pId,i,itemType,it.procureStatus,editable);
+      : `<div style="display:flex;flex-direction:column;gap:4px;min-width:150px"><select class="form-ctrl" ${rowEditable?'':'disabled'} onchange="updateProjectBomItemField('${pId}',${i},'machiningTypeId',this.value)">${bomMachiningOptions(it.machiningTypeId)}</select><input class="form-ctrl" type="number" step="any" style="width:100px" value="${String(it.hours||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'hours',this.value)" placeholder="Số giờ"></div>`;
+    const statusCell = procureStatusSelectHtml(pId,i,itemType,it.procureStatus,true);
+    const codeCell = `<div>${it.code||(pId+'.'+String(i+1).padStart(3,'0'))}</div>${it.extra?'<div class="badge badge-amber" style="font-size:9px;margin-top:3px;white-space:nowrap">⚠️ Phát sinh</div>':''}`;
     return `<tr>
-    <td class="tbl-code">${it.code||(pId+'.'+String(i+1).padStart(3,'0'))}</td>
+    <td class="tbl-code">${codeCell}</td>
     <td>${typeCell}</td>
     <td>${nameCell}</td>
     <td>${materialCell}</td>
-    <td><input class="form-ctrl" value="${String(it.dims||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'dims',this.value)"></td>
-    <td><input class="form-ctrl" type="number" min="0" value="${it.qty||0}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'qty',this.value)"></td>
-    <td><input class="form-ctrl" value="${String(it.unit||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'unit',this.value)"></td>
+    <td>${dimsCell}</td>
+    <td><input class="form-ctrl" type="number" min="0" value="${it.qty||0}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItemField('${pId}',${i},'qty',this.value)"></td>
+    <td><input class="form-ctrl" value="${String(it.unit||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'unit',this.value)"></td>
     <td>${machiningCell}</td>
     <td>${statusCell}</td>
-    <td><input class="form-ctrl" value="${String(it.note||'').replace(/"/g,'&quot;')}" ${editable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'note',this.value)"></td>
-    <td>${editable?`<button class="btn btn-xs btn-danger" onclick="removeProjectBomItem('${pId}',${i})">✕</button>`:''}</td>
+    <td><input class="form-ctrl" value="${String(it.note||'').replace(/"/g,'&quot;')}" ${rowEditable?'':'disabled'} oninput="updateProjectBomItem('${pId}',${i},'note',this.value)"></td>
+    <td>${rowEditable?`<button class="btn btn-xs btn-danger" onclick="removeProjectBomItem('${pId}',${i})">✕</button>`:''}</td>
   </tr>`;
   }).join('');
   const doneCount = b.items.filter(it=>{const s=it.procureStatus; return s==='purchased'||s==='machined';}).length;
+  const extraCount = b.items.filter(it=>it.extra).length;
   const approverEditable = b.status!=='approved';
   document.getElementById('modal-body').innerHTML=`
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
       <span>Trạng thái: ${bomStatusBadge(b.status)}</span>
       <span style="font-size:11px;color:var(--text2)">${b.sourceQuoteId?`Nguồn: ${b.sourceQuoteId}`:''}</span>
       ${b.items.length?`<span class="badge badge-blue" style="font-size:10.5px">📦 Tiến độ chi tiết: ${doneCount}/${b.items.length} đã gia công/đã mua</span>`:''}
+      ${extraCount?`<span class="badge badge-amber" style="font-size:10.5px">⚠️ ${extraCount} dòng phát sinh ngoài báo giá</span>`:''}
     </div>
     <div class="form-row" style="max-width:360px;margin-bottom:14px">
       <label class="form-label">👤 Người phê duyệt BOM</label>
@@ -3776,27 +3832,37 @@ function openProjectBom(pId){
             ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">Chờ <strong>${tgEscape(b.approverName)}</strong> duyệt</div>`
             : `<div style="font-size:11px;color:var(--amber);margin-top:4px">⚠️ Chưa chọn người phê duyệt</div>`)}
     </div>
-    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1350px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Gia công</th><th>Trạng thái</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
-    ${editable?`<button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addProjectBomItem('${pId}')">+ Thêm dòng</button>`:''}
+    <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r)"><table class="tbl" style="min-width:1380px"><thead><tr><th>Mã</th><th>Loại</th><th>Tên chi tiết</th><th>Vật liệu / Vật tư kho</th><th>Kích thước</th><th>SL</th><th>ĐVT</th><th>Loại gia công / Số giờ</th><th>Trạng thái</th><th>Ghi chú</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="11" class="empty-state">BOM chưa có dữ liệu</td></tr>'}</tbody></table></div>
+    <button class="btn btn-xs btn-ghost" style="margin-top:8px" onclick="addProjectBomItem('${pId}')">+ Thêm dòng${(b.sourceQuoteId||approved)?' (phát sinh)':''}</button>
   `;
   const canApproveThis = b.status==='ready' && b.approverEmail && (currentUser?.email===b.approverEmail || isAdmin());
   document.getElementById('modal-ft').innerHTML=`
     ${canApproveThis?`<button class="btn btn-green" style="margin-right:auto" onclick="approveProjectBom('${pId}')">✅ Duyệt BOM</button>`:''}
-    ${editable?`<button class="btn btn-xs btn-ghost" onclick="saveProjectBom('${pId}')">💾 Lưu BOM</button>`:''}
+    ${editable?`<button class="btn btn-xs btn-ghost" onclick="saveProjectBom('${pId}')">💾 Lưu BOM</button>`:`<button class="btn btn-xs btn-ghost" onclick="saveProjectBom('${pId}')">💾 Lưu tiến độ</button>`}
     <button class="btn btn-accent" onclick="exportProjectBom('${pId}')">📤 Xuất BOM</button>
     <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>`;
 }
 function updateProjectBomItem(pId,i,field,value){
-  const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved'||!b.items[i])return;
-  b.items[i][field]=field==='qty'?(parseFloat(value)||0):value;
+  const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);const it=b.items[i];if(!it)return;
+  // BOM đã duyệt: khoá các dòng gốc, chỉ cho phép sửa tiến độ (mọi dòng) hoặc sửa toàn bộ dòng phát sinh thêm sau duyệt
+  if(b.status==='approved' && field!=='procureStatus' && !it.extra) return;
+  it[field]=(field==='qty'||field==='extraCost')?(parseFloat(value)||0):value;
   if(field==='itemType'){
     // Chuyển loại: đặt lại trạng thái tiến độ cho phù hợp với loại mới, giữ lại tên/ghi chú
-    b.items[i].procureStatus='pending';
-    if(value!=='standard'){ b.items[i].stockCode=''; b.items[i].materialId=''; }
+    it.procureStatus='pending';
+    if(value!=='standard'){ it.stockCode=''; it.materialId=''; }
   }
 }
-function addProjectBomItem(pId){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.push({id:'bom-'+Date.now(),code:`${pId}.${String(b.items.length+1).padStart(3,'0')}`,itemType:'machined',stockCode:'',materialId:'',name:'',material:'',dims:'',qty:1,unit:'Cái',machining:'',hours:'',procureStatus:'pending',note:''});openProjectBom(pId);}
-function removeProjectBomItem(pId,i){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);if(b.status==='approved')return;b.items.splice(i,1);openProjectBom(pId);}
+function addProjectBomItem(pId){
+  const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);
+  // Phát sinh = dòng thêm ngoài phạm vi đã có trong báo giá gốc (b.sourceQuoteId) HOẶC thêm sau khi BOM đã duyệt.
+  // Nhờ vậy dòng thêm mới sẽ tính vào "Chi phí phát sinh" ngay cả khi BOM (được tạo tự động từ báo giá) chưa duyệt.
+  const isExtra = !!b.sourceQuoteId || b.status==='approved';
+  b.items.push({id:'bom-'+Date.now(),code:`${pId}.${String(b.items.length+1).padStart(3,'0')}`,itemType:'machined',stockCode:'',materialId:'',name:'',material:'',shape:'box',L:'',W:'',H:'',D:'',t:'',qty:1,unit:'Cái',machining:'',machiningTypeId:'',hours:'',procureStatus:'pending',note:'',extra:isExtra,extraCost:0,addedAt:isExtra?nowDateTimeStr():'',addedBy:isExtra?(currentUser?.name||''):''});
+  openProjectBom(pId);
+  if(isExtra) toast('⚠️ Dòng mới thêm vào BOM — nằm ngoài báo giá gốc nên được đánh dấu là phát sinh');
+}
+function removeProjectBomItem(pId,i){const p=projects.find(x=>x.id===pId);const b=getProjectBom(p);const it=b.items[i];if(!it)return;if(b.status==='approved' && !it.extra)return;b.items.splice(i,1);openProjectBom(pId);}
 function saveProjectBom(pId){const p=projects.find(x=>x.id===pId);if(!p)return;getProjectBom(p);syncDataToDrive();toast(`💾 Đã lưu BOM ${p.id}`);openProjectBom(pId);}
 function exportProjectBom(pId){
   const p=projects.find(x=>x.id===pId); if(!p) return; const b=getProjectBom(p);
@@ -3804,9 +3870,11 @@ function exportProjectBom(pId){
   if(typeof XLSX==='undefined'){toast('Thư viện Excel chưa tải xong');return;}
   const rows=b.items.map((it,i)=>{
     const itemType = it.itemType==='standard' ? 'standard' : 'machined';
-    return {'STT':i+1,'Mã BOM':it.code||`${p.id}.${String(i+1).padStart(3,'0')}`,'Loại':itemType==='standard'?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':itemType==='standard'?(it.stockCode||''):'','Vật liệu':it.material||'','Kích thước':it.dims||'','Số lượng':it.qty||0,'ĐVT':it.unit||'','Gia công':it.machining||'','Số giờ':it.hours||'','Trạng thái':procureStatusText(itemType,it.procureStatus),'Ghi chú':it.note||''};
+    const isStandard = itemType==='standard';
+    const cpTinhTay = isStandard ? (it.extra?Math.round(parseFloat(it.extraCost)||0):'') : (it.extra?Math.round(quoteItemCost(it).totalCost):'');
+    return {'STT':i+1,'Mã BOM':it.code||`${p.id}.${String(i+1).padStart(3,'0')}`,'Loại':isStandard?'Mua vật tư':'Gia công','Tên chi tiết':it.name||'','Mã vật tư kho':isStandard?(it.stockCode||''):'','Vật liệu':isStandard?'':(qsMaterialName(it.materialId)||''),'Kích thước':isStandard?'':quoteItemDimsLabel(it),'Số lượng':it.qty||0,'ĐVT':it.unit||'','Loại gia công':isStandard?'':(qsMachiningName(it.machiningTypeId)||''),'Số giờ':isStandard?'':(it.hours||''),'Trạng thái':procureStatusText(itemType,it.procureStatus),'Phát sinh':it.extra?`Có (${it.addedBy||''} — ${it.addedAt||''})`:'','CP phát sinh (đ)':cpTinhTay,'Ghi chú':it.note||''};
   });
-  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:28}];
+  const ws=XLSX.utils.json_to_sheet(rows); ws['!cols']=[{wch:6},{wch:14},{wch:12},{wch:28},{wch:14},{wch:20},{wch:24},{wch:10},{wch:10},{wch:20},{wch:10},{wch:16},{wch:22},{wch:16},{wch:28}];
   const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'BOM'); XLSX.writeFile(wb,`BOM_${p.id}.xlsx`);
   if(b.status==='draft'){b.status='ready';b.exportedAt=nowDateTimeStr();syncDataToDrive();}
   openProjectBom(pId); toast(`📤 Đã xuất BOM ${p.id} — trạng thái: Sẵn sàng`);
@@ -8895,8 +8963,8 @@ function loadProjectBomToMaterialRequest(){
     const requiredQty = Math.max(0, parseFloat(it.qty)||0);
     const stockQty = stockItem ? Math.max(0, parseFloat(stockItem.qty)||0) : 0;
     return {
-      name:it.material||it.name||'',
-      spec:it.dims||'',
+      name:(it.itemType==='standard' ? (it.name||it.material||'') : (qsMaterialName(it.materialId)||it.material||it.name||'')),
+      spec:it.itemType==='standard' ? (it.dims||'') : quoteItemDimsLabel(it),
       unit:it.unit || stockItem?.unit || 'Cái',
       qty:netPurchaseQty(requiredQty,stockQty),
       requiredQty,
@@ -11591,26 +11659,12 @@ function quoteStatusBadge(status) {
   return `<span class="badge badge-gray">✏️ Nháp</span>`;
 }
 function switchQuotesTab(tab) {
-  if(tab==='report' && !isAdmin()) { showNoPermToast(); return; }
   quotesTab = tab;
-  ['all','draft','sent','approved','rejected','report'].forEach(t=>{
+  ['all','draft','sent','approved','rejected'].forEach(t=>{
     const el = document.getElementById(`qt-tab-${t}`);
     if(el) el.classList.toggle('active', t===tab);
   });
-  const listWrap = document.getElementById('quotes-list-wrap');
-  const reportWrap = document.getElementById('quotes-report-wrap');
-  const exportReportBtn = document.getElementById('btn-export-report');
-  if(tab==='report') {
-    if(listWrap) listWrap.style.display = 'none';
-    if(reportWrap) reportWrap.style.display = '';
-    if(exportReportBtn) exportReportBtn.style.display = '';
-    renderProjectProfitReport();
-  } else {
-    if(listWrap) listWrap.style.display = '';
-    if(reportWrap) reportWrap.style.display = 'none';
-    if(exportReportBtn) exportReportBtn.style.display = 'none';
-    renderQuotes();
-  }
+  renderQuotes();
 }
 function canEditQuote(q) {
   if(!q) return false;
@@ -12292,21 +12346,6 @@ function openModal_editQuote(id) {
 }
 
 function renderQuotes() {
-  const reportTabBtn = document.getElementById('qt-tab-report');
-  if(reportTabBtn) {
-    reportTabBtn.style.display = isAdmin() ? '' : 'none';
-    if(!isAdmin() && quotesTab==='report') {
-      quotesTab='all';
-      const listWrap = document.getElementById('quotes-list-wrap');
-      const reportWrap = document.getElementById('quotes-report-wrap');
-      const exportReportBtn = document.getElementById('btn-export-report');
-      if(listWrap) listWrap.style.display = '';
-      if(reportWrap) reportWrap.style.display = 'none';
-      if(exportReportBtn) exportReportBtn.style.display = 'none';
-      const allTabBtn = document.getElementById('qt-tab-all');
-      if(allTabBtn) allTabBtn.classList.add('active');
-    }
-  }
   const tbody = document.getElementById('quotes-tbody');
   if(!tbody) return;
   let list = [...quotes].sort((a,b)=>(b.createdAtRaw||0)-(a.createdAtRaw||0));
@@ -12388,6 +12427,23 @@ function projectOvertimeCost(projectId) {
     .filter(r => r.kind==='overtime' && r.status==='approved' && r.proj===projectId && r.isExtra===true)
     .reduce((sum,r) => sum + (r.totalCost!=null ? (parseFloat(r.totalCost)||0) : (r.items||[]).reduce((s,it)=>s+(parseFloat(it.cost)||0),0)), 0);
 }
+// CP BOM phát sinh = tổng "CP phát sinh" của các dòng BOM được thêm SAU KHI BOM đã duyệt (đánh dấu extra:true).
+// Với dòng "Mua vật tư" phát sinh: một khi đã đánh dấu "Đã mua", chi phí đó được xem là đã đi qua
+// Đề nghị mua vật tư/Xuất kho và đã được cộng vào projectExportCost() — nên KHÔNG cộng trùng ở đây nữa.
+function projectBomExtraCost(projectId) {
+  const p = projects.find(x=>x.id===projectId);
+  const b = p ? getProjectBom(p) : null;
+  if(!b) return 0;
+  return (b.items||[]).filter(it=>it.extra).reduce((sum,it)=>{
+    const isStandard = it.itemType==='standard';
+    if(isStandard){
+      if(it.procureStatus==='purchased') return sum; // đã trừ qua Đề nghị mua vật tư / Xuất kho, không cộng trùng
+      return sum + (parseFloat(it.extraCost)||0);
+    }
+    // Dòng "Gia công" phát sinh: tính tiền theo đúng công thức Vật liệu + Gia công dùng chung với Tạo báo giá
+    return sum + quoteItemCost(it).totalCost;
+  }, 0);
+}
 function projectProfitReportRows() {
   return [...projects].map(p=>{
     const sellPrice = parseFloat(p.val)||0;
@@ -12395,21 +12451,22 @@ function projectProfitReportRows() {
     const materialCost = projectExportCost(p.id);
     const vehicleCost = projectVehicleCost(p.id);
     const overtimeCost = projectOvertimeCost(p.id);
-    const totalCost = quoteCost + materialCost + vehicleCost + overtimeCost;
+    const bomExtraCost = projectBomExtraCost(p.id);
+    const totalCost = quoteCost + materialCost + vehicleCost + overtimeCost + bomExtraCost;
     const profit = sellPrice - totalCost;
     const marginPct = sellPrice>0 ? (profit/sellPrice*100) : 0;
-    return { p, sellPrice, quoteCost, materialCost, vehicleCost, overtimeCost, totalCost, profit, marginPct };
+    return { p, sellPrice, quoteCost, materialCost, vehicleCost, overtimeCost, bomExtraCost, totalCost, profit, marginPct };
   }).sort((a,b)=>(b.sellPrice)-(a.sellPrice));
 }
 function renderProjectProfitReport() {
   const tbody = document.getElementById('proj-report-tbody');
   if(!tbody) return;
   if(!isAdmin()) {
-    tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🔒</div><div class="empty-state-title">Chỉ Admin (Toàn quyền) mới xem được báo cáo này</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">🔒</div><div class="empty-state-title">Chỉ Admin (Toàn quyền) mới xem được báo cáo này</div></div></td></tr>`;
     return;
   }
   if(projects.length===0){
-    tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📊</div><div class="empty-state-title">Chưa có dự án nào</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state" style="padding:30px"><div class="empty-state-icon">📊</div><div class="empty-state-title">Chưa có dự án nào</div></div></td></tr>`;
     return;
   }
   const rows = projectProfitReportRows();
@@ -12426,6 +12483,7 @@ function renderProjectProfitReport() {
       <td>${formatVNDFull(r.materialCost)}</td>
       <td>${formatVNDFull(r.vehicleCost)}</td>
       <td>${formatVNDFull(r.overtimeCost)}</td>
+      <td>${r.bomExtraCost?`<span style="color:var(--amber);font-weight:600">${formatVNDFull(r.bomExtraCost)}</span>`:formatVNDFull(0)}</td>
       <td style="font-weight:600">${formatVNDFull(r.totalCost)}</td>
       <td style="font-weight:700;color:${profitColor}">${formatVNDFull(r.profit)}</td>
       <td style="font-weight:600;color:${profitColor}">${r.sellPrice>0 ? r.marginPct.toFixed(1)+'%' : '—'}</td>
@@ -12443,11 +12501,12 @@ function exportProjectProfitReportExcel() {
     'Chi phí vật tư phát sinh': Math.round(r.materialCost),
     'CP đi lại phát sinh': Math.round(r.vehicleCost),
     'CP tăng ca phát sinh': Math.round(r.overtimeCost),
+    'CP BOM phát sinh': Math.round(r.bomExtraCost),
     'Tổng chi phí': Math.round(r.totalCost),
     'Lợi nhuận thực tế': Math.round(r.profit), 'Tỷ suất LN (%)': r.sellPrice>0 ? Math.round(r.marginPct*10)/10 : ''
   }));
   const ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols'] = [{wch:6},{wch:16},{wch:26},{wch:22},{wch:16},{wch:18},{wch:20},{wch:16},{wch:16},{wch:16},{wch:18},{wch:14}];
+  ws['!cols'] = [{wch:6},{wch:16},{wch:26},{wch:22},{wch:16},{wch:18},{wch:20},{wch:16},{wch:16},{wch:16},{wch:16},{wch:18},{wch:14}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Bao cao loi nhuan');
   const d = new Date();
