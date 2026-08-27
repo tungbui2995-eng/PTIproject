@@ -997,7 +997,7 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
     <div class="nav-label">Kinh doanh</div>
     <div class="nav-item" onclick="nav('quotes',this)" id="nav-quotes">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Kinh doanh <span class="nav-badge red" id="b-quotes" style="display:none">0</span>
+      Báo giá <span class="nav-badge red" id="b-quotes" style="display:none">0</span>
     </div>
     <div class="nav-item" onclick="nav('profitreport',this)" id="nav-profitreport">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
@@ -2753,7 +2753,7 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
     <div class="view" id="view-quotes">
       <div class="section-hd">
         <div class="section-hd-left">
-          <h2>💲 Kinh doanh</h2>
+          <h2>💲 Báo giá</h2>
           <p>Tính giá vốn & giá bán theo vật liệu, kích thước, loại gia công</p>
         </div>
         <button class="btn btn-sm btn-ghost" onclick="openModal_quoteSettings()" title="Cài đặt cơ sở dữ liệu giá">
@@ -3101,7 +3101,7 @@ const MODULE_LABELS = {
   dashboard:'Dashboard', projects:'Dự án', phases:'Giai đoạn & CV',
   gantt:'Tiến độ Gantt', issues:'NCR & Vấn đề', docs:'Thư viện tham khảo',
   team:'Quản lý tài khoản', chat:'Chat', meetings:'Cuộc họp', urgent:'Yêu cầu gấp', today:'Xử lý hôm nay',
-  warehouse:'Kho vật tư', approval:'Đăng ký - Đề nghị - Phê duyệt', attendance:'Chấm công GPS', quotes:'Kinh doanh',
+  warehouse:'Kho vật tư', approval:'Đăng ký - Đề nghị - Phê duyệt', attendance:'Chấm công GPS', quotes:'Báo giá',
   hr:'Nhân sự'
 };
 const PERM_LABELS = ['Không xem','Chỉ xem','Xem + Sửa','Toàn quyền'];
@@ -3173,7 +3173,7 @@ const PAGE_TITLES = {
   approval: '📝 Đăng ký - Đề nghị - Phê duyệt',
   workpic: '👷 Công việc & PIC',
   attendance: '📍 Chấm công GPS',
-  quotes: '💲 Kinh doanh',
+  quotes: '💲 Báo giá',
   profitreport: '📊 Doanh thu - Lợi nhuận (Ước tính)',
   hr: '🧑‍💼 Nhân sự',
   rules: '📋 Nội quy & Phúc lợi'
