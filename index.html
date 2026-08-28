@@ -13095,6 +13095,16 @@ function fmtMeetingDateTime(iso) {
   return `${days[d.getDay()]}, ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} • ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 }
 
+// Chuẩn hoá link họp: nếu người dùng nhập thiếu "https://" (vd: chỉ gõ "meet.google.com/xxx-xxxx-xxx")
+// thì trình duyệt sẽ hiểu nhầm thành đường dẫn nội bộ của app và không mở được Google Meet.
+// Hàm này tự thêm "https://" vào trước khi tạo link <a href> hoặc window.open().
+function normalizeMeetLink(link) {
+  const s = String(link||'').trim();
+  if(!s) return '';
+  if(/^https?:\/\//i.test(s)) return s;
+  return 'https://' + s;
+}
+
 function buildGCalUrl(m) {
   const fmt = iso => new Date(iso).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
   const text = encodeURIComponent(m.title);
@@ -13153,7 +13163,7 @@ function renderMeetings() {
           <div style="font-size:11px;color:var(--text2)">Người tổ chức: ${organizer?organizer.name:m.organizerName||'—'}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;min-width:170px">
-          ${m.meetLink ? `<a href="${m.meetLink}" target="_blank" class="btn btn-sm btn-accent" style="text-decoration:none;justify-content:center">
+          ${m.meetLink ? `<a href="${normalizeMeetLink(m.meetLink)}" target="_blank" rel="noopener" class="btn btn-sm btn-accent" style="text-decoration:none;justify-content:center">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="15" height="14" rx="2"/><path d="M18 9.5l4-2.5v10l-4-2.5"/></svg>
             Vào Google Meet
           </a>` : ''}
