@@ -7062,7 +7062,7 @@ function applyLogin(user) {
   av.textContent=user.name.slice(-1).toUpperCase(); av.style.background=c+'22'; av.style.color=c;
   document.getElementById('topbar-user-name').textContent=user.name;
   document.getElementById('chat-sender-name').textContent=user.name;
-  setTimeout(applyPermissions, 100);
+  setTimeout(() => { renderAll(); applyPermissions(); }, 100);
   toast(`Xin chào, ${user.name}! 👋`);
 }
 
