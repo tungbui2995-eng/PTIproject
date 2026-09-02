@@ -990,6 +990,10 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h3l2 2h9a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
       Dự án <span class="nav-badge" id="b-proj">0</span>
     </div>
+    <div class="nav-item" onclick="nav('businesstrip',this)" id="nav-businesstrip">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+      Lịch trình công tác
+    </div>
   </div>
 
 
@@ -2570,6 +2574,7 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
         </div>
       </div>
 
+      <!-- TAB: BUSINESS TRIP SCHEDULE (PUBLIC) -->
       <!-- TAB: OVERTIME REGISTRATION -->
       <div id="appr-panel-overtime" style="display:none">
         <div class="section-hd">
@@ -2820,6 +2825,35 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
             <tbody id="proj-report-tbody"></tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- LỊCH TRÌNH CÔNG TÁC (đứng độc lập, xem công khai) -->
+    <div class="view" id="view-businesstrip">
+      <div class="section-hd">
+        <div class="section-hd-left">
+          <h2>🧳 Lịch trình công tác</h2>
+          <p>Đăng ký lịch đi công tác gặp khách hàng/đối tác. Lịch cũng gộp cả "Lịch trình sử dụng xe", "Đơn xin nghỉ phép/vắng mặt" và ngày lễ Việt Nam.</p>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="exportApprovalExcel('businesstrip')" title="Xuất danh sách đăng ký công tác ra file Excel">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Xuất Excel
+        </button>
+        <button class="btn btn-sm btn-accent" onclick="openModal_newBusinessTrip()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Đăng ký công tác
+        </button>
+      </div>
+      <div class="card" style="padding:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn btn-sm btn-ghost" onclick="bizTripCalNav(-1)">◀</button>
+            <div id="bt-cal-title" style="font-weight:700;font-size:15px;min-width:150px;text-align:center"></div>
+            <button class="btn btn-sm btn-ghost" onclick="bizTripCalNav(1)">▶</button>
+          </div>
+          <button class="btn btn-sm btn-ghost" onclick="bizTripCalToday()">Hôm nay</button>
+        </div>
+        <div id="bt-cal-grid"></div>
       </div>
     </div>
 
@@ -3175,6 +3209,7 @@ const PAGE_TITLES = {
   attendance: '📍 Chấm công GPS',
   quotes: '💲 Báo giá',
   profitreport: '📊 Doanh thu - Lợi nhuận (Ước tính)',
+  businesstrip: '🧳 Lịch trình công tác',
   hr: '🧑‍💼 Nhân sự',
   rules: '📋 Nội quy & Phúc lợi'
 };
@@ -3242,6 +3277,7 @@ function nav(viewId, el) {
   if(viewId === 'attendance') renderAttendance();
   if(viewId === 'quotes') renderQuotes();
   if(viewId === 'profitreport') renderProjectProfitReport();
+  if(viewId === 'businesstrip') renderBusinessTripCalendar();
   if(viewId === 'hr') renderHr();
   closeMobileSidebar();
 }
@@ -8380,7 +8416,7 @@ function apprDownloadBtnHtml(id) {
   </button>`;
 }
 function apprKindLabel(kind) {
-  return { material:'Phiếu đề nghị mua vật tư', handover:'Biên bản bàn giao hàng hóa', assetHandover:'Biên bản bàn giao tài sản, công cụ dụng cụ', leave:'Đơn xin nghỉ phép', vehicle:'Lịch trình sử dụng xe', overtime:'Phiếu đăng ký tăng ca', advance:'Phiếu đề nghị tạm ứng', settlement:'Phiếu hoàn ứng' }[kind] || 'Phiếu';
+  return { material:'Phiếu đề nghị mua vật tư', handover:'Biên bản bàn giao hàng hóa', assetHandover:'Biên bản bàn giao tài sản, công cụ dụng cụ', leave:'Đơn xin nghỉ phép', vehicle:'Lịch trình sử dụng xe', businesstrip:'Lịch trình công tác', overtime:'Phiếu đăng ký tăng ca', advance:'Phiếu đề nghị tạm ứng', settlement:'Phiếu hoàn ứng' }[kind] || 'Phiếu';
 }
 
 // ── XUẤT EXCEL DANH SÁCH PHIẾU ĐỀ NGHỊ / PHÊ DUYỆT ──
@@ -8407,6 +8443,23 @@ function exportApprovalExcel(kind) {
     const d = new Date();
     const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
     XLSX.writeFile(wb, `Nhat_ky_ra_vao_hang_hoa_${dateStr}.xlsx`);
+    toast(`📤 Đã xuất ${rows.length} mục ra Excel`);
+    return;
+  }
+  if(kind==='businesstrip') {
+    const entries = getBusinessTripEntries().sort((a,b)=>a.from-b.from);
+    if(!entries.length) { toast('📭 Chưa có dữ liệu để xuất Excel'); return; }
+    const rows = entries.map((e,i)=>({
+      'STT': i+1, 'Nguồn': e.sourceLabel, 'Nội dung': e.label,
+      'Từ ngày': formatDateVN2(e.from), 'Đến ngày': formatDateVN2(e.to), 'Mã phiếu': e.id
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{wch:6},{wch:16},{wch:36},{wch:14},{wch:14},{wch:14}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Lich trinh cong tac');
+    const d = new Date();
+    const dateStr = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    XLSX.writeFile(wb, `Lich_trinh_cong_tac_${dateStr}.xlsx`);
     toast(`📤 Đã xuất ${rows.length} mục ra Excel`);
     return;
   }
@@ -8469,6 +8522,13 @@ function exportApprovalExcel(kind) {
       'Mã phiếu': r.id, 'Biển số xe': r.plateNumber||'', 'Người lái xe': r.driverName||'',
       'Tháng/Năm': `${r.month||''}/${r.year||''}`, 'Dự án': r.proj||'', 'Chi phí': canViewRecordMoney(r) ? (r.totalCost||0) : '🔒', 'Số chuyến': (r.items||[]).length,
       'Người duyệt': r.approverName||'', 'Trạng thái': apprStatusLabelPlain(r.status)
+    }));
+  } else if(kind==='businesstrip') {
+    sheetName = 'Lich trinh cong tac'; fileBase = 'Lich_trinh_cong_tac';
+    cols = [{wch:14},{wch:24},{wch:22},{wch:12},{wch:12},{wch:9},{wch:14},{wch:24}];
+    rows = list.map(r=>({
+      'Mã phiếu': r.id, 'Người đi công tác': (r.travelers||[]).map(t=>t.name).join(', '), 'Nơi đến/Khách hàng': r.destination||'',
+      'Từ ngày': r.fromDate||'', 'Đến ngày': r.toDate||'', 'Số ngày': r.days||0, 'Dự án': r.proj||'', 'Nội dung/Mục đích': r.purpose||''
     }));
   } else if(kind==='overtime') {
     sheetName = 'Dang ky tang ca'; fileBase = 'Phieu_dang_ky_tang_ca';
@@ -8801,6 +8861,168 @@ function renderVehicleRequests() {
       <td>${apprStatusBadge(r.status)}</td>
       <td onclick="event.stopPropagation()" style="display:flex;gap:4px"><button class="btn btn-xs btn-ghost" onclick="openModal_viewApproval('${r.id}')">Xem</button><button class="btn btn-xs btn-ghost" title="In theo mẫu" onclick="event.stopPropagation();printVehicleRequest('${r.id}')">🖨️</button>${apprDownloadBtnHtml(r.id)}${apprDeleteBtnHtml(r.id)}</td>
     </tr>`).join('');
+}
+
+// Lịch trình công tác — danh sách công khai cho toàn bộ nhân viên xem, ai cũng đăng ký được, không cần phê duyệt.
+// Gộp thêm các chuyến đi đã ghi nhận trong "Lịch trình sử dụng xe" (mỗi dòng chuyến đi trong phiếu xe) để có cái nhìn đầy đủ ai đang đi công tác/ra ngoài.
+// Chuyển chuỗi ngày "dd/mm/yyyy" (định dạng lưu trong các phiếu) thành đối tượng Date
+function parseVNDateStr(s) {
+  if(!s) return null;
+  const parts = String(s).split('/');
+  if(parts.length!==3) return null;
+  const d = parseInt(parts[0],10), m = parseInt(parts[1],10), y = parseInt(parts[2],10);
+  if(!d || !m || !y) return null;
+  return new Date(y, m-1, d);
+}
+// Chiều ngược lại: đối tượng Date -> chuỗi "dd/mm/yyyy"
+function formatDateVN2(dateObj) {
+  if(!dateObj) return '';
+  const d = String(dateObj.getDate()).padStart(2,'0');
+  const m = String(dateObj.getMonth()+1).padStart(2,'0');
+  const y = dateObj.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+// Gom toàn bộ dữ liệu "đi công tác" (phiếu đăng ký riêng + từng chuyến trong Lịch trình sử dụng xe) thành 1 danh sách chuẩn hoá,
+// dùng chung cho cả 2 kiểu hiển thị: bảng danh sách và lịch calendar.
+function getBusinessTripEntries() {
+  const list = [];
+  approvalRequests.filter(r=>r.kind==='businesstrip').forEach(r=>{
+    list.push({
+      id: r.id, source:'trip', sourceLabel:'🧳 Công tác',
+      label: ((r.travelers||[]).map(t=>t.name).join(', ')||'—') + ' → ' + (r.destination||''),
+      from: parseVNDateStr(r.fromDate), to: parseVNDateStr(r.toDate) || parseVNDateStr(r.fromDate),
+      createdAtRaw: r.createdAtRaw||0
+    });
+  });
+  approvalRequests.filter(r=>r.kind==='vehicle').forEach(r=>{
+    (r.items||[]).forEach(it=>{
+      if(!it.date) return;
+      list.push({
+        id: r.id, source:'vehicle', sourceLabel:'🚗 Từ xe',
+        label: (r.driverName||'—') + ' → ' + (it.route||''),
+        from: parseVNDateStr(it.date), to: parseVNDateStr(it.date),
+        createdAtRaw: r.createdAtRaw||0
+      });
+    });
+  });
+  // Gộp thêm Đơn xin nghỉ phép/vắng mặt (bỏ qua đơn đã bị từ chối vì không thực sự diễn ra)
+  approvalRequests.filter(r=>r.kind==='leave' && r.status!=='rejected').forEach(r=>{
+    list.push({
+      id: r.id, source:'leave', sourceLabel: (r.leaveType==='absence') ? '🚶 Vắng mặt' : '🏖️ Nghỉ phép',
+      label: (r.requester||'—') + ((r.leaveType==='absence') ? ' (Vắng mặt)' : ' (Nghỉ phép)'),
+      from: parseVNDateStr(r.fromDate), to: parseVNDateStr(r.toDate) || parseVNDateStr(r.fromDate),
+      createdAtRaw: r.createdAtRaw||0
+    });
+  });
+  return list.filter(e=>e.from);
+}
+
+// ── LỊCH NGHỈ LỄ VIỆT NAM (để hiển thị trên lịch calendar Lịch trình công tác) ──
+// Ngày lễ cố định dương lịch, áp dụng mọi năm
+const VN_FIXED_HOLIDAYS = [
+  {month:1, day:1, name:'Tết Dương lịch'},
+  {month:4, day:30, name:'Ngày Giải phóng miền Nam'},
+  {month:5, day:1, name:'Quốc tế Lao động'},
+  {month:9, day:2, name:'Quốc khánh'},
+];
+// Ngày Văn hóa Việt Nam 24/11 — chính thức áp dụng từ năm 2026 theo Nghị quyết Quốc hội (hiệu lực 01/7/2026)
+const VN_FIXED_HOLIDAYS_FROM_2026 = [
+  {month:11, day:24, name:'Ngày Văn hóa Việt Nam'}
+];
+// Ngày lễ tính theo âm lịch (Tết Nguyên Đán, Giỗ Tổ Hùng Vương) — quy đổi sẵn ra dương lịch theo từng năm cụ thể
+const VN_LUNAR_HOLIDAYS = {
+  2025: [
+    {month:1, day:29, name:'Tết Nguyên Đán (Mùng 1)'}, {month:1, day:30, name:'Tết Nguyên Đán (Mùng 2)'}, {month:1, day:31, name:'Tết Nguyên Đán (Mùng 3)'},
+    {month:4, day:7, name:'Giỗ Tổ Hùng Vương'},
+  ],
+  2026: [
+    {month:2, day:14, name:'Nghỉ Tết (27 Tháng Chạp)'}, {month:2, day:15, name:'Nghỉ Tết (28 Tháng Chạp)'}, {month:2, day:16, name:'Nghỉ Tết (29 Tháng Chạp)'},
+    {month:2, day:17, name:'Tết Nguyên Đán (Mùng 1)'}, {month:2, day:18, name:'Tết Nguyên Đán (Mùng 2)'}, {month:2, day:19, name:'Tết Nguyên Đán (Mùng 3)'},
+    {month:2, day:20, name:'Nghỉ Tết (Mùng 4)'}, {month:2, day:21, name:'Nghỉ Tết (Mùng 5)'}, {month:2, day:22, name:'Nghỉ Tết (Mùng 6)'},
+    {month:4, day:26, name:'Giỗ Tổ Hùng Vương'},
+  ],
+  2027: [
+    {month:2, day:6, name:'Tết Nguyên Đán (Mùng 1)'}, {month:2, day:7, name:'Tết Nguyên Đán (Mùng 2)'}, {month:2, day:8, name:'Tết Nguyên Đán (Mùng 3)'},
+    {month:4, day:16, name:'Giỗ Tổ Hùng Vương'},
+  ],
+  2028: [
+    {month:4, day:4, name:'Giỗ Tổ Hùng Vương'},
+  ],
+};
+function getVNHolidayForDate(dateObj) {
+  const y = dateObj.getFullYear(), m = dateObj.getMonth()+1, d = dateObj.getDate();
+  let h = VN_FIXED_HOLIDAYS.find(x=>x.month===m && x.day===d);
+  if(!h && y>=2026) h = VN_FIXED_HOLIDAYS_FROM_2026.find(x=>x.month===m && x.day===d);
+  if(!h) h = (VN_LUNAR_HOLIDAYS[y]||[]).find(x=>x.month===m && x.day===d);
+  return h ? h.name : null;
+}
+
+let bizTripCalYear = new Date().getFullYear();
+let bizTripCalMonth = new Date().getMonth(); // 0-11
+
+function bizTripCalNav(delta) {
+  bizTripCalMonth += delta;
+  if(bizTripCalMonth<0){ bizTripCalMonth=11; bizTripCalYear--; }
+  if(bizTripCalMonth>11){ bizTripCalMonth=0; bizTripCalYear++; }
+  renderBusinessTripCalendar();
+}
+function bizTripCalToday() {
+  const now = new Date();
+  bizTripCalYear = now.getFullYear(); bizTripCalMonth = now.getMonth();
+  renderBusinessTripCalendar();
+}
+function renderBusinessTripCalendar() {
+  const titleEl = document.getElementById('bt-cal-title');
+  const gridEl = document.getElementById('bt-cal-grid');
+  if(!gridEl) return;
+  const monthNames = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  if(titleEl) titleEl.textContent = `${monthNames[bizTripCalMonth]}, ${bizTripCalYear}`;
+
+  const entries = getBusinessTripEntries();
+  const firstDay = new Date(bizTripCalYear, bizTripCalMonth, 1);
+  const daysInMonth = new Date(bizTripCalYear, bizTripCalMonth+1, 0).getDate();
+  const startWeekday = firstDay.getDay(); // 0=CN
+  const todayStr = new Date().toDateString();
+  const weekLabels = ['CHỦ NHẬT','THỨ HAI','THỨ BA','THỨ TƯ','THỨ NĂM','THỨ SÁU','THỨ BẢY'];
+
+  const totalCells = Math.ceil((startWeekday + daysInMonth)/7)*7;
+  let cellsHtml = '';
+  for(let i=0;i<totalCells;i++){
+    const dayNum = i - startWeekday + 1;
+    const inMonth = dayNum>=1 && dayNum<=daysInMonth;
+    const cellDate = inMonth ? new Date(bizTripCalYear, bizTripCalMonth, dayNum) : null;
+    const isToday = cellDate && cellDate.toDateString()===todayStr;
+    const holidayName = cellDate ? getVNHolidayForDate(cellDate) : null;
+    let dayEntries = [];
+    if(inMonth) {
+      dayEntries = entries.filter(e => cellDate>=new Date(e.from.getFullYear(),e.from.getMonth(),e.from.getDate()) && cellDate<=new Date(e.to.getFullYear(),e.to.getMonth(),e.to.getDate()));
+    }
+    cellsHtml += `<div style="min-height:92px;border:1px solid var(--border);${inMonth?(holidayName?'background:var(--red-dim)':''):'background:var(--bg1)'};padding:5px;vertical-align:top;position:relative">
+      ${inMonth ? `<div style="display:flex;align-items:baseline;justify-content:space-between;gap:4px;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:700;${holidayName?'color:var(--red)':(isToday?'color:var(--accent)':'color:var(--text0)')}">${dayNum}${isToday?' <span style="font-size:9px;font-weight:500;color:var(--accent)">(hôm nay)</span>':''}</span>
+        ${holidayName?`<span style="font-size:8.5px;color:var(--red);font-weight:600;text-align:right;line-height:1.2">${holidayName}</span>`:''}
+      </div>` : ''}
+      <div style="display:flex;flex-direction:column;gap:2px;max-height:64px;overflow-y:auto">
+        ${dayEntries.map(e=>{
+          const clr = e.source==='trip' ? 'var(--accent)' : e.source==='vehicle' ? 'var(--amber)' : 'var(--teal)';
+          const clrDim = e.source==='trip' ? 'var(--accent-dim)' : e.source==='vehicle' ? 'var(--amber-dim)' : 'var(--teal-dim)';
+          return `<div title="${e.label.replace(/"/g,'&quot;')}" onclick="openModal_viewApproval('${e.id}')" style="cursor:pointer;font-size:10px;line-height:1.3;padding:2px 4px;border-radius:4px;background:${clrDim};color:${clr};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.label}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  gridEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--border);border-top:none;border-left:none">
+      ${weekLabels.map(w=>`<div style="background:var(--bg4);color:var(--text0);font-size:10.5px;font-weight:700;text-align:center;padding:8px 4px;border:1px solid var(--border);border-top:1px solid var(--border)">${w}</div>`).join('')}
+      ${cellsHtml}
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;font-size:10.5px;color:var(--text2);flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--accent-dim);border:1px solid var(--accent)"></span> Lịch trình công tác</div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--amber-dim);border:1px solid var(--amber)"></span> Từ lịch trình sử dụng xe</div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--teal-dim);border:1px solid var(--teal)"></span> Nghỉ phép / Vắng mặt</div>
+      <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:var(--red-dim);border:1px solid var(--red)"></span> Ngày lễ Việt Nam</div>
+    </div>`;
 }
 
 function renderOvertimeRequests() {
@@ -10031,6 +10253,84 @@ function calcLeaveDays() {
   } else out.value = '';
 }
 
+// ── LỊCH TRÌNH CÔNG TÁC (xem công khai — mọi nhân viên đều xem được danh sách) ──
+let businessTripTravelersTmp = [];
+function toggleBusinessTripTraveler(email, name, checked) {
+  businessTripTravelersTmp = businessTripTravelersTmp.filter(a=>a.email!==email);
+  if(checked) businessTripTravelersTmp.push({email, name});
+}
+function openModal_newBusinessTrip() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  businessTripTravelersTmp = [{email:currentUser.email, name:currentUser.name}];
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('open');
+  overlay.classList.add('wide-modal');
+  document.getElementById('modal-hd-title').textContent = '🧳 Đăng ký lịch trình công tác';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Không cần phê duyệt — đăng ký xong sẽ hiển thị công khai ngay cho toàn bộ nhân viên xem.</div>
+    <div class="form-row">
+      <label class="form-label">Người đi công tác * <span style="font-weight:400;color:var(--text2);font-size:11px">(lấy từ danh sách Quản lý tài khoản)</span></label>
+      <div id="bt-traveler-list" style="display:flex;flex-direction:column;gap:2px;max-height:190px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
+        ${team.map(t => `
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+            <input type="checkbox" value="${t.email}" onchange="toggleBusinessTripTraveler('${t.email}','${t.name.replace(/'/g,"\\'")}',this.checked)" style="width:15px;height:15px;accent-color:var(--accent)" ${businessTripTravelersTmp.find(a=>a.email===t.email)?'checked':''}>
+            <span style="font-size:12.5px">${t.name}</span>
+            <span style="font-size:11px;color:var(--text2)">${t.email}</span>
+          </label>`).join('')}
+      </div>
+    </div>
+    <div class="form-row"><label class="form-label">Nơi đến / Khách hàng làm việc *</label><input class="form-ctrl" id="bt-destination" placeholder="VD: Công ty ABC — Hà Nội"></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Từ ngày *</label><input class="form-ctrl" type="date" id="bt-from" onchange="calcBusinessTripDays()"></div>
+      <div class="form-row"><label class="form-label">Đến ngày *</label><input class="form-ctrl" type="date" id="bt-to" onchange="calcBusinessTripDays()"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Số ngày công tác</label><input class="form-ctrl" id="bt-days" placeholder="Tự tính theo ngày đi/về" disabled></div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="bt-proj">${apprProjectOptions()}</select></div>
+    <div class="form-row"><label class="form-label">Phương tiện di chuyển</label><input class="form-ctrl" id="bt-vehicle" placeholder="Xe công ty / Xe cá nhân / Máy bay / Tàu..."></div>
+    <div class="form-row"><label class="form-label">Nội dung / Mục đích công tác</label><textarea class="form-ctrl" id="bt-purpose" rows="3" placeholder="Gặp khách hàng, khảo sát, lắp đặt, bảo trì..."></textarea></div>
+  `;
+  document.getElementById('modal-ft').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-accent" onclick="submitBusinessTrip()">✅ Đăng ký</button>
+  `;
+}
+function calcBusinessTripDays() {
+  const from = document.getElementById('bt-from')?.value;
+  const to = document.getElementById('bt-to')?.value;
+  const out = document.getElementById('bt-days');
+  if(!out) return;
+  if(from && to) {
+    const d1 = new Date(from), d2 = new Date(to);
+    const diff = Math.round((d2-d1)/86400000)+1;
+    out.value = diff>0 ? diff+' ngày' : '';
+  } else out.value = '';
+}
+function submitBusinessTrip() {
+  if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
+  const destination = document.getElementById('bt-destination').value.trim();
+  const fromVal = document.getElementById('bt-from').value;
+  const toVal = document.getElementById('bt-to').value;
+  const proj = document.getElementById('bt-proj').value;
+  const vehicle = document.getElementById('bt-vehicle').value.trim();
+  const purpose = document.getElementById('bt-purpose').value.trim();
+  if(businessTripTravelersTmp.length===0){ toast('Vui lòng chọn ít nhất 1 người đi công tác'); return; }
+  if(!destination){ toast('Vui lòng nhập nơi đến / khách hàng'); return; }
+  if(!fromVal || !toVal){ toast('Vui lòng chọn thời gian công tác'); return; }
+  const d1 = new Date(fromVal), d2 = new Date(toVal);
+  const days = Math.round((d2-d1)/86400000)+1;
+  if(days<=0){ toast('Khoảng ngày không hợp lệ'); return; }
+  const id = generateDocId('LTCT', approvalRequests.filter(r=>r.kind==='businesstrip'));
+  const req = {
+    id, kind:'businesstrip', requester: currentUser.name, requesterEmail: currentUser.email,
+    travelers: [...businessTripTravelersTmp], destination, proj, vehicle, purpose,
+    fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), days,
+    status:'approved', createdAt: nowDateStr(), createdAtRaw: Date.now()
+  };
+  approvalRequests.push(req);
+  closeModal(); renderBusinessTripCalendar(); syncDataToDrive();
+  toast(`✅ Đã đăng ký lịch trình công tác ${id}`);
+}
+
 function submitLeave() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const kinhGui = document.getElementById('lv-kinhgui').value.trim();
@@ -10782,18 +11082,18 @@ function openModal_viewApproval(id) {
       ['Trưởng phòng ban/BP phê duyệt', r.approverName||'—'],
       ['Người nhận (Distributor)', r.distributorName || r.distributorEmail || '—'],
     ];
-  } else if(r.kind==='vehicle') {
-    title = `🚗 Lịch trình sử dụng xe — ${r.id}`;
+  } else if(r.kind==='businesstrip') {
+    title = `🧳 Lịch trình công tác — ${r.id}`;
     rows = [
-      ['Người lái xe', r.driverName||'—'],
-      ['Biển số xe', r.plateNumber||'—'],
-      ['Tháng/Năm', `Tháng ${r.month||'—'}/${r.year||'—'}`],
-      ['Dự án liên quan', r.proj||'—'],
-      ['Tổng chi phí đi lại', `<strong style="color:var(--accent)">${moneyMaskedFor(r, formatVND(r.totalCost||0))}</strong>`],
-      ['Người tạo', r.requester],
-      ['Người phê duyệt', r.approverName||'—'],
-      ['Người được phân phối (Distributor)', r.distributorName || r.distributorEmail || '—'],
+      ['Người đi công tác', (r.travelers||[]).map(t=>t.name).join(', ')||'—'],
+      ['Nơi đến / Khách hàng', r.destination||'—'],
+      ['Thời gian công tác', `Từ ngày ${r.fromDate||'—'} đến ngày ${r.toDate||'—'} (${r.days||0} ngày)`],
+      ['Dự án liên quan', projLabel],
+      ['Phương tiện di chuyển', r.vehicle||'—'],
+      ['Nội dung / Mục đích', r.purpose||'—'],
+      ['Người đăng ký', r.requester],
     ];
+  } else if(r.kind==='vehicle') {
     itemsHtml = `<table class="tbl" style="min-width:700px"><thead><tr><th>Ngày</th><th>Quãng đường đi</th><th>Giờ xuất phát</th><th>Giờ kết thúc</th><th>Km đi</th><th>Km về</th><th>Tên cty giao hàng/Người sử dụng xe</th><th>Chi phí</th></tr></thead><tbody>
       ${(r.items||[]).map(it=>`<tr><td>${it.date||'—'}</td><td>${it.route||'—'}</td><td>${it.timeStart||'—'}</td><td>${it.timeEnd||'—'}</td><td>${it.kmStart||'—'}</td><td>${it.kmEnd||'—'}</td><td>${it.purpose||'—'}</td><td>${moneyMaskedFor(r, formatVND(it.cost||0))}</td></tr>`).join('')}
     </tbody></table>`;
@@ -10815,7 +11115,7 @@ function openModal_viewApproval(id) {
     title = `Phiếu — ${r.id}`;
     rows = [];
   }
-  if(r.kind!=='material' && r.status!=='pending') {
+  if(r.kind!=='material' && r.kind!=='businesstrip' && r.status!=='pending') {
     rows.push(['Thời gian phê duyệt', r.approvedAt||'—']);
     rows.push(['Người xử lý', r.approvedBy||'—']);
     if(r.status==='rejected') rows.push(['Lý do từ chối', `<span style="color:var(--red)">${r.rejectReason||'—'}</span>`]);
@@ -10826,7 +11126,7 @@ function openModal_viewApproval(id) {
 
   document.getElementById('modal-hd-title').textContent = title;
   document.getElementById('modal-body').innerHTML = `
-    <div style="margin-bottom:12px">${apprStatusBadge(r.status)}</div>
+    <div style="margin-bottom:12px">${r.kind==='businesstrip' ? `<span class="badge badge-green">🧳 Đã đăng ký — công khai</span>` : apprStatusBadge(r.status)}</div>
     <table style="width:100%;font-size:13px;border-collapse:collapse;margin-bottom:14px">
       ${rows.map(([k,v])=>`
         <tr style="border-bottom:1px solid var(--border)">
@@ -11417,6 +11717,7 @@ function renderAll() {
   renderMeetings();
   renderAttendance();
   renderQuotes();
+  renderBusinessTripCalendar();
   ocRenderAll();
   const sel = document.getElementById('phase-proj-sel');
   if(sel) sel.innerHTML = '<option value="">— Chọn dự án —</option>' + projects.map(p=>'<option value="'+p.id+'">'+p.id+' — '+p.name+'</option>').join('');
