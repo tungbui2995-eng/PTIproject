@@ -8887,9 +8887,10 @@ function formatDateVN2(dateObj) {
 function getBusinessTripEntries() {
   const list = [];
   approvalRequests.filter(r=>r.kind==='businesstrip').forEach(r=>{
+    const timeLabel = (r.fromTime||r.toTime) ? ` (${r.fromTime||'?'}-${r.toTime||'?'})` : '';
     list.push({
       id: r.id, source:'trip', sourceLabel:'🧳 Công tác',
-      label: ((r.travelers||[]).map(t=>t.name).join(', ')||'—') + ' → ' + (r.destination||''),
+      label: ((r.travelers||[]).map(t=>t.name).join(', ')||'—') + ' → ' + (r.destination||'') + timeLabel,
       from: parseVNDateStr(r.fromDate), to: parseVNDateStr(r.toDate) || parseVNDateStr(r.fromDate),
       createdAtRaw: r.createdAtRaw||0
     });
@@ -10259,15 +10260,20 @@ function toggleBusinessTripTraveler(email, name, checked) {
   businessTripTravelersTmp = businessTripTravelersTmp.filter(a=>a.email!==email);
   if(checked) businessTripTravelersTmp.push({email, name});
 }
-function openModal_newBusinessTrip() {
+function openModal_newBusinessTrip(editId) {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
-  businessTripTravelersTmp = [{email:currentUser.email, name:currentUser.name}];
+  const editing = editId ? approvalRequests.find(r=>r.id===editId && r.kind==='businesstrip') : null;
+  businessTripTravelersTmp = editing ? [...(editing.travelers||[])] : [{email:currentUser.email, name:currentUser.name}];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
   overlay.classList.add('wide-modal');
-  document.getElementById('modal-hd-title').textContent = '🧳 Đăng ký lịch trình công tác';
+  document.getElementById('modal-hd-title').textContent = editing ? `✏️ Sửa lịch trình công tác — ${editing.id}` : '🧳 Đăng ký lịch trình công tác';
+  const toDateInput = (s) => { // "dd/mm/yyyy" -> "yyyy-mm-dd" cho input type=date
+    if(!s) return '';
+    const p = s.split('/'); if(p.length!==3) return '';
+    return `${p[2]}-${p[1]}-${p[0]}`;
+  };
   document.getElementById('modal-body').innerHTML = `
-    <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Không cần phê duyệt — đăng ký xong sẽ hiển thị công khai ngay cho toàn bộ nhân viên xem.</div>
     <div class="form-row">
       <label class="form-label">Người đi công tác * <span style="font-weight:400;color:var(--text2);font-size:11px">(lấy từ danh sách Quản lý tài khoản)</span></label>
       <div id="bt-traveler-list" style="display:flex;flex-direction:column;gap:2px;max-height:190px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);padding:6px">
@@ -10279,19 +10285,23 @@ function openModal_newBusinessTrip() {
           </label>`).join('')}
       </div>
     </div>
-    <div class="form-row"><label class="form-label">Nơi đến / Khách hàng làm việc *</label><input class="form-ctrl" id="bt-destination" placeholder="VD: Công ty ABC — Hà Nội"></div>
+    <div class="form-row"><label class="form-label">Nơi đến / Khách hàng làm việc *</label><input class="form-ctrl" id="bt-destination" placeholder="VD: Công ty ABC — Hà Nội" value="${(editing?.destination||'').replace(/"/g,'&quot;')}"></div>
     <div class="form-grid">
-      <div class="form-row"><label class="form-label">Từ ngày *</label><input class="form-ctrl" type="date" id="bt-from" onchange="calcBusinessTripDays()"></div>
-      <div class="form-row"><label class="form-label">Đến ngày *</label><input class="form-ctrl" type="date" id="bt-to" onchange="calcBusinessTripDays()"></div>
+      <div class="form-row"><label class="form-label">Từ ngày *</label><input class="form-ctrl" type="date" id="bt-from" value="${editing?toDateInput(editing.fromDate):''}" onchange="calcBusinessTripDays()"></div>
+      <div class="form-row"><label class="form-label">Đến ngày *</label><input class="form-ctrl" type="date" id="bt-to" value="${editing?toDateInput(editing.toDate):''}" onchange="calcBusinessTripDays()"></div>
     </div>
-    <div class="form-row"><label class="form-label">Số ngày công tác</label><input class="form-ctrl" id="bt-days" placeholder="Tự tính theo ngày đi/về" disabled></div>
-    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="bt-proj">${apprProjectOptions()}</select></div>
-    <div class="form-row"><label class="form-label">Phương tiện di chuyển</label><input class="form-ctrl" id="bt-vehicle" placeholder="Xe công ty / Xe cá nhân / Máy bay / Tàu..."></div>
-    <div class="form-row"><label class="form-label">Nội dung / Mục đích công tác</label><textarea class="form-ctrl" id="bt-purpose" rows="3" placeholder="Gặp khách hàng, khảo sát, lắp đặt, bảo trì..."></textarea></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Giờ bắt đầu</label><input class="form-ctrl" type="time" id="bt-from-time" value="${editing?.fromTime||''}"></div>
+      <div class="form-row"><label class="form-label">Giờ kết thúc</label><input class="form-ctrl" type="time" id="bt-to-time" value="${editing?.toTime||''}"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Số ngày công tác</label><input class="form-ctrl" id="bt-days" placeholder="Tự tính theo ngày đi/về" value="${editing?editing.days+' ngày':''}" disabled></div>
+    <div class="form-row"><label class="form-label">Dự án liên quan</label><select class="form-ctrl" id="bt-proj">${apprProjectOptions(editing?.proj)}</select></div>
+    <div class="form-row"><label class="form-label">Phương tiện di chuyển</label><input class="form-ctrl" id="bt-vehicle" placeholder="Xe công ty / Xe cá nhân / Máy bay / Tàu..." value="${(editing?.vehicle||'').replace(/"/g,'&quot;')}"></div>
+    <div class="form-row"><label class="form-label">Nội dung / Mục đích công tác</label><textarea class="form-ctrl" id="bt-purpose" rows="3" placeholder="Gặp khách hàng, khảo sát, lắp đặt, bảo trì...">${editing?.purpose||''}</textarea></div>
   `;
   document.getElementById('modal-ft').innerHTML = `
     <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
-    <button class="btn btn-accent" onclick="submitBusinessTrip()">✅ Đăng ký</button>
+    <button class="btn btn-accent" onclick="submitBusinessTrip(${editing?`'${editing.id}'`:'null'})">${editing?'💾 Lưu thay đổi':'✅ Đăng ký'}</button>
   `;
 }
 function calcBusinessTripDays() {
@@ -10305,11 +10315,13 @@ function calcBusinessTripDays() {
     out.value = diff>0 ? diff+' ngày' : '';
   } else out.value = '';
 }
-function submitBusinessTrip() {
+function submitBusinessTrip(editId) {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
   const destination = document.getElementById('bt-destination').value.trim();
   const fromVal = document.getElementById('bt-from').value;
   const toVal = document.getElementById('bt-to').value;
+  const fromTime = document.getElementById('bt-from-time').value;
+  const toTime = document.getElementById('bt-to-time').value;
   const proj = document.getElementById('bt-proj').value;
   const vehicle = document.getElementById('bt-vehicle').value.trim();
   const purpose = document.getElementById('bt-purpose').value.trim();
@@ -10319,11 +10331,23 @@ function submitBusinessTrip() {
   const d1 = new Date(fromVal), d2 = new Date(toVal);
   const days = Math.round((d2-d1)/86400000)+1;
   if(days<=0){ toast('Khoảng ngày không hợp lệ'); return; }
+  if(editId) {
+    const r = approvalRequests.find(x=>x.id===editId && x.kind==='businesstrip');
+    if(!r){ toast('Không tìm thấy phiếu'); return; }
+    if(!isAdmin() && r.requesterEmail!==currentUser.email){ toast('⛔ Bạn không có quyền sửa phiếu này'); return; }
+    Object.assign(r, {
+      travelers: [...businessTripTravelersTmp], destination, proj, vehicle, purpose,
+      fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), fromTime, toTime, days
+    });
+    closeModal(); renderBusinessTripCalendar(); syncDataToDrive();
+    toast(`💾 Đã lưu thay đổi lịch trình công tác ${editId}`);
+    return;
+  }
   const id = generateDocId('LTCT', approvalRequests.filter(r=>r.kind==='businesstrip'));
   const req = {
     id, kind:'businesstrip', requester: currentUser.name, requesterEmail: currentUser.email,
     travelers: [...businessTripTravelersTmp], destination, proj, vehicle, purpose,
-    fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), days,
+    fromDate: fromVal.split('-').reverse().join('/'), toDate: toVal.split('-').reverse().join('/'), fromTime, toTime, days,
     status:'approved', createdAt: nowDateStr(), createdAtRaw: Date.now()
   };
   approvalRequests.push(req);
@@ -11087,7 +11111,7 @@ function openModal_viewApproval(id) {
     rows = [
       ['Người đi công tác', (r.travelers||[]).map(t=>t.name).join(', ')||'—'],
       ['Nơi đến / Khách hàng', r.destination||'—'],
-      ['Thời gian công tác', `Từ ngày ${r.fromDate||'—'} đến ngày ${r.toDate||'—'} (${r.days||0} ngày)`],
+      ['Thời gian công tác', `Từ ${r.fromTime?r.fromTime+', ':''}ngày ${r.fromDate||'—'} đến ${r.toTime?r.toTime+', ':''}ngày ${r.toDate||'—'} (${r.days||0} ngày)`],
       ['Dự án liên quan', projLabel],
       ['Phương tiện di chuyển', r.vehicle||'—'],
       ['Nội dung / Mục đích', r.purpose||'—'],
@@ -11146,6 +11170,7 @@ function openModal_viewApproval(id) {
     ${r.kind==='leave' ? `<button class="btn btn-sm btn-ghost" onclick="printLeaveRequest('${r.id}')" title="In đơn theo mẫu">🖨️ In đơn</button>` : ''}
     ${r.kind==='vehicle' ? `<button class="btn btn-sm btn-ghost" onclick="printVehicleRequest('${r.id}')" title="In theo mẫu">🖨️ In lịch trình</button>` : ''}
     ${r.kind==='overtime' ? `<button class="btn btn-sm btn-ghost" onclick="printOvertimeRequest('${r.id}')" title="In theo mẫu">🖨️ In phiếu</button>` : ''}
+    ${(r.kind==='businesstrip' && (isAdmin() || r.requesterEmail===currentUser?.email)) ? `<button class="btn btn-sm btn-ghost" onclick="closeModal();openModal_newBusinessTrip('${r.id}')">✏️ Sửa</button>` : ''}
     <button class="btn btn-ghost" onclick="closeModal()">Đóng</button>
     ${canApprove ? `
       <button class="btn btn-danger btn-sm" onclick="closeModal();promptRejectApproval('${r.id}')">❌ Từ chối</button>
