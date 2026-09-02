@@ -358,7 +358,8 @@ body {
 .overlay.open { opacity: 1; pointer-events: all; }
 .modal {
   background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r3);
-  width: 620px; max-height: 90vh; overflow-y: auto;
+  width: 620px; max-height: 90vh; overflow: hidden;
+  display: flex; flex-direction: column;
   transform: translateY(14px) scale(0.98); transition: transform .22s cubic-bezier(0.34,1.56,0.64,1);
   box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,0.04);
 }
@@ -367,17 +368,19 @@ body {
   padding: 18px 20px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
   font-size: 14px; font-weight: 600;
+  flex: 0 0 auto;
 }
 .modal-close { color: var(--text2); cursor: pointer; padding: 4px; border-radius: 6px; transition: all .15s; }
 .modal-close:hover { background: var(--bg4); color: var(--text0); }
-.modal-body { padding: 20px; }
-.modal-ft { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1 1 auto; min-height: 0; }
+.modal-ft { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex: 0 0 auto; }
 
 .phase-docs-modal .modal { width: 90vw; max-width: 900px; }
 .phase-docs-modal .tbl { min-width: auto; width: 100%; }
 .phase-docs-modal .tbl th, .phase-docs-modal .tbl td { white-space: normal; word-break: break-word; padding: 8px 10px; }
 .phase-docs-modal .tbl-wrap { overflow-x: auto; }
 .wide-modal .modal { width: 92vw; max-width: 1080px; }
+.xl-modal .modal { width: 94vw; max-width: 1320px; max-height: 96vh; }
 .quote-modal .modal { width: 98vw; max-width: 1800px; max-height: 96vh; }
 
 /* ── BÁO GIÁ: HẠNG MỤC MẸ / HẠNG MỤC CON ── */
@@ -754,6 +757,7 @@ textarea.form-ctrl { resize: vertical; min-height: 72px; }
   .perm-grid { grid-template-columns: 1fr; }
   .phase-docs-modal .modal { width: 95vw; }
   .wide-modal .modal { width: 95vw; }
+  .xl-modal .modal { width: 95vw; }
 
   body { overflow-x: hidden; }
   .sidebar {
@@ -6118,6 +6122,7 @@ function closeModal() {
   ov.classList.remove('phase-docs-modal');
   ov.classList.remove('wide-modal');
   ov.classList.remove('quote-modal');
+  ov.classList.remove('xl-modal');
 }
 
 // ── SAVE FUNCTIONS ──
@@ -8892,6 +8897,7 @@ function getBusinessTripEntries() {
       id: r.id, source:'trip', sourceLabel:'🧳 Công tác',
       label: ((r.travelers||[]).map(t=>t.name).join(', ')||'—') + ' → ' + (r.destination||'') + timeLabel,
       from: parseVNDateStr(r.fromDate), to: parseVNDateStr(r.toDate) || parseVNDateStr(r.fromDate),
+      sortTime: r.fromTime || '',
       createdAtRaw: r.createdAtRaw||0
     });
   });
@@ -8902,6 +8908,7 @@ function getBusinessTripEntries() {
         id: r.id, source:'vehicle', sourceLabel:'🚗 Từ xe',
         label: (r.driverName||'—') + ' → ' + (it.route||''),
         from: parseVNDateStr(it.date), to: parseVNDateStr(it.date),
+        sortTime: it.timeStart || '',
         createdAtRaw: r.createdAtRaw||0
       });
     });
@@ -8912,6 +8919,7 @@ function getBusinessTripEntries() {
       id: r.id, source:'leave', sourceLabel: (r.leaveType==='absence') ? '🚶 Vắng mặt' : '🏖️ Nghỉ phép',
       label: (r.requester||'—') + ((r.leaveType==='absence') ? ' (Vắng mặt)' : ' (Nghỉ phép)'),
       from: parseVNDateStr(r.fromDate), to: parseVNDateStr(r.toDate) || parseVNDateStr(r.fromDate),
+      sortTime: '',
       createdAtRaw: r.createdAtRaw||0
     });
   });
@@ -8996,7 +9004,8 @@ function renderBusinessTripCalendar() {
     const holidayName = cellDate ? getVNHolidayForDate(cellDate) : null;
     let dayEntries = [];
     if(inMonth) {
-      dayEntries = entries.filter(e => cellDate>=new Date(e.from.getFullYear(),e.from.getMonth(),e.from.getDate()) && cellDate<=new Date(e.to.getFullYear(),e.to.getMonth(),e.to.getDate()));
+      dayEntries = entries.filter(e => cellDate>=new Date(e.from.getFullYear(),e.from.getMonth(),e.from.getDate()) && cellDate<=new Date(e.to.getFullYear(),e.to.getMonth(),e.to.getDate()))
+        .sort((a,b) => (a.sortTime||'99:99').localeCompare(b.sortTime||'99:99'));
     }
     cellsHtml += `<div style="min-height:92px;border:1px solid var(--border);${inMonth?(holidayName?'background:var(--red-dim)':''):'background:var(--bg1)'};padding:5px;vertical-align:top;position:relative">
       ${inMonth ? `<div style="display:flex;align-items:baseline;justify-content:space-between;gap:4px;margin-bottom:4px">
@@ -10266,7 +10275,7 @@ function openModal_newBusinessTrip(editId) {
   businessTripTravelersTmp = editing ? [...(editing.travelers||[])] : [{email:currentUser.email, name:currentUser.name}];
   const overlay = document.getElementById('overlay');
   overlay.classList.add('open');
-  overlay.classList.add('wide-modal');
+  overlay.classList.add('xl-modal');
   document.getElementById('modal-hd-title').textContent = editing ? `✏️ Sửa lịch trình công tác — ${editing.id}` : '🧳 Đăng ký lịch trình công tác';
   const toDateInput = (s) => { // "dd/mm/yyyy" -> "yyyy-mm-dd" cho input type=date
     if(!s) return '';
