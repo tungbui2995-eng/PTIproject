@@ -915,22 +915,7 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         Đăng nhập
       </button>
-      <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
-        <details style="cursor:pointer">
-          <summary style="font-size:11px;color:var(--text2);list-style:none;display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 0;user-select:none">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Đăng nhập khẩn cấp Admin
-          </summary>
-          <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
-            <input class="form-ctrl" type="password" id="emergency-pass" placeholder="Mật khẩu Admin khẩn cấp" style="font-size:12px"
-              onkeydown="if(event.key==='Enter')emergencyAdminLogin()">
-            <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;color:var(--red);border-color:rgba(248,113,113,0.3)" onclick="emergencyAdminLogin()">
-              🔑 Xác nhận đăng nhập khẩn cấp
-            </button>
-          </div>
-        </details>
-      </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--text2);text-align:center">Mật khẩu mặc định: <strong style="color:var(--text1)">1234</strong> · Liên hệ PM để đổi mật khẩu</div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text2);text-align:center">Quên mật khẩu? Liên hệ Admin/PM để được đặt lại.</div>
     </div>
   </div>
 </div>
@@ -2922,6 +2907,11 @@ table.oc-hctable th:hover .oc-hc-remove, table.oc-hctable td.oc-rowlabel:hover .
 // ═══════════════════════════════════════════════════════════════
 
 const DRIVE_API_URL = "https://script.google.com/macros/s/AKfycbzEEx69y1kyP4J9UJUZP8senAH8hqkUsNVBGO73oahMuSxU5vLhmvTeNzy5Fn4q_yd-/exec";
+// Mã bí mật gửi kèm mọi lệnh gọi tới Apps Script — script phía backend phải kiểm tra đúng mã này
+// mới cho phép đọc/ghi dữ liệu. Nếu không có bước kiểm tra này ở phía Apps Script, bất kỳ ai có
+// URL trên (dễ lấy vì lộ ngay trong mã nguồn) đều gọi thẳng được vào API mà không cần qua app.
+// QUAN TRỌNG: đổi giá trị dưới đây thành mã riêng của bạn, và đặt ĐÚNG mã giống hệt vào Apps Script.
+const APP_SECRET_KEY = "0a9b23fd25adf214afa110c587de72bce47401ef56a5f94f";
 // Cờ đánh dấu đã tải xong dữ liệu thật từ Drive — chặn mọi thao tác lưu (sync)
 // cho tới khi tải thành công, tránh trường hợp mất mạng/lỗi tải làm ghi đè
 // dữ liệu thật trên Drive bằng dữ liệu rỗng cục bộ.
@@ -3160,10 +3150,10 @@ const DRIVE_PERM_LEVELS = {
 };
 
 let team = [
-  {name:'Tùng', email:'tungbui2995@gmail.com', role:'Lead PTI-nical Engineer / PM', projects:[], status:'Sẵn sàng', roleTemplate:'admin',    perms:{...ROLE_TEMPLATES.admin}, password:'1234', drivePerm:'owner'},
-  {name:'Nguyễn Văn A', email:'a@company.com', role:'Lead PTI-nical Engineer', projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'read'},
-  {name:'Trần Văn B',   email:'b@company.com', role:'Senior PTI-nical Designer',     projects:['TL-2025-002'], status:'Sẵn sàng', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'write'},
-  {name:'Lê Văn C',     email:'c@company.com', role:'Automation & Electrical Engineer',projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, password:'1234', drivePerm:'read'}
+  {name:'Tùng', email:'tungbui2995@gmail.com', role:'Lead PTI-nical Engineer / PM', projects:[], status:'Sẵn sàng', roleTemplate:'admin',    perms:{...ROLE_TEMPLATES.admin}, passwordHash:'682c04e60c28f5e8f059d65de02638cf516c41d0fe300bbc75b5179648fb4572', drivePerm:'owner'},
+  {name:'Nguyễn Văn A', email:'a@company.com', role:'Lead PTI-nical Engineer', projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, passwordHash:'d296a96648f4600eee148ea268b743d78543508d2f7a04fb90704dfcf2ae8194', drivePerm:'read'},
+  {name:'Trần Văn B',   email:'b@company.com', role:'Senior PTI-nical Designer',     projects:['TL-2025-002'], status:'Sẵn sàng', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, passwordHash:'955695e3fb2e5765d50bcb659985f47780550b4d43e5cc982cf8c105cc91f870', drivePerm:'write'},
+  {name:'Lê Văn C',     email:'c@company.com', role:'Automation & Electrical Engineer',projects:['TL-2025-001'], status:'Bận', roleTemplate:'engineer', perms:{...ROLE_TEMPLATES.engineer}, passwordHash:'24cfd01d2acfa00dd4d00aed5796730f52fdc81d4c4644ad815fce757a986f62', drivePerm:'read'}
 ];
 
 let tasks = [];
@@ -3329,6 +3319,39 @@ function todayISO() {
 function isOverdue(dateStr) {
   if(!dateStr) return false;
   return new Date(dateStr) < new Date();
+}
+// ── BẢO MẬT MẬT KHẨU ──
+// Băm mật khẩu bằng SHA-256 (Web Crypto API có sẵn trong trình duyệt, không cần thư viện ngoài).
+// Trộn thêm email làm "muối" (salt) đơn giản để 2 người dùng cùng mật khẩu không ra cùng 1 hash.
+// Lưu ý: đây là cải thiện đáng kể so với lưu mật khẩu dạng chữ thường (plaintext), nhưng do
+// toàn bộ logic vẫn chạy ở phía client (không có server thật để kiểm tra), đây KHÔNG phải là
+// bảo mật cấp production hoàn chỉnh — chỉ giảm rủi ro lộ mật khẩu thật khi file dữ liệu bị xem/lộ.
+async function hashPassword(email, plainPassword) {
+  const input = String(email||'').trim().toLowerCase() + '::' + String(plainPassword||'');
+  const enc = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+// Kiểm tra mật khẩu nhập vào so với dữ liệu thành viên — tự tương thích ngược với dữ liệu cũ
+// (tài khoản tạo trước khi nâng cấp bảo mật, vẫn còn lưu password dạng chữ thường).
+async function verifyPassword(member, plainInput) {
+  if(!member) return false;
+  if(member.passwordHash) {
+    const h = await hashPassword(member.email, plainInput);
+    return h === member.passwordHash;
+  }
+  const legacyPass = member.password || '1234';
+  return plainInput === legacyPass;
+}
+// ── CHỐNG XSS ──
+// Dùng hàm này bọc quanh MỌI nội dung tự do do người dùng gõ (tên, ghi chú, tin nhắn, nội dung...)
+// trước khi chèn vào innerHTML — tránh trường hợp ai đó gõ mã HTML/script độc hại
+// (VD: <img src=x onerror=...>) khiến trình duyệt của NGƯỜI KHÁC (kể cả Admin) chạy mã đó khi xem.
+function escapeHtml(str) {
+  if(str===null || str===undefined) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 function stringToColor(str) {
   const colors = ['#4f8ef7','#34d399','#a78bfa','#fbbf24','#f87171','#2dd4bf','#fb923c','#60a5fa'];
@@ -5042,6 +5065,7 @@ function uploadPhaseDoc(pId, idx, input) {
     const reader = new FileReader();
     reader.onload = function(e) {
       const payload = {
+        secret: APP_SECRET_KEY,
         action: "upload_file",
         proj: pId,
         filename: file.name,
@@ -5471,12 +5495,12 @@ function _renderPermBody(idx) {
     <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:14px">
       <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">🔑 Mật khẩu đăng nhập</div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input class="form-ctrl" type="password" id="perm-pw-input" placeholder="Mật khẩu hiện tại: ${t.password||'1234 (mặc định)'}" style="flex:1">
+        <input class="form-ctrl" type="password" id="perm-pw-input" placeholder="Nhập mật khẩu mới..." style="flex:1">
         <button class="btn btn-sm" style="background:var(--amber-dim);border-color:rgba(251,191,36,0.3);color:var(--amber);flex-shrink:0" onclick="savePermPassword(${idx})">
           Đặt mật khẩu
         </button>
       </div>
-      <div style="font-size:10px;color:var(--text2);margin-top:4px">Để trống nếu không muốn đổi · Mặc định: 1234</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">Để trống nếu không muốn đổi · Mật khẩu được lưu dưới dạng đã băm (không ai xem lại được mật khẩu cũ, kể cả Admin)</div>
     </div>
   `;
 }
@@ -5506,11 +5530,12 @@ function applyTemplate(idx, tmpl) {
   _renderPermFoot(idx);
 }
 
-function savePermPassword(idx) {
+async function savePermPassword(idx) {
   const pw = document.getElementById('perm-pw-input')?.value.trim();
   if(!pw) { toast('Vui lòng nhập mật khẩu mới'); return; }
   if(pw.length < 4) { toast('Mật khẩu phải ít nhất 4 ký tự'); return; }
-  team[idx].password = pw;
+  team[idx].passwordHash = await hashPassword(team[idx].email, pw);
+  delete team[idx].password; // dọn luôn mật khẩu chữ thường cũ (nếu có) khỏi dữ liệu
   syncDataToDrive();
   toast(`🔑 Đã đặt mật khẩu mới cho ${team[idx].name}`);
   _renderPermBody(idx); 
@@ -5612,11 +5637,12 @@ function deleteMember(idx) {
   });
 }
 
-function addMember() {
+async function addMember() {
   const name = document.getElementById('nm-name').value.trim();
   const email = document.getElementById('nm-email').value.trim();
   if(!name || !email){ toast('Vui lòng điền tên và email'); return; }
   const pass = document.getElementById('nm-pass')?.value.trim() || '1234';
+  const passwordHash = await hashPassword(email, pass);
   team.push({
     name, email,
     role: document.getElementById('nm-role').value.trim(),
@@ -5624,7 +5650,7 @@ function addMember() {
     status: document.getElementById('nm-status').value,
     roleTemplate: 'engineer',
     perms: {...ROLE_TEMPLATES.engineer},
-    password: pass,
+    passwordHash,
     drivePerm: document.getElementById('nm-drive-perm')?.value || 'read',
     telegramChatId: document.getElementById('nm-tg-chatid')?.value.trim() || ''
   });
@@ -6326,6 +6352,7 @@ function saveDocWithFile() {
     const reader = new FileReader();
     reader.onload = function(e) {
       const payload = {
+        secret: APP_SECRET_KEY,
         action: "upload_file", proj: "", filename: relativePath,
         mimeType: file.type || "application/octet-stream",
         fileData: e.target.result.split(',')[1],
@@ -6363,7 +6390,7 @@ function fetchDataFromDrive() {
   if(DRIVE_API_URL.includes("DÁN_URL")) {
     hideLoading(); alert("Vui lòng cấu hình URL Web App Google Apps Script."); return;
   }
-  fetch(DRIVE_API_URL)
+  fetch(`${DRIVE_API_URL}?secret=${encodeURIComponent(APP_SECRET_KEY)}`)
     .then(res => res.json())
     .then(data => {
       projects = (data.projects || []).map(p => {
@@ -6423,7 +6450,7 @@ function syncDataToDrive() {
 
 function doSyncDataToDrive() {
   showLoading("Đang đồng bộ lên Google Drive...");
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, mailLogs, meetings, orgChart, settings, attendanceLogs, quotes, quoteSettings, hrProfiles, salaryRecords };
+  const payload = { secret: APP_SECRET_KEY, projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, mailLogs, meetings, orgChart, settings, attendanceLogs, quotes, quoteSettings, hrProfiles, salaryRecords };
   fetch(DRIVE_API_URL, { method: "POST", mode: "no-cors", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) })
     .then(() => { hideLoading(); toast("Đã lưu dữ liệu lên Drive!"); renderAll(); })
     .catch(err => { hideLoading(); alert("Lỗi đồng bộ: " + err); });
@@ -6999,23 +7026,23 @@ function initLoginScreen() {
   const sel = document.getElementById('login-user');
   sel.innerHTML = '<option value="">— Chọn tên của bạn —</option>'
     + team.map(t=>`<option value="${t.email}">${t.name} — ${t.role.split('/')[0].trim()}</option>`).join('');
-  
-  const savedPass = localStorage.getItem('mp_saved_password');
+
+  const savedHash = localStorage.getItem('mp_saved_password_hash');
   const savedEmail = localStorage.getItem('mp_saved_email');
-  
+
   if(savedEmail) {
     sel.value = savedEmail;
-    if(savedPass) {
-      document.getElementById('login-pass').value = savedPass;
-      document.getElementById('remember-me').checked = true;
-      onLoginUserChange(savedEmail);
+    onLoginUserChange(savedEmail);
+    if(savedHash) {
       const member = team.find(t=>t.email===savedEmail);
-      if(member && savedPass === member.password) {
-        setTimeout(() => { doLogin(); }, 300);
+      if(member && member.passwordHash && savedHash === member.passwordHash) {
+        setTimeout(() => {
+          applyLogin({email:member.email,name:member.name,role:member.role,color:stringToColor(member.email)});
+        }, 300);
       }
     }
   }
-  
+
   const saved = sessionStorage.getItem('mp_user');
   if(saved) {
     try { const u=JSON.parse(saved); if(team.find(t=>t.email===u.email)){applyLogin(u);return;} } catch(e){}
@@ -7029,68 +7056,43 @@ function onLoginUserChange(email) {
   if(m){ prev.style.display='block'; prev.innerHTML=`👷 <strong style="color:var(--text0)">${m.name}</strong> · ${m.role} · <span class="badge ${m.status==='Bận'?'badge-amber':'badge-green'}">${m.status}</span>`; }
   else prev.style.display='none';
   document.getElementById('login-err').style.display='none';
-  
-  const savedPass = localStorage.getItem('mp_saved_password');
+
+  const savedHash = localStorage.getItem('mp_saved_password_hash');
   const savedEmail = localStorage.getItem('mp_saved_email');
-  if(email === savedEmail && savedPass) {
-    document.getElementById('login-pass').value = savedPass;
-    document.getElementById('remember-me').checked = true;
-  } else {
-    document.getElementById('login-pass').value = '';
-    document.getElementById('remember-me').checked = false;
-  }
+  document.getElementById('login-pass').value = '';
+  document.getElementById('remember-me').checked = (email === savedEmail && !!savedHash);
 }
 
-const EMERGENCY_ADMIN_PASSWORD = 'PTI-@2025!'; 
-
-function emergencyAdminLogin() {
-  const inputEl = document.getElementById('emergency-pass');
-  const pass = inputEl ? inputEl.value : '';
-  if(!pass) { toast('Vui lòng nhập mật khẩu Admin khẩn cấp'); return; }
-  if(pass !== EMERGENCY_ADMIN_PASSWORD) {
-    if(inputEl) { inputEl.value=''; inputEl.style.border='1px solid var(--red)'; setTimeout(()=>inputEl.style.border='',1500); }
-    toast('❌ Sai mật khẩu Admin khẩn cấp'); return;
-  }
-  const adminUser = {
-    email: 'admin@PTI-project.local',
-    name: 'Admin (Khẩn cấp)',
-    role: 'System Administrator',
-    color: '#f87171',
-    perms: {...ROLE_TEMPLATES.admin},
-    password: EMERGENCY_ADMIN_PASSWORD,
-    drivePerm: 'owner'
-  };
-  if(!team.find(t=>t.email===adminUser.email)) {
-    team.push({...adminUser, projects:[], status:'Sẵn sàng', roleTemplate:'admin'});
-  }
-  applyLogin(adminUser);
-  toast('⚠️ Đăng nhập khẩn cấp thành công. Vào Quản lý tài khoản → Phân quyền & Mật khẩu để cài lại.');
-}
-
-function doLogin() {
+async function doLogin() {
   const email=document.getElementById('login-user').value;
   const pass=document.getElementById('login-pass').value;
   const errEl=document.getElementById('login-err');
   const rememberMe = document.getElementById('remember-me').checked;
   if(!email){errEl.textContent='Vui lòng chọn tài khoản.';errEl.style.display='block';return;}
   const member=team.find(t=>t.email===email);
-  const correctPass=member?.password||'1234';
-  if(pass!==correctPass){
+  const ok = await verifyPassword(member, pass);
+  if(!ok){
     errEl.textContent='Sai mật khẩu. Vui lòng thử lại.';errEl.style.display='block';
     document.getElementById('login-pass').value='';document.getElementById('login-pass').focus();
-    localStorage.removeItem('mp_saved_password');
+    localStorage.removeItem('mp_saved_password_hash');
     localStorage.removeItem('mp_saved_email');
     return;
   }
-  
+  // Nâng cấp âm thầm sang mật khẩu đã băm nếu tài khoản này vẫn còn ở dạng cũ (chữ thường, trước khi nâng cấp bảo mật)
+  if(member && !member.passwordHash) {
+    member.passwordHash = await hashPassword(member.email, pass);
+    delete member.password;
+    syncDataToDrive();
+  }
+
   if(rememberMe) {
     localStorage.setItem('mp_saved_email', email);
-    localStorage.setItem('mp_saved_password', pass);
+    localStorage.setItem('mp_saved_password_hash', member.passwordHash);
   } else {
     localStorage.removeItem('mp_saved_email');
-    localStorage.removeItem('mp_saved_password');
+    localStorage.removeItem('mp_saved_password_hash');
   }
-  
+
   applyLogin({email,name:member.name,role:member.role,color:stringToColor(email)});
 }
 
@@ -8049,7 +8051,7 @@ async function submitTxn(txnType) {
   for(let i=0;i<txnImageData.length;i++) {
     const img=txnImageData[i]; showLoading(`Đang tải ảnh (${i+1}/${txnImageData.length}): ${img.name}`);
     try {
-      const res=await fetch(DRIVE_API_URL,{method:'POST',body:JSON.stringify({action:'upload_file',proj:'warehouse-txn',folderIntent:'evidence',filename:img.name,mimeType:img.mimeType||'image/jpeg',fileData:img.base64.split(',')[1]})}).then(r=>r.json());
+      const res=await fetch(DRIVE_API_URL,{method:'POST',body:JSON.stringify({secret:APP_SECRET_KEY,action:'upload_file',proj:'warehouse-txn',folderIntent:'evidence',filename:img.name,mimeType:img.mimeType||'image/jpeg',fileData:img.base64.split(',')[1]})}).then(r=>r.json());
       uploadedImages.push({name:img.name,base64:img.base64,fileId:res.fileId||null,url:res.fileId?`https://drive.google.com/uc?id=${res.fileId}`:img.base64});
     } catch(e) { uploadedImages.push({name:img.name,base64:img.base64,url:img.base64}); }
   }
@@ -9061,7 +9063,7 @@ function renderOvertimeRequests() {
 // ── PHIẾU ĐỀ NGHỊ MUA VẬT TƯ ──
 function openModal_newMaterialRequest() {
   if(!currentUser){ toast('Vui lòng đăng nhập'); return; }
-  materialItemsTmp = [{ name:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' }];
+  materialItemsTmp = [{ name:'', material:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' }];
   materialApproversTmp = [{ email:'' }];
   materialDistributorTmp = '';
   materialDistributor2Tmp = '';
@@ -9102,11 +9104,12 @@ function openModal_newMaterialRequest() {
       <option value="Con"></option>
     </datalist>
     <datalist id="mr-stock-name-options">${materialStockNameOptionsHtml()}</datalist>
+    <datalist id="mr-material-options">${(quoteSettings.materials||[]).map(m=>`<option value="${escapeHtml(m.name)}"></option>`).join('')}</datalist>
     <div class="form-row">
       <label class="form-label">Danh mục vật tư đề nghị mua <span style="font-weight:400;color:var(--text2);font-size:11px">(gõ tên để xem gợi ý vật tư đang có trong kho)</span></label>
       <div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--r);margin-top:6px">
-        <table class="tbl" style="min-width:720px" id="mr-items-table">
-          <thead><tr><th style="width:34px">STT</th><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
+        <table class="tbl" style="min-width:820px" id="mr-items-table">
+          <thead><tr><th style="width:34px">STT</th><th>Tên vật tư</th><th>Vật liệu</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th></th></tr></thead>
           <tbody id="mr-items-tbody"></tbody>
         </table>
       </div>
@@ -9118,7 +9121,7 @@ function openModal_newMaterialRequest() {
           <input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importMaterialItemsExcel(this)">
         </label>
         <button class="btn btn-xs btn-ghost" onclick="downloadMaterialTemplate()">📄 Tải form mẫu Excel</button>
-        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Thông số kỹ thuật / Kích thước phôi, ĐVT, SL, Tồn kho, Ghi chú</span>
+        <span style="font-size:10.5px;color:var(--text2)">Cột: Tên vật tư, Vật liệu, Thông số kỹ thuật / Kích thước phôi, ĐVT, SL, Tồn kho, Ghi chú</span>
       </div>
     </div>
     <div class="form-row">
@@ -9198,7 +9201,8 @@ function loadProjectBomToMaterialRequest(){
     const requiredQty = Math.max(0, parseFloat(it.qty)||0);
     const stockQty = stockItem ? Math.max(0, parseFloat(stockItem.qty)||0) : 0;
     return {
-      name:(it.itemType==='standard' ? (it.name||it.material||'') : (qsMaterialName(it.materialId)||it.material||it.name||'')),
+      name:(it.itemType==='standard' ? (it.name||it.material||'') : (it.name||qsMaterialName(it.materialId)||it.material||'')),
+      material:(it.itemType==='standard' ? '' : (qsMaterialName(it.materialId)||it.material||'')),
       spec:it.itemType==='standard' ? (it.dims||'') : quoteItemDimsLabel(it),
       unit:it.unit || stockItem?.unit || 'Cái',
       qty:netPurchaseQty(requiredQty,stockQty),
@@ -9329,6 +9333,7 @@ function renderMaterialItemsTable() {
         <input class="form-ctrl" style="min-width:150px" list="mr-stock-name-options" value="${it.name}" oninput="onMaterialNameInput(${i},this.value)" placeholder="Tên vật tư (gõ để xem gợi ý trong kho)">
         <div id="mr-item-hint-${i}">${materialStockHintHtml(it.name)}</div>
       </td>
+      <td><input class="form-ctrl" style="min-width:110px" list="mr-material-options" value="${it.material||''}" oninput="materialItemsTmp[${i}].material=this.value" placeholder="VD: Thép, Nhôm, Inox..."></td>
       <td><input class="form-ctrl" style="min-width:150px" value="${it.spec||''}" oninput="materialItemsTmp[${i}].spec=this.value" placeholder="Thông số kỹ thuật / Kích thước phôi"></td>
       <td><input class="form-ctrl" style="width:90px" list="mr-dvt-options" id="mr-item-unit-${i}" value="${it.unit}" oninput="materialItemsTmp[${i}].unit=this.value" placeholder="Cái"></td>
       <td><input class="form-ctrl" type="number" min="0" style="width:70px" value="${it.qty}" oninput="materialItemsTmp[${i}].qty=this.value"></td>
@@ -9338,7 +9343,7 @@ function renderMaterialItemsTable() {
     </tr>`).join('');
 }
 function addMaterialRow() {
-  materialItemsTmp.push({ name:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' });
+  materialItemsTmp.push({ name:'', material:'', spec:'', unit:'', qty:1, stock:'', note:'', purchaseStatus:'notyet' });
   renderMaterialItemsTable();
 }
 function removeMaterialRow(i) {
@@ -9349,12 +9354,12 @@ function removeMaterialRow(i) {
 
 function downloadMaterialTemplate() {
   const aoa = [
-    ['Tên vật tư', 'Thông số kỹ thuật / Kích thước phôi', 'ĐVT', 'SL', 'Tồn kho', 'Ghi chú'],
-    ['Thép tấm SS400', 'Dày 3mm, khổ 1250x2500', 'Tấm', 5, '', 'Dùng cho gia công vỏ tủ điện'],
-    ['', '', '', '', '', '']
+    ['Tên vật tư', 'Vật liệu', 'Thông số kỹ thuật / Kích thước phôi', 'ĐVT', 'SL', 'Tồn kho', 'Ghi chú'],
+    ['Thép tấm SS400', 'Thép', 'Dày 3mm, khổ 1250x2500', 'Tấm', 5, '', 'Dùng cho gia công vỏ tủ điện'],
+    ['', '', '', '', '', '', '']
   ];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = [{wch:24},{wch:34},{wch:10},{wch:8},{wch:10},{wch:28}];
+  ws['!cols'] = [{wch:24},{wch:14},{wch:34},{wch:10},{wch:8},{wch:10},{wch:28}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Danh mục vật tư');
   XLSX.writeFile(wb, 'Form_mau_de_nghi_mua_vat_tu.xlsx');
@@ -9374,6 +9379,7 @@ function importMaterialItemsExcel(input) {
       const findKey = (row, keys) => Object.keys(row).find(k => keys.some(x => String(k).toLowerCase().trim().includes(x)));
       const imported = rows.map(row=>{
         const nameKey  = findKey(row, ['tên vật tư','ten vat tu','tên hàng','tên','name']);
+        const materialKey = findKey(row, ['vật liệu','vat lieu','material']);
         const specKey  = findKey(row, ['thông số kỹ thuật','thong so ky thuat','kích thước phôi','kich thuoc phoi','thông số','thong so','quy cách','quy cach','spec']);
         const unitKey  = findKey(row, ['đvt','dvt','đơn vị','don vi','unit']);
         const qtyKey   = findKey(row, ['số lượng','so luong','sl','qty']);
@@ -9383,6 +9389,7 @@ function importMaterialItemsExcel(input) {
         const stockMatch = materialStockMatch(name);
         return {
           name,
+          material: String(materialKey ? row[materialKey] : '').trim(),
           spec: String(specKey ? row[specKey] : '').trim(),
           unit: String(unitKey ? row[unitKey] : '').trim() || (stockMatch ? (stockMatch.unit||'') : ''),
           qty: (()=>{
@@ -9442,7 +9449,7 @@ async function submitMaterialRequest() {
       showLoading(`Đang tải tệp (${i+1}/${materialFilesTmp.length}): ${f.name}`);
       try {
         const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
-          action:'upload_file', proj:'material-'+id, folderIntent:'evidence',
+          secret:APP_SECRET_KEY, action:'upload_file', proj:'material-'+id, folderIntent:'evidence',
           filename: f.name, mimeType: f.mimeType,
           fileData: f.base64.split(',')[1]
         })}).then(r=>r.json());
@@ -9953,7 +9960,7 @@ function printVehicleRequest(id) {
   const r = approvalRequests.find(x=>x.id===id && x.kind==='vehicle');
   if(!r) return;
   const rowsHtml = (r.items||[]).map(it=>`
-    <tr><td>${it.date||''}</td><td style="text-align:left;padding-left:8px">${it.route||''}</td><td>${it.timeStart||''}</td><td>${it.timeEnd||''}</td><td>${it.kmStart||''}</td><td>${it.kmEnd||''}</td><td style="text-align:left;padding-left:8px">${it.purpose||''}</td><td>${r.status==='approved'?'✅':''}</td></tr>`).join('')
+    <tr><td>${escapeHtml(it.date)}</td><td style="text-align:left;padding-left:8px">${escapeHtml(it.route)}</td><td>${escapeHtml(it.timeStart)}</td><td>${escapeHtml(it.timeEnd)}</td><td>${escapeHtml(it.kmStart)}</td><td>${escapeHtml(it.kmEnd)}</td><td style="text-align:left;padding-left:8px">${escapeHtml(it.purpose)}</td><td>${r.status==='approved'?'✅':''}</td></tr>`).join('')
     + Array.from({length: Math.max(0, 22-(r.items||[]).length)}).map(()=>`<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
   printDocWindow(`${r.id} — Lịch trình sử dụng xe`, `
     ${printHeaderHtml('LỊCH TRÌNH SỬ DỤNG XE', `Biển số xe: <span class="dots" style="min-width:140px">${r.plateNumber||''}</span>`)}
@@ -10582,7 +10589,7 @@ async function submitAdvance() {
       showLoading(`Đang tải ảnh (${i+1}/${advImageData.length}): ${img.name}`);
       try {
         const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
-          action:'upload_file', proj:'advance-'+id, folderIntent:'evidence',
+          secret:APP_SECRET_KEY, action:'upload_file', proj:'advance-'+id, folderIntent:'evidence',
           filename: img.name, mimeType:'image/jpeg',
           fileData: img.base64.split(',')[1]
         })}).then(r=>r.json());
@@ -10790,7 +10797,7 @@ async function submitSettlement() {
       showLoading(`Đang tải ảnh (${i+1}/${huImageData.length}): ${img.name}`);
       try {
         const res = await fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
-          action:'upload_file', proj:'settlement-'+id, folderIntent:'evidence',
+          secret:APP_SECRET_KEY, action:'upload_file', proj:'settlement-'+id, folderIntent:'evidence',
           filename: img.name, mimeType:'image/jpeg',
           fileData: img.base64.split(',')[1]
         })}).then(r=>r.json());
@@ -10996,21 +11003,21 @@ function openModal_viewApproval(id) {
   if(r.kind==='material') {
     title = `📝 Phiếu đề nghị mua vật tư — ${r.id}`;
     rows = [
-      ['Kính gửi', r.to||'—'],
-      ['Người đề nghị', r.requester],
-      ['Chức danh', r.title||'—'],
-      ['Bộ phận đề nghị', r.dept||'—'],
+      ['Kính gửi', escapeHtml(r.to)||'—'],
+      ['Người đề nghị', escapeHtml(r.requester)],
+      ['Chức danh', escapeHtml(r.title)||'—'],
+      ['Bộ phận đề nghị', escapeHtml(r.dept)||'—'],
       ['Dự án liên quan', projLabel],
-      ['Mục đích sử dụng', r.purpose||'—'],
+      ['Mục đích sử dụng', escapeHtml(r.purpose)||'—'],
       ['Ngày cần vật tư', r.neededDate ? formatDateVN(r.neededDate) + neededDateBadge(r) : '—'],
-      ['Người mua (Distributor)', r.distributorName || r.distributorEmail || '—'],
-      ['Hành chính/Kế toán', r.distributor2Name || r.distributor2Email || '—'],
+      ['Người mua (Distributor)', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
+      ['Hành chính/Kế toán', escapeHtml(r.distributor2Name) || escapeHtml(r.distributor2Email) || '—'],
     ];
     itemsHtml = `<div style="display:flex;justify-content:flex-end;margin-bottom:6px">
         <button class="btn btn-xs btn-green" onclick="markAllMaterialItemsDone('${r.id}')">✅ Chọn tất cả đã hoàn thành</button>
       </div>
-      <table class="tbl" style="min-width:760px"><thead><tr><th>Tên vật tư</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th><th>Nhập kho</th></tr></thead><tbody>
-      ${(r.items||[]).map((it,i)=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.stock||'—'}</td><td>${it.note||'—'}</td><td>${purchaseStatusSelectHtml(r.id,i,it.purchaseStatus)}</td><td>${it.stockAdded ? '<span class="badge badge-green" title="Đã cộng vào tồn kho">✅ Đã nhập</span>' : '<span style="color:var(--text2);font-size:11px">—</span>'}</td></tr>`).join('')}
+      <table class="tbl" style="min-width:820px"><thead><tr><th>Tên vật tư</th><th>Vật liệu</th><th>Thông số kỹ thuật / Kích thước phôi</th><th>ĐVT</th><th>SL</th><th>Tồn kho</th><th>Ghi chú</th><th>Trạng thái mua</th><th>Nhập kho</th></tr></thead><tbody>
+      ${(r.items||[]).map((it,i)=>`<tr><td>${escapeHtml(it.name)}</td><td>${escapeHtml(it.material)||'—'}</td><td>${escapeHtml(it.spec)||'—'}</td><td>${escapeHtml(it.unit)||'—'}</td><td>${it.qty||0}</td><td>${escapeHtml(it.stock)||'—'}</td><td>${escapeHtml(it.note)||'—'}</td><td>${purchaseStatusSelectHtml(r.id,i,it.purchaseStatus)}</td><td>${it.stockAdded ? '<span class="badge badge-green" title="Đã cộng vào tồn kho">✅ Đã nhập</span>' : '<span style="color:var(--text2);font-size:11px">—</span>'}</td></tr>`).join('')}
     </tbody></table>` + apprFilesHtml(r.files);
     const alist = getMaterialApprovers(r);
     approversHtml = `
@@ -11022,9 +11029,9 @@ function openModal_viewApproval(id) {
           const waitingTurn = a.status==='pending' && !myTurn;
           return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;gap:10px">
             <div style="min-width:0">
-              <div style="font-weight:600">${ai+1}. ${a.name||a.email}</div>
-              <div style="font-size:11px;color:var(--text2);margin-top:2px">${apprStatusBadge(a.status)}${a.approvedAt?(' · '+a.approvedAt):''}${waitingTurn?' · <span style="color:var(--text2)">chờ đến lượt</span>':''}</div>
-              ${a.status==='rejected' && a.rejectReason ? `<div style="font-size:11px;color:var(--red);margin-top:2px">Lý do: ${a.rejectReason}</div>` : ''}
+              <div style="font-weight:600">${ai+1}. ${escapeHtml(a.name||a.email)}</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:2px">${apprStatusBadge(a.status)}${a.approvedAt?(' · '+escapeHtml(a.approvedAt)):''}${waitingTurn?' · <span style="color:var(--text2)">chờ đến lượt</span>':''}</div>
+              ${a.status==='rejected' && a.rejectReason ? `<div style="font-size:11px;color:var(--red);margin-top:2px">Lý do: ${escapeHtml(a.rejectReason)}</div>` : ''}
             </div>
             ${canActRow ? `
               <div style="display:flex;gap:6px;flex-shrink:0">
@@ -11037,38 +11044,38 @@ function openModal_viewApproval(id) {
   } else if(r.kind==='handover') {
     title = `📦 Biên bản bàn giao hàng hóa — ${r.id}`;
     rows = [
-      ['Ngày bàn giao', r.date||'—'],
+      ['Ngày bàn giao', escapeHtml(r.date)||'—'],
       ['Dự án liên quan', projLabel],
-      ['Bên giao (A)', `${r.partyAName||'—'}${r.partyADept?(' — '+r.partyADept):''}`],
-      ['ĐT / Địa chỉ bên A', `${r.partyAPhone||'—'} / ${r.partyAAddr||'—'}`],
-      ['Bên nhận (B)', `${r.partyBName||'—'}${r.partyBDept?(' — '+r.partyBDept):''}`],
-      ['ĐT / Địa chỉ bên B', `${r.partyBPhone||'—'} / ${r.partyBAddr||'—'}`],
-      ['Người tạo', r.requester],
-      ['Người phê duyệt', r.approverName||'—'],
-      ['Người nhận (Distributor)', r.distributorName || r.distributorEmail || '—'],
+      ['Bên giao (A)', `${escapeHtml(r.partyAName)||'—'}${r.partyADept?(' — '+escapeHtml(r.partyADept)):''}`],
+      ['ĐT / Địa chỉ bên A', `${escapeHtml(r.partyAPhone)||'—'} / ${escapeHtml(r.partyAAddr)||'—'}`],
+      ['Bên nhận (B)', `${escapeHtml(r.partyBName)||'—'}${r.partyBDept?(' — '+escapeHtml(r.partyBDept)):''}`],
+      ['ĐT / Địa chỉ bên B', `${escapeHtml(r.partyBPhone)||'—'} / ${escapeHtml(r.partyBAddr)||'—'}`],
+      ['Người tạo', escapeHtml(r.requester)],
+      ['Người phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người nhận (Distributor)', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
     ];
     itemsHtml = `<table class="tbl" style="min-width:600px"><thead><tr><th>Sản phẩm/thiết bị</th><th>Quy cách</th><th>ĐVT</th><th>SL</th><th>Ghi chú</th></tr></thead><tbody>
-      ${(r.items||[]).map(it=>`<tr><td>${it.name}</td><td>${it.spec||'—'}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.note||'—'}</td></tr>`).join('')}
+      ${(r.items||[]).map(it=>`<tr><td>${escapeHtml(it.name)}</td><td>${escapeHtml(it.spec)||'—'}</td><td>${escapeHtml(it.unit)||'—'}</td><td>${it.qty||0}</td><td>${escapeHtml(it.note)||'—'}</td></tr>`).join('')}
     </tbody></table>`;
   } else if(r.kind==='assetHandover') {
     title = `🖥️ Biên bản bàn giao tài sản, CCDC — ${r.id}`;
     rows = [
-      ['Ngày bàn giao', r.date||'—'],
+      ['Ngày bàn giao', escapeHtml(r.date)||'—'],
       ['Dự án liên quan', projLabel],
-      ['Bên giao', `${r.companyName||'—'}${r.repName?(' — Đại diện: '+r.repName):''}${r.repTitle?(' ('+r.repTitle+')'):''}`],
-      ['Bên nhận', `${r.recipientName||'—'}${r.recipientPosition?(' — '+r.recipientPosition):''}`],
+      ['Bên giao', `${escapeHtml(r.companyName)||'—'}${r.repName?(' — Đại diện: '+escapeHtml(r.repName)):''}${r.repTitle?(' ('+escapeHtml(r.repTitle)+')'):''}`],
+      ['Bên nhận', `${escapeHtml(r.recipientName)||'—'}${r.recipientPosition?(' — '+escapeHtml(r.recipientPosition)):''}`],
       ['Ngày sinh', r.recipientDob ? formatDateVN(r.recipientDob) : '—'],
-      ['Số CCCD', `${r.recipientCccd||'—'}${r.recipientCccdDate?(' · Ngày cấp: '+formatDateVN(r.recipientCccdDate)):''}${r.recipientCccdPlace?(' · Nơi cấp: '+r.recipientCccdPlace):''}`],
-      ['Nơi ĐKHK thường trú', r.recipientPermanentAddr||'—'],
-      ['Địa chỉ liên hệ', r.recipientContactAddr||'—'],
-      ['Số điện thoại liên hệ', r.recipientPhone||'—'],
-      ['Người tạo', r.requester],
-      ['Người phê duyệt', r.approverName||'—'],
-      ['Người nhận thông báo', r.distributorName || r.distributorEmail || '—'],
-      ['Người phân phối — Hành chính/Kế toán', r.distributor2Name || r.distributor2Email || '—'],
+      ['Số CCCD', `${escapeHtml(r.recipientCccd)||'—'}${r.recipientCccdDate?(' · Ngày cấp: '+formatDateVN(r.recipientCccdDate)):''}${r.recipientCccdPlace?(' · Nơi cấp: '+escapeHtml(r.recipientCccdPlace)):''}`],
+      ['Nơi ĐKHK thường trú', escapeHtml(r.recipientPermanentAddr)||'—'],
+      ['Địa chỉ liên hệ', escapeHtml(r.recipientContactAddr)||'—'],
+      ['Số điện thoại liên hệ', escapeHtml(r.recipientPhone)||'—'],
+      ['Người tạo', escapeHtml(r.requester)],
+      ['Người phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người nhận thông báo', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
+      ['Người phân phối — Hành chính/Kế toán', escapeHtml(r.distributor2Name) || escapeHtml(r.distributor2Email) || '—'],
     ];
     itemsHtml = `<table class="tbl" style="min-width:640px"><thead><tr><th>Tên tài sản</th><th>Đơn vị</th><th>SL</th><th>Tình trạng</th><th>Giá trị</th><th>Ghi chú</th></tr></thead><tbody>
-      ${(r.items||[]).map(it=>`<tr><td>${it.name}</td><td>${it.unit||'—'}</td><td>${it.qty||0}</td><td>${it.condition||'—'}</td><td>${it.value||'—'}</td><td>${it.note||'—'}</td></tr>`).join('')}
+      ${(r.items||[]).map(it=>`<tr><td>${escapeHtml(it.name)}</td><td>${escapeHtml(it.unit)||'—'}</td><td>${it.qty||0}</td><td>${escapeHtml(it.condition)||'—'}</td><td>${escapeHtml(it.value)||'—'}</td><td>${escapeHtml(it.note)||'—'}</td></tr>`).join('')}
     </tbody></table>
     <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.6">
       Bên nhận cam kết: sử dụng đúng mục đích công việc, tuân thủ quy định của Công ty; có trách nhiệm bảo quản tài sản được giao, không tự ý tháo lắp, sửa chữa, cho mượn hoặc chuyển giao khi chưa được sự đồng ý của Công ty; bảo mật toàn bộ dữ liệu, thông tin của Công ty lưu trữ trên thiết bị; nếu làm mất, hư hỏng do lỗi chủ quan hoặc sử dụng không đúng quy định, chịu trách nhiệm bồi thường theo quy định của Công ty và pháp luật hiện hành.
@@ -11076,73 +11083,73 @@ function openModal_viewApproval(id) {
   } else if(r.kind==='advance') {
     title = `💰 Phiếu đề nghị tạm ứng — ${r.id}`;
     rows = [
-      ['Người đề nghị', r.requester],
-      ['Bộ phận', r.dept||'—'],
+      ['Người đề nghị', escapeHtml(r.requester)],
+      ['Bộ phận', escapeHtml(r.dept)||'—'],
       ['Dự án liên quan', projLabel],
       ['Số tiền tạm ứng', `<strong>${moneyMaskedFor(r, formatVND(r.amount||0))}</strong>`],
       ['Ngày cần nhận tiền', r.neededDate ? formatDateVN(r.neededDate) : '—'],
-      ['Lý do / Nội dung', r.reason||'—'],
-      ['Người phê duyệt', r.approverName||'—'],
-      ['Người chi tiền', r.distributorName || r.distributorEmail || '—'],
+      ['Lý do / Nội dung', escapeHtml(r.reason)||'—'],
+      ['Người phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người chi tiền', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
     ];
     if((r.images||[]).length) itemsHtml = apprImagesHtml(r.images);
   } else if(r.kind==='settlement') {
     title = `🧾 Phiếu hoàn ứng — ${r.id}`;
     rows = [
-      ['Người đề nghị', r.requester],
-      ['Bộ phận', r.dept||'—'],
+      ['Người đề nghị', escapeHtml(r.requester)],
+      ['Bộ phận', escapeHtml(r.dept)||'—'],
       ['Dự án liên quan', projLabel],
-      ['Phiếu tạm ứng liên quan', r.advanceRefId || '—'],
+      ['Phiếu tạm ứng liên quan', escapeHtml(r.advanceRefId) || '—'],
       ['Số tiền đã tạm ứng', moneyMaskedFor(r, formatVND(r.advanceAmount||0))],
       ['Tổng chi thực tế', moneyMaskedFor(r, formatVND(r.totalSpent||0))],
       ['Chênh lệch', `<strong style="color:${(r.diff||0)<0?'var(--red)':'var(--green)'}">${moneyMaskedFor(r, formatVND(r.diff||0))}</strong>${(r.diff||0)<0?' (công ty trả thêm)':' (hoàn lại công ty)'}`],
-      ['Người phê duyệt', r.approverName||'—'],
-      ['Người chi tiền', r.distributorName || r.distributorEmail || '—'],
+      ['Người phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người chi tiền', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
     ];
     itemsHtml = `<table class="tbl" style="min-width:600px"><thead><tr><th>Nội dung chi</th><th>Số tiền</th><th>Chứng từ/Hóa đơn</th><th>Ghi chú</th></tr></thead><tbody>
-      ${(r.items||[]).map(it=>`<tr><td>${it.content}</td><td>${moneyMaskedFor(r, formatVND(it.amount||0))}</td><td>${it.receipt||'—'}</td><td>${it.note||'—'}</td></tr>`).join('')}
+      ${(r.items||[]).map(it=>`<tr><td>${escapeHtml(it.content)}</td><td>${moneyMaskedFor(r, formatVND(it.amount||0))}</td><td>${escapeHtml(it.receipt)||'—'}</td><td>${escapeHtml(it.note)||'—'}</td></tr>`).join('')}
     </tbody></table>` + ((r.images||[]).length ? apprImagesHtml(r.images) : '');
   } else if(r.kind==='leave') {
     title = `🗓️ Đơn xin nghỉ phép/vắng mặt — ${r.id}`;
     rows = [
-      ['Kính gửi', r.kinhGui||'—'],
-      ['Người xin nghỉ', r.requester],
-      ['Bộ phận', r.dept||'—'],
+      ['Kính gửi', escapeHtml(r.kinhGui)||'—'],
+      ['Người xin nghỉ', escapeHtml(r.requester)],
+      ['Bộ phận', escapeHtml(r.dept)||'—'],
       ['Loại đơn', (r.leaveType==='absence') ? 'Vắng mặt' : 'Nghỉ phép năm'],
-      ['Thời gian nghỉ', `Từ ${r.fromHour?r.fromHour+'h, ':''}ngày ${r.fromDate} đến ${r.toHour?r.toHour+'h, ':''}ngày ${r.toDate}`],
-      ['Tổng số ngày nghỉ/giờ vắng mặt', r.total || (r.days+' ngày')],
-      ['Lý do', r.reason||'—'],
-      ['Trưởng phòng ban/BP phê duyệt', r.approverName||'—'],
-      ['Người nhận (Distributor)', r.distributorName || r.distributorEmail || '—'],
+      ['Thời gian nghỉ', `Từ ${r.fromHour?escapeHtml(r.fromHour)+'h, ':''}ngày ${escapeHtml(r.fromDate)} đến ${r.toHour?escapeHtml(r.toHour)+'h, ':''}ngày ${escapeHtml(r.toDate)}`],
+      ['Tổng số ngày nghỉ/giờ vắng mặt', escapeHtml(r.total) || (r.days+' ngày')],
+      ['Lý do', escapeHtml(r.reason)||'—'],
+      ['Trưởng phòng ban/BP phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người nhận (Distributor)', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
     ];
   } else if(r.kind==='businesstrip') {
     title = `🧳 Lịch trình công tác — ${r.id}`;
     rows = [
-      ['Người đi công tác', (r.travelers||[]).map(t=>t.name).join(', ')||'—'],
-      ['Nơi đến / Khách hàng', r.destination||'—'],
-      ['Thời gian công tác', `Từ ${r.fromTime?r.fromTime+', ':''}ngày ${r.fromDate||'—'} đến ${r.toTime?r.toTime+', ':''}ngày ${r.toDate||'—'} (${r.days||0} ngày)`],
+      ['Người đi công tác', escapeHtml((r.travelers||[]).map(t=>t.name).join(', '))||'—'],
+      ['Nơi đến / Khách hàng', escapeHtml(r.destination)||'—'],
+      ['Thời gian công tác', `Từ ${r.fromTime?escapeHtml(r.fromTime)+', ':''}ngày ${escapeHtml(r.fromDate)||'—'} đến ${r.toTime?escapeHtml(r.toTime)+', ':''}ngày ${escapeHtml(r.toDate)||'—'} (${r.days||0} ngày)`],
       ['Dự án liên quan', projLabel],
-      ['Phương tiện di chuyển', r.vehicle||'—'],
-      ['Nội dung / Mục đích', r.purpose||'—'],
-      ['Người đăng ký', r.requester],
+      ['Phương tiện di chuyển', escapeHtml(r.vehicle)||'—'],
+      ['Nội dung / Mục đích', escapeHtml(r.purpose)||'—'],
+      ['Người đăng ký', escapeHtml(r.requester)],
     ];
   } else if(r.kind==='vehicle') {
     itemsHtml = `<table class="tbl" style="min-width:700px"><thead><tr><th>Ngày</th><th>Quãng đường đi</th><th>Giờ xuất phát</th><th>Giờ kết thúc</th><th>Km đi</th><th>Km về</th><th>Tên cty giao hàng/Người sử dụng xe</th><th>Chi phí</th></tr></thead><tbody>
-      ${(r.items||[]).map(it=>`<tr><td>${it.date||'—'}</td><td>${it.route||'—'}</td><td>${it.timeStart||'—'}</td><td>${it.timeEnd||'—'}</td><td>${it.kmStart||'—'}</td><td>${it.kmEnd||'—'}</td><td>${it.purpose||'—'}</td><td>${moneyMaskedFor(r, formatVND(it.cost||0))}</td></tr>`).join('')}
+      ${(r.items||[]).map(it=>`<tr><td>${escapeHtml(it.date)||'—'}</td><td>${escapeHtml(it.route)||'—'}</td><td>${escapeHtml(it.timeStart)||'—'}</td><td>${escapeHtml(it.timeEnd)||'—'}</td><td>${escapeHtml(it.kmStart)||'—'}</td><td>${escapeHtml(it.kmEnd)||'—'}</td><td>${escapeHtml(it.purpose)||'—'}</td><td>${moneyMaskedFor(r, formatVND(it.cost||0))}</td></tr>`).join('')}
     </tbody></table>`;
   } else if(r.kind==='overtime') {
     title = `🕒 Phiếu đăng ký tăng ca — ${r.id}`;
     rows = [
-      ['Ngày tăng ca', r.date||'—'],
-      ['Bộ phận', r.dept||'—'],
-      ['Dự án liên quan', r.proj||'—'],
+      ['Ngày tăng ca', escapeHtml(r.date)||'—'],
+      ['Bộ phận', escapeHtml(r.dept)||'—'],
+      ['Dự án liên quan', escapeHtml(r.proj)||'—'],
       ['Tổng chi phí tăng ca', `<strong style="color:var(--accent)">${moneyMaskedFor(r, formatVND(r.totalCost||0))}</strong>`],
-      ['Người tạo', r.requester],
-      ['Quản lý/Trưởng BP phê duyệt', r.approverName||'—'],
-      ['Người được phân phối (Distributor)', r.distributorName || r.distributorEmail || '—'],
+      ['Người tạo', escapeHtml(r.requester)],
+      ['Quản lý/Trưởng BP phê duyệt', escapeHtml(r.approverName)||'—'],
+      ['Người được phân phối (Distributor)', escapeHtml(r.distributorName) || escapeHtml(r.distributorEmail) || '—'],
     ];
     itemsHtml = `<table class="tbl" style="min-width:700px"><thead><tr><th>Họ và tên</th><th>Bộ phận</th><th>Từ giờ</th><th>Đến giờ</th><th>Nội dung công việc</th><th>Chi phí</th></tr></thead><tbody>
-      ${(r.items||[]).map(it=>`<tr><td>${it.name||'—'}</td><td>${it.dept||'—'}</td><td>${it.timeStart||'—'}</td><td>${it.timeEnd||'—'}</td><td>${it.content||'—'}</td><td>${moneyMaskedFor(r, formatVND(it.cost||0))}</td></tr>`).join('')}
+      ${(r.items||[]).map(it=>`<tr><td>${escapeHtml(it.name)||'—'}</td><td>${escapeHtml(it.dept)||'—'}</td><td>${escapeHtml(it.timeStart)||'—'}</td><td>${escapeHtml(it.timeEnd)||'—'}</td><td>${escapeHtml(it.content)||'—'}</td><td>${moneyMaskedFor(r, formatVND(it.cost||0))}</td></tr>`).join('')}
     </tbody></table>`;
   } else {
     title = `Phiếu — ${r.id}`;
@@ -11151,7 +11158,7 @@ function openModal_viewApproval(id) {
   if(r.kind!=='material' && r.kind!=='businesstrip' && r.status!=='pending') {
     rows.push(['Thời gian phê duyệt', r.approvedAt||'—']);
     rows.push(['Người xử lý', r.approvedBy||'—']);
-    if(r.status==='rejected') rows.push(['Lý do từ chối', `<span style="color:var(--red)">${r.rejectReason||'—'}</span>`]);
+    if(r.status==='rejected') rows.push(['Lý do từ chối', `<span style="color:var(--red)">${escapeHtml(r.rejectReason)||'—'}</span>`]);
   }
   if((r.kind==='advance' || r.kind==='settlement') && r.status==='approved') {
     rows.push(['Xác nhận của người tạo', apprConfirmBadge(r) + (r.requesterConfirmed ? ` <span style="color:var(--text2);font-size:11px">(${r.requesterConfirmedAt||''})</span>` : '')]);
@@ -11512,20 +11519,20 @@ function renderMessages(room) {
     const timeStr = new Date(msg.ts).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
     const initial = (msg.senderName||'?').slice(-1).toUpperCase();
     const avatarColor = stringToColor(msg.senderEmail||msg.senderName||'');
-    const textHtml = (msg.text||'').replace(/@(\S+)/g, '<span class="mention">@$1</span>');
+    const textHtml = escapeHtml(msg.text||'').replace(/@(\S+)/g, '<span class="mention">@$1</span>');
     html += `<div class="chat-msg">
       <div class="chat-msg-avatar" style="background:${avatarColor}22;border-color:${avatarColor}44;color:${avatarColor}">${initial}</div>
       <div class="chat-msg-body">
         <div class="chat-msg-meta">
-          <span class="chat-msg-name" style="color:${avatarColor}">${msg.senderName}</span>
+          <span class="chat-msg-name" style="color:${avatarColor}">${escapeHtml(msg.senderName)}</span>
           <span class="chat-msg-time">${timeStr}</span>
         </div>
         ${msg.text ? `<div class="chat-msg-text">${textHtml}</div>` : ''}
         ${(msg.files||[]).map(f=>`
           <div class="chat-msg-file">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text1)">${f.name}</span>
-            <span style="font-family:monospace;font-size:10px;color:var(--text2)">${f.size}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text1)">${escapeHtml(f.name)}</span>
+            <span style="font-family:monospace;font-size:10px;color:var(--text2)">${escapeHtml(f.size)}</span>
             ${f.fileId ? `<a href="https://drive.google.com/uc?export=download&id=${f.fileId}" target="_blank" class="download-btn" style="padding:3px 8px">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Tải
             </a>` : ''}
@@ -11641,7 +11648,7 @@ function sendChatFiles(input) {
     const reader = new FileReader();
     reader.onload = function(e) {
       fetch(DRIVE_API_URL, { method:'POST', body: JSON.stringify({
-        action:'upload_file', proj: currentRoomId, folderIntent:'chat',
+        secret: APP_SECRET_KEY, action:'upload_file', proj: currentRoomId, folderIntent:'chat',
         filename: file.name, mimeType: file.type||'application/octet-stream',
         fileData: e.target.result.split(',')[1]
       })}).then(r=>r.json()).then(res=>{
@@ -11662,7 +11669,7 @@ function sendChatFiles(input) {
 
 function syncChatToDrive() {
   if(!driveLoaded) return; // tránh ghi đè Drive khi chưa tải được dữ liệu thật
-  const payload = { projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, mailLogs, meetings, orgChart, settings, attendanceLogs, quotes, quoteSettings, hrProfiles, salaryRecords };
+  const payload = { secret: APP_SECRET_KEY, projects, issues, docs, team, tasks, chatRooms, warehouseStock, warehouseOrders, warehouseTxns, approvalRequests, mailLogs, meetings, orgChart, settings, attendanceLogs, quotes, quoteSettings, hrProfiles, salaryRecords };
   fetch(DRIVE_API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(()=>{});
 }
 
